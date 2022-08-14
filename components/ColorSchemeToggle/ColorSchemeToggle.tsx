@@ -1,18 +1,23 @@
-import { ActionIcon, Group, useMantineColorScheme } from '@mantine/core';
-import { IconSun, IconMoonStars } from '@tabler/icons';
+import { ActionIcon, Group, useMantineColorScheme, useMantineTheme } from '@mantine/core';
+import { IconMoonStars, IconSun } from '@tabler/icons';
+import { ColorControl } from '../ColorControl/ColorControl';
 
 export function ColorSchemeToggle() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const theme = useMantineTheme();
+
+  const handlePrimaryColorChange = (color: string) => {
+    theme.primaryColor = color;
+  };
 
   return (
     <Group position="center" mt="xl">
       <ActionIcon
         onClick={() => toggleColorScheme()}
         size="xl"
-        sx={(theme) => ({
-          backgroundColor:
-            theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-          color: theme.colorScheme === 'dark' ? theme.colors.yellow[4] : theme.colors.blue[6],
+        sx={(th) => ({
+          backgroundColor: th.colorScheme === 'dark' ? th.colors.dark[6] : th.colors.gray[0],
+          color: th.colorScheme === 'dark' ? th.colors.yellow[4] : th.colors.blue[6],
         })}
       >
         {colorScheme === 'dark' ? (
@@ -21,6 +26,7 @@ export function ColorSchemeToggle() {
           <IconMoonStars size={20} stroke={1.5} />
         )}
       </ActionIcon>
+      <ColorControl onChange={handlePrimaryColorChange} value={theme.primaryColor} />
     </Group>
   );
 }

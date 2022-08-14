@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { AppProps } from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
-import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
+import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
+import { RouterTransition } from '../components/RouterTransition/RouterTransition';
 
-export default function App(props: AppProps & { colorScheme: ColorScheme }) {
+export default function App(props: AppProps & { colorScheme: ColorScheme; primaryColor: string }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+  const [primaryColor] = useState(props.primaryColor);
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -25,8 +27,9 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
       </Head>
 
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+        <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
           <NotificationsProvider>
+            <RouterTransition />
             <Component {...pageProps} />
           </NotificationsProvider>
         </MantineProvider>
@@ -37,4 +40,5 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
 
 App.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
   colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
+  primaryColor: getCookie('mantine-primary-color', ctx) || 'blue',
 });
