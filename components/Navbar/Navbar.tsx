@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Navbar } from '@mantine/core';
+import { Collapse, createStyles, Navbar } from '@mantine/core';
 import {
   Icon2fa,
   IconBellRinging,
@@ -9,8 +9,12 @@ import {
   IconLogout,
   IconReceipt2,
   IconSettings,
+  IconUser,
 } from '@tabler/icons';
 import { UserButton } from '../UserButton/UserButton';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { useToggle } from '@mantine/hooks';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -73,32 +77,27 @@ const useStyles = createStyles((theme, _params, getRef) => {
 });
 
 const data = [
-  { link: '', label: 'Notifications', icon: IconBellRinging },
-  { link: '', label: 'Billing', icon: IconReceipt2 },
-  { link: '', label: 'Security', icon: IconFingerprint },
-  { link: '', label: 'SSH Keys', icon: IconKey },
-  { link: '', label: 'Databases', icon: IconDatabaseImport },
-  { link: '', label: 'Authentication', icon: Icon2fa },
-  { link: '', label: 'Other Settings', icon: IconSettings },
+  { link: '/', label: 'Главная', icon: IconBellRinging },
+  { link: '/configs', label: 'Пользовательский сборки', icon: IconReceipt2 },
+  { link: '/security', label: 'Security', icon: IconFingerprint },
+  { link: '/ssh', label: 'SSH Keys', icon: IconKey },
+  { link: '/databases', label: 'Databases', icon: IconDatabaseImport },
+  { link: '/auth', label: 'Authentication', icon: Icon2fa },
+  { link: '/other', label: 'Other Settings', icon: IconSettings },
 ];
 
 export function NavbarSimpleColored({ opened }: any) {
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState('Billing');
+  const router = useRouter();
+  const [visible, toggle] = useToggle();
 
   const links = data.map((item) => (
-    <a
-      className={cx(classes.link, { [classes.linkActive]: item.label === active })}
-      href={item.link}
-      key={item.label}
-      onClick={(event) => {
-        event.preventDefault();
-        setActive(item.label);
-      }}
-    >
-      <item.icon className={classes.linkIcon} stroke={1.5} />
-      <span>{item.label}</span>
-    </a>
+    <Link href={item.link} key={item.label} passHref>
+      <a className={cx(classes.link, { [classes.linkActive]: item.link === router.asPath })}>
+        <item.icon className={classes.linkIcon} stroke={1.5} />
+        <span>{item.label}</span>
+      </a>
+    </Link>
   ));
 
   return (
@@ -112,11 +111,19 @@ export function NavbarSimpleColored({ opened }: any) {
       <Navbar.Section grow>{links}</Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <UserButton image="" name="Username" email="email@email.com" />
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
-          <IconLogout className={classes.linkIcon} stroke={1.5} />
-          <span>Logout</span>
-        </a>
+        <Collapse in={visible}>
+          <Link href="/profile">
+            <a className={classes.link}>
+              <IconUser className={classes.linkIcon} stroke={1.5} />
+              <span>Профиль</span>
+            </a>
+          </Link>
+          <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <span>Выйти</span>
+          </a>
+        </Collapse>
+        <UserButton image="" name="Username" email="email@email.com" onClick={() => toggle()} />
       </Navbar.Section>
     </Navbar>
   );
