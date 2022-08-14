@@ -6,6 +6,7 @@ import {
   IconDatabaseImport,
   IconFingerprint,
   IconKey,
+  IconLogout,
   IconReceipt2,
   IconSettings,
 } from '@tabler/icons';
@@ -111,7 +112,11 @@ export function NavbarSimpleColored({ opened }: any) {
       <Navbar.Section grow>{links}</Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <UserButton image={''} name={'Username'} email={'email@email.com'} />
+        <UserButton image="" name="Username" email="email@email.com" />
+        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+          <IconLogout className={classes.linkIcon} stroke={1.5} />
+          <span>Logout</span>
+        </a>
       </Navbar.Section>
     </Navbar>
   );

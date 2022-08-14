@@ -2,9 +2,25 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
-module.exports = withBundleAnalyzer({
-  reactStrictMode: false,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-});
+const withPWA = require('next-pwa');
+
+module.exports = withPWA(
+  // {
+  //   pwa: {
+  //     dest: './public',
+  //     register: true,
+  //     skipWaiting: true,
+  //   },
+  // }
+  withBundleAnalyzer({
+    reactStrictMode: false,
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
+    pwa: {
+      dest: 'public',
+      register: true,
+      skipWaiting: true,
+    },
+  })
+);
