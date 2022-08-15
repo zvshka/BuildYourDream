@@ -19,5 +19,6 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'no-spaced-func': 'off',
     'no-unused-vars': 'warn',
+    'linebreak-style': 0,
   },
 };

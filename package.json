@@ -29,6 +29,7 @@
     "@mantine/notifications": "5.1.5",
     "@mantine/nprogress": "^5.1.5",
     "@mantine/prism": "5.1.5",
+    "@mantine/modals": "^5.1.5",
     "@next/bundle-analyzer": "^12.1.4",
     "@tabler/icons": "^1.78.1",
     "cookies-next": "^2.1.1",

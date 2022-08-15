@@ -1,11 +1,10 @@
-import { Collapse, createStyles, Navbar } from '@mantine/core';
+import { Collapse, createStyles, Navbar, Text, UnstyledButton } from '@mantine/core';
 import {
-  Icon2fa,
   IconBell,
   IconCpu,
-  IconDatabaseImport,
   IconDots,
   IconLogout,
+  IconMessage,
   IconSettings,
   IconUser,
   IconUsers,
@@ -14,6 +13,8 @@ import {
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useToggle } from '@mantine/hooks';
+import { useModals } from '@mantine/modals';
+import { showNotification, useNotifications } from '@mantine/notifications';
 import { UserButton } from '../UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => {
@@ -39,6 +40,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
       borderRadius: theme.radius.sm,
       fontWeight: 500,
+      width: '100%',
 
       '&:hover': {
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
@@ -47,6 +49,18 @@ const useStyles = createStyles((theme, _params, getRef) => {
         [`& .${icon}`]: {
           color: theme.colorScheme === 'dark' ? theme.white : theme.black,
         },
+      },
+    },
+
+    logout: {
+      '&:hover': {
+        backgroundColor:
+          theme.colorScheme === 'dark'
+            ? theme.fn.darken(theme.fn.variant({ variant: 'filled', color: 'red' }).background, 0.2)
+            : theme.fn.lighten(
+                theme.fn.variant({ variant: 'filled', color: 'red' }).background,
+                0.2
+              ),
       },
     },
 
@@ -78,17 +92,35 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 const data = [
   { link: '/', label: 'Конфигуратор', icon: IconCpu },
-  { link: '/user-configs', label: 'Пользовательские сборки', icon: IconWorld },
+  { link: '/configs', label: 'Пользовательские сборки', icon: IconWorld },
   { link: '/profile', label: 'Профиль', icon: IconUser },
   { link: '/notifications', label: 'Уведомления', icon: IconBell },
-  { link: '/settings', label: 'Настройки', icon: IconSettings },  
+  { link: '/settings', label: 'Настройки', icon: IconSettings },
   { link: '/other', label: 'Прочее', icon: IconDots },
+  { link: '/chat', label: 'Чат', icon: IconMessage },
 ];
 
 export function NavbarSimpleColored({ opened }: any) {
   const { classes, cx } = useStyles();
   const router = useRouter();
   const [visible, toggle] = useToggle();
+  const modals = useModals();
+
+  const handleLogout = () => {
+    modals.openConfirmModal({
+      title: 'Вы уверены?',
+      children: <Text size="sm">После подтверждения вам придётся войти в аккаунт снова</Text>,
+      labels: { confirm: 'Конечно', cancel: 'Нет' },
+      onConfirm() {
+        showNotification({
+          title: 'Успех',
+          message: 'Вы успешно вышли из аккаунта',
+          color: 'green',
+        });
+      },
+      onCancel() {},
+    });
+  };
 
   const links = data.map((item) => (
     <Link href={item.link} key={item.label} passHref>
@@ -117,10 +149,10 @@ export function NavbarSimpleColored({ opened }: any) {
               <span>Сменить пользователя</span>
             </a>
           </Link>
-          <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+          <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>
             <IconLogout className={classes.linkIcon} stroke={1.5} />
             <span>Выйти</span>
-          </a>
+          </UnstyledButton>
         </Collapse>
         <UserButton image="" name="Username" email="email@email.com" onClick={() => toggle()} />
       </Navbar.Section>

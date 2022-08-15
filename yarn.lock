@@ -1621,6 +1621,13 @@
   resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-5.1.5.tgz"
   integrity sha512-R2/NaGoRTOCWj9jLA0lNp+tuCaKF64gpjqYgxlDXp5VAyO1R0zTfMK8OSWJLcr2OTzVzjmakOwF2OZg8Am/r0w==
 
+"@mantine/modals@^5.1.5":
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/@mantine/modals/-/modals-5.1.6.tgz#88815917e9ff78e1ef0ca673d60aa8c46886d489"
+  integrity sha512-x95tiHf/sKR5wMEYz2NXAu8qqzazx2CQIvkZTo9Wai8NUyflaj2ZRUvhhgMVBrdtwfhO+qjjc3Yq6JrAnkVJ2g==
+  dependencies:
+    "@mantine/utils" "5.1.6"
+
 "@mantine/next@5.1.5":
   version "5.1.5"
   resolved "https://registry.npmjs.org/@mantine/next/-/next-5.1.5.tgz"
@@ -1672,6 +1679,11 @@
   version "5.1.5"
   resolved "https://registry.npmjs.org/@mantine/utils/-/utils-5.1.5.tgz"
   integrity sha512-c8pJE/mM4dAdjLfQCmFC4V9VNF0rTpiS46nxBoUzGShHkr7NTLOfkzws3hYzYFNvJ2MvNMQu//QOXZrnrAPRTw==
+
+"@mantine/utils@5.1.6":
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/@mantine/utils/-/utils-5.1.6.tgz#992cd1e8850467533aa88dc5fd933650674abf5e"
+  integrity sha512-y7va2keQ+TPwn2j668r889NhQWO0OhSvaxT5P8n2iBaTyPg+Xp5Jm2IE5UjI+OrZErrgmQq1sxbfg6v5vdK+0A==
 
 "@mdx-js/mdx@^1.6.22":
   version "1.6.22"

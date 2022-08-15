@@ -3,7 +3,11 @@ import { AppShell, useMantineTheme } from '@mantine/core';
 import { NavbarSimpleColored } from '../Navbar/Navbar';
 import { HeaderWithLogo } from '../Header/HeaderWithLogo';
 
-export default function Shell({ children }: { children: ReactElement | ReactElement[] | string }) {
+export default function Shell({
+  children,
+}: {
+  children: ReactElement | ReactElement[] | string | undefined;
+}) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
   return (

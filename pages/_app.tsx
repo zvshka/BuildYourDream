@@ -5,6 +5,7 @@ import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
+import { ModalsProvider } from '@mantine/modals';
 import { RouterTransition } from '../components/RouterTransition/RouterTransition';
 import { ColorContext } from '../components/ColorControl/ColorContext';
 
@@ -37,10 +38,12 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
       <ColorContext.Provider value={{ value: primaryColor, setValue: changePrimaryColor }}>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
-            <NotificationsProvider>
-              <RouterTransition />
-              <Component {...pageProps} />
-            </NotificationsProvider>
+            <ModalsProvider>
+              <NotificationsProvider>
+                <RouterTransition />
+                <Component {...pageProps} />
+              </NotificationsProvider>
+            </ModalsProvider>
           </MantineProvider>
         </ColorSchemeProvider>
       </ColorContext.Provider>
