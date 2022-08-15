@@ -1,4 +1,4 @@
-import { createStyles, Title, Text, Button, Container, Group } from '@mantine/core';
+import { Button, Container, createStyles, Group, Text, Title } from '@mantine/core';
 import Shell from '../components/Shell/Shell';
 
 const useStyles = createStyles((theme) => ({
@@ -13,7 +13,7 @@ const useStyles = createStyles((theme) => ({
     fontSize: 220,
     lineHeight: 1,
     marginBottom: theme.spacing.xl * 1.5,
-    color: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2],
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.dark[4],
 
     [theme.fn.smallerThan('sm')]: {
       fontSize: 120,

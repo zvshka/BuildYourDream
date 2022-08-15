@@ -1,27 +1,37 @@
-import { Group, Image, Stack, Text, Box, createStyles } from '@mantine/core';
+import { Box, createStyles, Group, Image, Paper, Text } from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
   image: {
-    height: 128,
-    width: 128,
+    width: 96,
+    borderRadius: theme.radius.sm,
+  },
+  wrapper: {
+    borderRadius: theme.radius.sm,
+    transition: 'all .4s',
+    '&:hover': {
+      boxShadow: theme.shadows.xl,
+    },
   },
 }));
 
-export const ConfigsItem = ({ data }: any) => {
+export const ConfigsItem = () => {
   const { classes } = useStyles();
   return (
-    <Group>
-      <Box className={classes.image}>
-        <Image
-          src={
-            'https://cdn.discordapp.com/avatars/263349725099458566/18993e33fb027e11af9d826d74b37fab.png?size=4096'
-          }
-        />
-      </Box>
-      <Stack>
-        <Text>Title</Text>
-        <Text>Description</Text>
-      </Stack>
-    </Group>
+    <Paper className={classes.wrapper}>
+      <Group>
+        <Box className={classes.image}>
+          <Image
+            radius="sm"
+            src="https://cdn.discordapp.com/avatars/263349725099458566/18993e33fb027e11af9d826d74b37fab.png?size=4096"
+          />
+        </Box>
+        <Box>
+          <Box>
+            <Text>Title</Text>
+            <Text>Description</Text>
+          </Box>
+        </Box>
+      </Group>
+    </Paper>
   );
 };

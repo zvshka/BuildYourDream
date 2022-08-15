@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { IconColorPicker } from '@tabler/icons';
-import { ColorSwatch, Group, Popover, useMantineTheme, CheckIcon } from '@mantine/core';
+import { CheckIcon, ColorSwatch, Group, Popover, useMantineTheme } from '@mantine/core';
 
 interface ColorControlProps {
-  onChange(color: string): void;
   value: string;
+
+  onChange(color: string): void;
 }
 
 export function ColorControl({ onChange, value }: ColorControlProps) {

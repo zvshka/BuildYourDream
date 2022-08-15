@@ -1,4 +1,4 @@
-import { createStyles, Group, Box, Image, Text } from '@mantine/core';
+import { Box, createStyles, Group, Image, Text } from '@mantine/core';
 import Shell from '../components/Shell/Shell';
 
 const useStyles = createStyles((theme) => ({

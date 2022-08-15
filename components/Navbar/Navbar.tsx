@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Collapse, createStyles, Navbar } from '@mantine/core';
 import {
   Icon2fa,
@@ -11,10 +10,10 @@ import {
   IconSettings,
   IconUser,
 } from '@tabler/icons';
-import { UserButton } from '../UserButton/UserButton';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useToggle } from '@mantine/hooks';
+import { UserButton } from '../UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
