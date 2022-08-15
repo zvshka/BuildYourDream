@@ -42,10 +42,10 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
             <Text
               color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
             >
-              Build Your Dream
+              Dream PC Builder
             </Text>
           </Title>
-          <Code className={classes.version}>v3.1.2</Code>
+          <Code className={classes.version}>v3.1.3</Code>
         </Group>
       </div>
     </Header>

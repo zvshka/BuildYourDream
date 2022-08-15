@@ -21,7 +21,6 @@ const useStyles = createStyles((theme) => ({
   },
 
   title: {
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
     textAlign: 'center',
     fontWeight: 900,
     fontSize: 38,
@@ -46,14 +45,13 @@ export default function NotFoundTitle() {
     <Shell>
       <Container className={classes.root}>
         <div className={classes.label}>404</div>
-        <Title className={classes.title}>You have found a secret place.</Title>
+        <Title className={classes.title}>Страница не найдена.</Title>
         <Text color="dimmed" size="lg" align="center" className={classes.description}>
-          Unfortunately, this is only a 404 page. You may have mistyped the address, or the page has
-          been moved to another URL.
+          Вероятно, Вы ошиблись при вводе URL-адреса, либо запрашиваемая страница была перемещена на другой URL-адрес.
         </Text>
         <Group position="center">
           <Button variant="subtle" size="md">
-            Take me back to home page
+            Вернуться на главную страницу
           </Button>
         </Group>
       </Container>

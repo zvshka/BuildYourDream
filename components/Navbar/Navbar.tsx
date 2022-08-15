@@ -1,14 +1,15 @@
 import { Collapse, createStyles, Navbar } from '@mantine/core';
 import {
   Icon2fa,
-  IconBellRinging,
+  IconBell,
+  IconCpu,
   IconDatabaseImport,
-  IconFingerprint,
-  IconKey,
+  IconDots,
   IconLogout,
-  IconReceipt2,
   IconSettings,
   IconUser,
+  IconUsers,
+  IconWorld,
 } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -76,13 +77,12 @@ const useStyles = createStyles((theme, _params, getRef) => {
 });
 
 const data = [
-  { link: '/', label: 'Главная', icon: IconBellRinging },
-  { link: '/configs', label: 'Пользовательский сборки', icon: IconReceipt2 },
-  { link: '/security', label: 'Security', icon: IconFingerprint },
-  { link: '/ssh', label: 'SSH Keys', icon: IconKey },
-  { link: '/databases', label: 'Databases', icon: IconDatabaseImport },
-  { link: '/auth', label: 'Authentication', icon: Icon2fa },
-  { link: '/other', label: 'Other Settings', icon: IconSettings },
+  { link: '/', label: 'Конфигуратор', icon: IconCpu },
+  { link: '/user-configs', label: 'Пользовательские сборки', icon: IconWorld },
+  { link: '/profile', label: 'Профиль', icon: IconUser },
+  { link: '/notifications', label: 'Уведомления', icon: IconBell },
+  { link: '/settings', label: 'Настройки', icon: IconSettings },  
+  { link: '/other', label: 'Прочее', icon: IconDots },
 ];
 
 export function NavbarSimpleColored({ opened }: any) {
@@ -111,10 +111,10 @@ export function NavbarSimpleColored({ opened }: any) {
 
       <Navbar.Section className={classes.footer}>
         <Collapse in={visible}>
-          <Link href="/profile">
+          <Link href="/change-user">
             <a className={classes.link}>
-              <IconUser className={classes.linkIcon} stroke={1.5} />
-              <span>Профиль</span>
+              <IconUsers className={classes.linkIcon} stroke={1.5} />
+              <span>Сменить пользователя</span>
             </a>
           </Link>
           <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>

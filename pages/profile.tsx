@@ -21,7 +21,7 @@ export default function Profile() {
             alt="avatar"
           />
         </Box>
-        <Text>Username</Text>
+        <Text>Чертилаgd</Text>
         <Text>Email</Text>
       </Group>
     </Shell>

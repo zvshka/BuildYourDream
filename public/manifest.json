@@ -5,8 +5,8 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
-  "name": "Build Your Dream",
-  "short_name": "BYD",
+  "name": "Dream PC Builder",
+  "short_name": "DPCB",
   "icons": [
     {
       "src": "/icon-192x192.png",
