@@ -18,6 +18,6 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off',
     'no-spaced-func': 'off',
-    'max-len': 0,
+    'no-unused-vars': 'warn',
   },
 };
