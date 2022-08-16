@@ -26,17 +26,7 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
   const { classes } = useStyles();
   return (
     <Header height={70} p="md">
-      <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-          <Burger
-            opened={opened}
-            onClick={() => setOpened((o: any) => !o)}
-            size="sm"
-            color={theme.colors.gray[6]}
-            mr="xl"
-          />
-        </MediaQuery>
-
+      <Group position="apart">
         <Group position="apart">
           <Title order={3}>
             <Text
@@ -47,7 +37,16 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
           </Title>
           <Code className={classes.version}>v3.1.3</Code>
         </Group>
-      </div>
+        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+          <Burger
+            opened={opened}
+            onClick={() => setOpened((o: any) => !o)}
+            size="sm"
+            color={theme.colors.gray[6]}
+            mr="xl"
+          />
+        </MediaQuery>
+      </Group>
     </Header>
   );
 }

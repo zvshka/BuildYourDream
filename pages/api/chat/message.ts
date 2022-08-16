@@ -14,5 +14,5 @@ export default function message(req: NextApiRequest, res: NextApiResponse) {
   const newMessage = { id: randstr('id_'), body, author, postedAt: new Date().toDateString() };
   chatHistory.messages.push(newMessage);
   pusher.trigger('chat', 'new-message', newMessage);
-  return res.status(200);
+  return res.status(200).json({ message: 'success' });
 }

@@ -14,7 +14,8 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useToggle } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
-import { showNotification, useNotifications } from '@mantine/notifications';
+import { showNotification } from '@mantine/notifications';
+import { NextLink } from '@mantine/next';
 import { UserButton } from '../UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => {
@@ -123,12 +124,15 @@ export function NavbarSimpleColored({ opened }: any) {
   };
 
   const links = data.map((item) => (
-    <Link href={item.link} key={item.label} passHref>
-      <a className={cx(classes.link, { [classes.linkActive]: item.link === router.asPath })}>
-        <item.icon className={classes.linkIcon} stroke={1.5} />
-        <span>{item.label}</span>
-      </a>
-    </Link>
+    <UnstyledButton
+      href={item.link}
+      key={item.label}
+      component={NextLink}
+      className={cx(classes.link, { [classes.linkActive]: item.link === router.asPath })}
+    >
+      <item.icon className={classes.linkIcon} stroke={1.5} />
+      <span>{item.label}</span>
+    </UnstyledButton>
   ));
 
   return (
