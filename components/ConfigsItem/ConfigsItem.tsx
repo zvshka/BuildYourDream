@@ -27,12 +27,12 @@ export const ConfigsItem = () => {
         </Box>
         <Box>
           <Box>
-            <Text><b>Название сборки</b></Text>
+            <Text>
+              <b>Название сборки</b>
+            </Text>
             <Text>Описание сборки</Text>
           </Box>
-          <Box
-            
-          />
+          <Box />
         </Box>
       </Group>
     </Paper>
