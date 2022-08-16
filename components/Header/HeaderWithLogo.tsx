@@ -43,7 +43,6 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
             onClick={() => setOpened((o: any) => !o)}
             size="sm"
             color={theme.colors.gray[6]}
-            mr="xl"
           />
         </MediaQuery>
       </Group>

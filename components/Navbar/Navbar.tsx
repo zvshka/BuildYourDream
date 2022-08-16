@@ -146,19 +146,23 @@ export function NavbarSimpleColored({ opened }: any) {
       <Navbar.Section grow>{links}</Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <Collapse in={visible}>
-          <Link href="/change-user">
-            <a className={classes.link}>
-              <IconUsers className={classes.linkIcon} stroke={1.5} />
-              <span>Сменить пользователя</span>
-            </a>
-          </Link>
-          <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>
-            <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <span>Выйти</span>
-          </UnstyledButton>
-        </Collapse>
-        <UserButton image="" name="Username" email="email@email.com" onClick={() => toggle()} />
+        {/*<Collapse in={visible}>*/}
+        {/*  <Link href="/change-user">*/}
+        {/*    <a className={classes.link}>*/}
+        {/*      <IconUsers className={classes.linkIcon} stroke={1.5} />*/}
+        {/*      <span>Сменить пользователя</span>*/}
+        {/*    </a>*/}
+        {/*  </Link>*/}
+        {/*  <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>*/}
+        {/*    <IconLogout className={classes.linkIcon} stroke={1.5} />*/}
+        {/*    <span>Выйти</span>*/}
+        {/*  </UnstyledButton>*/}
+        {/*</Collapse>*/}
+        {/*<UserButton image="" name="Username" email="email@email.com" onClick={() => toggle()} />*/}
+        <UnstyledButton className={classes.link} component={NextLink} href="/auth/signup">
+          <IconLogout className={classes.linkIcon} stroke={1.5} />
+          <span>Вход</span>
+        </UnstyledButton>
       </Navbar.Section>
     </Navbar>
   );
