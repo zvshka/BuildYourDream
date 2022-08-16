@@ -8,12 +8,18 @@ import {
   Stack,
   Textarea,
 } from '@mantine/core';
-import { randomId, useHash, useListState, useShallowEffect } from '@mantine/hooks';
+import {
+  getHotkeyHandler,
+  randomId,
+  useHash,
+  useListState,
+  useShallowEffect,
+} from '@mantine/hooks';
 import { useEffect, useRef, useState } from 'react';
 import Pusher from 'pusher-js';
 import { useForm } from '@mantine/form';
 import Shell from '../components/Shell/Shell';
-import { Message } from '../components/Message';
+import { Message } from '../components/Message/Message';
 
 const useStyles = createStyles((theme) => ({
   inputWrapper: {
@@ -93,6 +99,7 @@ export default function Chat() {
   });
   const viewport = useRef<any>();
   const { classes } = useStyles();
+
   useEffect(() => {
     fetch('/api/chat/connect')
       .then((res) => res.json())
@@ -103,6 +110,9 @@ export default function Chat() {
           })
         );
       });
+    fetch('/api/chat/messages')
+      .then((res) => res.json())
+      .then((data) => handlers.setState(data.messages));
     viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' });
   }, []);
 
@@ -112,17 +122,23 @@ export default function Chat() {
       image: '',
       name: hash,
     });
-    pusher?.subscribe('chat').bind('new-message', (data: any) => {
+    pusher?.subscribe('chat').bind('new-messages', (data: any) => {
       handlers.append(data);
+      setTimeout(
+        () => viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' }),
+        500
+      );
     });
   }, [pusher]);
 
   const handleSubmit = (data: typeof form.values) => {
-    fetch('/api/chat/message', {
+    if (!data.body.length) return;
+    fetch('/api/chat/messages', {
       method: 'POST',
       // @ts-ignore
       body: JSON.stringify(data),
     });
+    form.setFieldValue('body', '');
   };
 
   return (
@@ -135,7 +151,7 @@ export default function Chat() {
                 {messages.map((message) => (
                   <Message
                     key={message.id}
-                    postedAt={new Date().toDateString()}
+                    postedAt={message.postedAt}
                     body={message.body}
                     author={message.author}
                   />
@@ -150,6 +166,7 @@ export default function Chat() {
                 autosize
                 minRows={1}
                 maxRows={4}
+                onKeyDown={getHotkeyHandler([['Enter', () => handleSubmit(form.values)]])}
                 {...form.getInputProps('body')}
               />
             </Box>

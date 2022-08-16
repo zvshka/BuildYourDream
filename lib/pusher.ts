@@ -1,29 +1,19 @@
 import Pusher from 'pusher';
 
-// eslint-disable-next-line import/no-mutable-exports
-let pusher: Pusher;
-if (process.env.NODE_ENV === 'production') {
-  pusher = new Pusher({
+declare global {
+  // allow global `var` declarations
+  // eslint-disable-next-line no-var, vars-on-top
+  var pusher: Pusher | undefined;
+}
+
+export const pusher =
+  global.pusher ||
+  new Pusher({
     appId: process.env.PUSHER_APPID || '',
     key: process.env.PUSHER_KEY || '',
     secret: process.env.PUSHER_SECRET || '',
     cluster: 'eu',
     useTLS: true,
   });
-} else {
-  // @ts-ignore
-  if (!global.pusher) {
-    // @ts-ignore
-    global.pusher = new Pusher({
-      appId: process.env.PUSHER_APPID || '',
-      key: process.env.PUSHER_KEY || '',
-      secret: process.env.PUSHER_SECRET || '',
-      cluster: 'eu',
-      useTLS: true,
-    });
-  }
-  // @ts-ignore
-  pusher = global.pusher;
-}
 
-export default pusher;
+if (process.env.NODE_ENV !== 'production') global.pusher = pusher;

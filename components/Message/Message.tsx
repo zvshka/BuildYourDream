@@ -1,9 +1,11 @@
-import { createStyles, Text, Avatar, Group, Box } from '@mantine/core';
+import { Avatar, Box, createStyles, Group, Spoiler, Text } from '@mantine/core';
+import dayjs from 'dayjs';
 
 const useStyles = createStyles((theme) => ({
   body: {
     paddingLeft: 54,
-    paddingTop: theme.spacing.sm,
+    paddingRight: 24,
+    whiteSpace: 'pre-wrap',
   },
 }));
 
@@ -22,16 +24,16 @@ export function Message({ postedAt, body, author }: MessageProps) {
     <Box sx={{ marginTop: theme.spacing.md }}>
       <Group>
         <Avatar src={author.image} alt={author.name} radius="xl" />
-        <div>
+        <Group>
           <Text size="sm">{author.name}</Text>
           <Text size="xs" color="dimmed">
-            {postedAt}
+            {dayjs(postedAt).format('DD-MM-YYYY hh:mm').toString()}
           </Text>
-        </div>
+        </Group>
       </Group>
-      <Text className={classes.body} size="sm">
-        {body}
-      </Text>
+      <Spoiler maxHeight={150} hideLabel="Свернуть" showLabel="Показать" className={classes.body}>
+        <Text size="sm">{body}</Text>
+      </Spoiler>
     </Box>
   );
 }
