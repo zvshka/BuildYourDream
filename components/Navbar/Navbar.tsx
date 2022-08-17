@@ -1,22 +1,19 @@
-import { Collapse, createStyles, Navbar, Text, UnstyledButton } from '@mantine/core';
+import { createStyles, Navbar, Text, UnstyledButton } from '@mantine/core';
 import {
+  Icon3dCubeSphere,
   IconBell,
   IconCpu,
   IconDots,
   IconLogout,
   IconMessage,
-  IconSettings,
   IconUser,
-  IconUsers,
   IconWorld,
 } from '@tabler/icons';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { useToggle } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { NextLink } from '@mantine/next';
-import { UserButton } from '../UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -96,9 +93,9 @@ const data = [
   { link: '/configs', label: 'Пользовательские сборки', icon: IconWorld },
   { link: '/profile', label: 'Профиль', icon: IconUser },
   { link: '/notifications', label: 'Уведомления', icon: IconBell },
-  { link: '/settings', label: 'Настройки', icon: IconSettings },
-  { link: '/other', label: 'Прочее', icon: IconDots },
+  { link: '/parts', label: 'Комплектующие', icon: Icon3dCubeSphere },
   { link: '/chat', label: 'Чат', icon: IconMessage },
+  { link: '/other', label: 'Прочее', icon: IconDots },
 ];
 
 export function NavbarSimpleColored({ opened }: any) {

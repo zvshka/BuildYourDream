@@ -17,6 +17,7 @@ import { NextLink } from '@mantine/next';
 import { useForm } from '@mantine/form';
 import { IconCheck, IconX } from '@tabler/icons';
 import { forwardRef, useState } from 'react';
+import axios from 'axios';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -71,7 +72,7 @@ const InputWithChecks = forwardRef(({ ...props }: any, ref) => {
   const color = strength === 100 ? 'teal' : strength > 50 ? 'yellow' : 'red';
 
   return (
-    <Popover opened={popoverOpened} position="top" width="target" transition="pop">
+    <Popover opened={popoverOpened} position="bottom" width="target" transition="pop">
       <Popover.Target>
         <div
           onFocusCapture={() => setPopoverOpened(true)}
@@ -109,7 +110,8 @@ export default function SignUp() {
   });
 
   const handleSubmit = (data: typeof form.values) => {
-    return false;
+    console.log(data);
+    axios.post('/api/auth/signup', data).then(console.log);
   };
 
   return (
@@ -123,7 +125,12 @@ export default function SignUp() {
             required
             {...form.getInputProps('username')}
           />
-          <TextInput label="Email" className={classes.input} required />
+          <TextInput
+            label="Email"
+            className={classes.input}
+            required
+            {...form.getInputProps('email')}
+          />
           <InputWithChecks
             label="Пароль"
             className={classes.input}
