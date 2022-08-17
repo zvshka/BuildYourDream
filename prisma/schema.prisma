@@ -27,5 +27,17 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role Role @default(USER)
+  role     Role      @default(USER)
+  messages Message[]
+}
+
+model Message {
+  id       String  @id @default(cuid())
+  author   User?   @relation(fields: [authorId], references: [id])
+  authorId String?
+  username String
+  body     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

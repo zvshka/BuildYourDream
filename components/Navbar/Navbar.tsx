@@ -159,7 +159,7 @@ export function NavbarSimpleColored({ opened }: any) {
         {/*  </UnstyledButton>*/}
         {/*</Collapse>*/}
         {/*<UserButton image="" name="Username" email="email@email.com" onClick={() => toggle()} />*/}
-        <UnstyledButton className={classes.link} component={NextLink} href="/auth/signup">
+        <UnstyledButton className={classes.link} component={NextLink} href="/auth/signin">
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Вход</span>
         </UnstyledButton>

@@ -1,22 +1,20 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { pusher } from '../../../lib/pusher';
+import { handler } from '../../../lib/handler';
+import ChatService from '../../../services/Chat.service';
 
-const chatHistory: { messages: any[] } = { messages: [] };
+const api = handler();
 
-function randstr(prefix: string) {
-  return Math.random()
-    .toString(36)
-    .replace('0.', prefix || '');
-}
+api.post(async (req, res) => {
+  const { body, author } = req.body;
+  const newMessage = await ChatService.createMessage({ body, author });
+  console.log(newMessage);
+  pusher.trigger('chat', 'new-messages', newMessage);
+  res.status(200).json({ message: 'success' });
+});
 
-export default async function messages(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { body, author } = JSON.parse(req.body);
-    const newMessage = { id: randstr('id_'), body, author, postedAt: Date.now() };
-    pusher.trigger('chat', 'new-messages', newMessage);
-    chatHistory.messages.push(newMessage);
-    res.status(200).json({ message: 'success' });
-  } else if (req.method === 'GET') {
-    res.status(200).json({ messages: chatHistory.messages });
-  }
-}
+api.get(async (req, res) => {
+  const messages = await ChatService.fetchMessages();
+  res.status(200).send({ messages });
+});
+
+export default api;

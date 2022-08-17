@@ -9,23 +9,14 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface MessageProps {
-  postedAt: string;
-  body: string;
-  author: {
-    name: string;
-    image: string;
-  };
-}
-
-export function Message({ postedAt, body, author }: MessageProps) {
+export function Message({ postedAt, body, author }: any) {
   const { classes, theme } = useStyles();
   return (
     <Box sx={{ marginTop: theme.spacing.md }}>
       <Group>
-        <Avatar src={author.image} alt={author.name} radius="xl" />
+        <Avatar src={author?.image} alt={author} radius="xl" />
         <Group>
-          <Text size="sm">{author.name}</Text>
+          <Text size="sm">{author}</Text>
           <Text size="xs" color="dimmed">
             {dayjs(postedAt).format('DD-MM-YYYY hh:mm').toString()}
           </Text>

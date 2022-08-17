@@ -18,6 +18,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import Pusher from 'pusher-js';
 import { useForm } from '@mantine/form';
+import axios from 'axios';
 import Shell from '../components/Shell/Shell';
 import { Message } from '../components/Message/Message';
 
@@ -49,51 +50,13 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface MessageProps {
-  id?: string;
-  postedAt: string;
-  body: string;
-  author: {
-    name: string;
-    image: string;
-  };
-}
-
 export default function Chat() {
   const [hash, setHash] = useHash();
-  const [messages, handlers] = useListState<MessageProps>([
-    // {
-    //   postedAt: new Date().toDateString(),
-    //   body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    //   author: {
-    //     image: '',
-    //     name: 'zvshka',
-    //   },
-    // },
-    // {
-    //   postedAt: new Date().toDateString(),
-    //   body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    //   author: {
-    //     image: '',
-    //     name: 'zvshka',
-    //   },
-    // },
-    // {
-    //   postedAt: new Date().toDateString(),
-    //   body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    //   author: {
-    //     image: '',
-    //     name: 'zvshka',
-    //   },
-    // },
-  ]);
+  const [messages, handlers] = useListState<any>([]);
   const [pusher, setPusher] = useState<Pusher>();
   const form = useForm({
     initialValues: {
-      author: {
-        image: '',
-        name: '',
-      },
+      author: '',
       body: '',
     },
   });
@@ -101,43 +64,33 @@ export default function Chat() {
   const { classes } = useStyles();
 
   useEffect(() => {
-    fetch('/api/chat/connect')
-      .then((res) => res.json())
-      .then((data) => {
-        setPusher(
-          new Pusher(data.key, {
-            cluster: 'eu',
-          })
-        );
-      });
-    fetch('/api/chat/messages')
-      .then((res) => res.json())
-      .then((data) => handlers.setState(data.messages));
-    viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' });
+    axios.get('/api/chat/connect').then((res) => {
+      setPusher(
+        new Pusher(res.data.key, {
+          cluster: 'eu',
+        })
+      );
+    });
+    axios.get('/api/chat/messages').then((res) => {
+      handlers.setState(res.data.messages);
+      viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' });
+    });
   }, []);
 
   useShallowEffect(() => {
     setHash(randomId());
-    form.setFieldValue('author', {
-      image: '',
-      name: hash,
-    });
+    form.setFieldValue('author', hash);
     pusher?.subscribe('chat').bind('new-messages', (data: any) => {
       handlers.append(data);
-      setTimeout(
-        () => viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' }),
-        500
+      setTimeout(() =>
+        viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' })
       );
     });
   }, [pusher]);
 
   const handleSubmit = (data: typeof form.values) => {
     if (!data.body.length) return;
-    fetch('/api/chat/messages', {
-      method: 'POST',
-      // @ts-ignore
-      body: JSON.stringify(data),
-    });
+    axios.post('/api/chat/messages', data);
     form.setFieldValue('body', '');
   };
 
@@ -151,9 +104,9 @@ export default function Chat() {
                 {messages.map((message) => (
                   <Message
                     key={message.id}
-                    postedAt={message.postedAt}
+                    postedAt={message.createdAt}
                     body={message.body}
-                    author={message.author}
+                    author={message.username}
                   />
                 ))}
               </ScrollArea>
