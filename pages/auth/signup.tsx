@@ -1,23 +1,25 @@
 import {
   Anchor,
+  Box,
   Button,
+  Center,
   Container,
   createStyles,
   PasswordInput,
-  Stack,
-  TextInput,
-  Title,
-  Text,
-  Center,
-  Box,
   Popover,
   Progress,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { useForm } from '@mantine/form';
 import { IconCheck, IconX } from '@tabler/icons';
 import { forwardRef, useState } from 'react';
 import axios from 'axios';
+import { showNotification } from '@mantine/notifications';
+import { validateEmail } from '../../lib/validateEmail';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -107,11 +109,43 @@ export default function SignUp() {
       password: '',
       passwordConfirm: '',
     },
+    validate: {
+      username: (value) => {
+        if (!/^[А-Яа-яA-Za-z0-9]+(?:[ _-][А-Яа-яA-Za-z0-9]+)*$/.test(value)) {
+          return 'Никнейм содержит недопустимые символы';
+        }
+        if (value.length < 5) {
+          return 'Минимум 5 символов';
+        }
+        if (value.length > 20) {
+          return 'Максимум 20 символов';
+        }
+        return null;
+      },
+      email: (value) => (validateEmail(value) ? null : 'Некорректный email'),
+      password: (value) =>
+        value.length < 6 || value.length > 20
+          ? 'Длина пароля должна быть от 6 до 20 символов'
+          : null,
+      passwordConfirm: (value, values) =>
+        value !== values.password ? 'Пароли не совпадают' : null,
+    },
   });
 
   const handleSubmit = (data: typeof form.values) => {
-    console.log(data);
-    axios.post('/api/auth/signup', data).then(console.log);
+    axios
+      .post('/api/auth/signup', data)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+        showNotification({
+          title: 'Ошибка',
+          message: e.response.data.message,
+          color: 'red',
+        });
+      });
   };
 
   return (
@@ -137,7 +171,12 @@ export default function SignUp() {
             required
             {...form.getInputProps('password')}
           />
-          <InputWithChecks label="Пароль ещё раз" className={classes.input} required />
+          <InputWithChecks
+            label="Пароль ещё раз"
+            className={classes.input}
+            required
+            {...form.getInputProps('passwordConfirm')}
+          />
           <Button type="submit" className={classes.input}>
             Регистрация
           </Button>

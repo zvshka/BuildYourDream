@@ -1,7 +1,7 @@
-import Error from 'next/error';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserService from './User.service';
+import { ApiError } from '../lib/ApiError';
 
 class AuthService {
   async signup({
@@ -16,10 +16,7 @@ class AuthService {
     const candidate =
       (await UserService.findOneByEmail(email)) || (await UserService.findOneByUsername(username));
     if (candidate) {
-      return new Error({
-        statusCode: 401,
-        title: 'Пользователь с таким email или никнеймом уже существует',
-      });
+      throw ApiError.BadRequest("Пользователь с таким Email'ом или Никнеймом уже существует");
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
