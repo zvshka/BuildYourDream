@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { pusher } from '../../../lib/pusher';
 import { handler } from '../../../lib/handler';
 import ChatService from '../../../services/Chat.service';
@@ -14,7 +15,10 @@ api.post(async (req, res) => {
 
 api.get(async (req, res) => {
   const messages = await ChatService.fetchMessages();
-  res.status(200).send({ messages });
+  console.log(messages);
+  res.status(200).send({
+    messages: messages.sort((m1, m2) => dayjs(m1.createdAt).diff(m2.createdAt)),
+  });
 });
 
 export default api;

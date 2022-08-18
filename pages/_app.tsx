@@ -7,9 +7,14 @@ import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core
 import { NotificationsProvider } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { RouterTransition } from '../components/RouterTransition/RouterTransition';
 import { ColorContext } from '../components/ColorControl/ColorContext';
 import 'dayjs/locale/ru';
+import { ReactQueryProvider } from '../components/QueryProvider/QueryProvider';
+import { AuthProvider } from '../components/Auth/AuthProvider';
+
+dayjs.extend(relativeTime);
 
 dayjs.locale('ru');
 
@@ -44,8 +49,12 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
             <ModalsProvider>
               <NotificationsProvider>
-                <RouterTransition />
-                <Component {...pageProps} />
+                <ReactQueryProvider>
+                  <AuthProvider>
+                    <RouterTransition />
+                    <Component {...pageProps} />
+                  </AuthProvider>
+                </ReactQueryProvider>
               </NotificationsProvider>
             </ModalsProvider>
           </MantineProvider>

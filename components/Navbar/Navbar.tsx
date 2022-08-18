@@ -1,4 +1,4 @@
-import { createStyles, Navbar, Text, UnstyledButton } from '@mantine/core';
+import { Collapse, createStyles, Navbar, Text, UnstyledButton } from '@mantine/core';
 import {
   Icon3dCubeSphere,
   IconBell,
@@ -7,6 +7,7 @@ import {
   IconLogout,
   IconMessage,
   IconUser,
+  IconUsers,
   IconWorld,
 } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -14,6 +15,9 @@ import { useToggle } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { NextLink } from '@mantine/next';
+import Link from 'next/link';
+import { useAuth } from '../Auth/AuthProvider';
+import { UserButton } from '../UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -103,6 +107,7 @@ export function NavbarSimpleColored({ opened }: any) {
   const router = useRouter();
   const [visible, toggle] = useToggle();
   const modals = useModals();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
     modals.openConfirmModal({
@@ -110,6 +115,7 @@ export function NavbarSimpleColored({ opened }: any) {
       children: <Text size="sm">После подтверждения вам придётся войти в аккаунт снова</Text>,
       labels: { confirm: 'Конечно', cancel: 'Нет' },
       onConfirm() {
+        logout();
         showNotification({
           title: 'Успех',
           message: 'Вы успешно вышли из аккаунта',
@@ -143,23 +149,34 @@ export function NavbarSimpleColored({ opened }: any) {
       <Navbar.Section grow>{links}</Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        {/*<Collapse in={visible}>*/}
-        {/*  <Link href="/change-user">*/}
-        {/*    <a className={classes.link}>*/}
-        {/*      <IconUsers className={classes.linkIcon} stroke={1.5} />*/}
-        {/*      <span>Сменить пользователя</span>*/}
-        {/*    </a>*/}
-        {/*  </Link>*/}
-        {/*  <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>*/}
-        {/*    <IconLogout className={classes.linkIcon} stroke={1.5} />*/}
-        {/*    <span>Выйти</span>*/}
-        {/*  </UnstyledButton>*/}
-        {/*</Collapse>*/}
-        {/*<UserButton image="" name="Username" email="email@email.com" onClick={() => toggle()} />*/}
-        <UnstyledButton className={classes.link} component={NextLink} href="/auth/signin">
-          <IconLogout className={classes.linkIcon} stroke={1.5} />
-          <span>Вход</span>
-        </UnstyledButton>
+        {user && (
+          <>
+            <Collapse in={visible}>
+              <Link href="/change-user">
+                <a className={classes.link}>
+                  <IconUsers className={classes.linkIcon} stroke={1.5} />
+                  <span>Сменить пользователя</span>
+                </a>
+              </Link>
+              <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>
+                <IconLogout className={classes.linkIcon} stroke={1.5} />
+                <span>Выйти</span>
+              </UnstyledButton>
+            </Collapse>
+            <UserButton
+              image=""
+              name={user.username as string}
+              email={user.email}
+              onClick={() => toggle()}
+            />
+          </>
+        )}
+        {!user && (
+          <UnstyledButton className={classes.link} component={NextLink} href="/auth/signin">
+            <IconLogout className={classes.linkIcon} stroke={1.5} />
+            <span>Вход</span>
+          </UnstyledButton>
+        )}
       </Navbar.Section>
     </Navbar>
   );

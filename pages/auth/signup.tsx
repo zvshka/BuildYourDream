@@ -5,6 +5,7 @@ import {
   Center,
   Container,
   createStyles,
+  LoadingOverlay,
   PasswordInput,
   Popover,
   Progress,
@@ -17,9 +18,11 @@ import { NextLink } from '@mantine/next';
 import { useForm } from '@mantine/form';
 import { IconCheck, IconX } from '@tabler/icons';
 import { forwardRef, useState } from 'react';
-import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
+import { useRouter } from 'next/router';
+import { useToggle } from '@mantine/hooks';
 import { validateEmail } from '../../lib/validateEmail';
+import { useAuth } from '../../components/Auth/AuthProvider';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -101,6 +104,9 @@ const InputWithChecks = forwardRef(({ ...props }: any, ref) => {
 
 export default function SignUp() {
   const { classes } = useStyles();
+  const { register } = useAuth();
+  const [loading, toggle] = useToggle();
+  const router = useRouter();
 
   const form = useForm({
     initialValues: {
@@ -133,24 +139,30 @@ export default function SignUp() {
   });
 
   const handleSubmit = (data: typeof form.values) => {
-    axios
-      .post('/api/auth/signup', data)
-      .then((res) => {
-        console.log(res.data);
+    toggle();
+    register(data)
+      .then((userData) => {
+        showNotification({
+          title: 'Успех',
+          message: `Добро пожаловать, ${userData.username}`,
+          color: 'green',
+        });
+        router.push('/');
       })
       .catch((e) => {
-        console.log(e);
         showNotification({
           title: 'Ошибка',
           message: e.response.data.message,
           color: 'red',
         });
-      });
+      })
+      .finally(() => toggle());
   };
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Container className={classes.container} size="xs">
+        <LoadingOverlay visible={loading} overlayBlur={2} />
         <Stack justify="center" align="center" sx={{ height: '100%' }}>
           <Title order={2}>Регистрация</Title>
           <TextInput

@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   createStyles,
+  LoadingOverlay,
   PasswordInput,
   Stack,
   TextInput,
@@ -10,6 +11,10 @@ import {
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { useForm } from '@mantine/form';
+import { useToggle } from '@mantine/hooks';
+import { showNotification } from '@mantine/notifications';
+import { useRouter } from 'next/router';
+import { useAuth } from '../../components/Auth/AuthProvider';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -25,6 +30,9 @@ const useStyles = createStyles(() => ({
 
 export default function SignIn() {
   const { classes } = useStyles();
+  const [loading, toggle] = useToggle();
+  const { login } = useAuth();
+  const router = useRouter();
 
   const form = useForm({
     initialValues: {
@@ -34,16 +42,44 @@ export default function SignIn() {
   });
 
   const handleSubmit = (data: typeof form.values) => {
-    return;
+    toggle();
+    login(data)
+      .then((userData) => {
+        showNotification({
+          title: 'Успех',
+          message: `Добро пожаловать, ${userData.username}`,
+          color: 'green',
+        });
+        router.push('/');
+      })
+      .catch((e) => {
+        showNotification({
+          title: 'Ошибка',
+          message: e.response.data.message,
+          color: 'red',
+        });
+      })
+      .finally(() => toggle());
   };
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Container className={classes.container} size="xs">
+        <LoadingOverlay visible={loading} overlayBlur={2} />
         <Stack justify="center" align="center" sx={{ height: '100%' }}>
           <Title order={2}>Вход</Title>
-          <TextInput label="Никнейм" className={classes.input} required />
-          <PasswordInput label="Пароль" className={classes.input} required />
+          <TextInput
+            label="Никнейм"
+            className={classes.input}
+            required
+            {...form.getInputProps('username')}
+          />
+          <PasswordInput
+            label="Пароль"
+            className={classes.input}
+            required
+            {...form.getInputProps('password')}
+          />
           <Button type="submit" className={classes.input}>
             Вход
           </Button>

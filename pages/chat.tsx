@@ -7,6 +7,7 @@ import {
   ScrollArea,
   Stack,
   Textarea,
+  TextInput,
 } from '@mantine/core';
 import {
   getHotkeyHandler,
@@ -48,6 +49,11 @@ const useStyles = createStyles((theme) => ({
     left: theme.spacing.sm,
     paddingTop: theme.spacing.sm,
   },
+  viewport: {
+    '& > div': {
+      // display: 'block !important',
+    },
+  },
 }));
 
 export default function Chat() {
@@ -55,6 +61,7 @@ export default function Chat() {
   const [messages, handlers] = useListState<any>([]);
   const [pusher, setPusher] = useState<Pusher>();
   const form = useForm({
+    validateInputOnChange: false,
     initialValues: {
       author: '',
       body: '',
@@ -100,7 +107,13 @@ export default function Chat() {
         <Stack className={classes.container}>
           <Paper className={classes.messagesContainer}>
             <Stack justify="flex-end" className={classes.messages}>
-              <ScrollArea viewportRef={viewport}>
+              <ScrollArea
+                viewportRef={viewport}
+                offsetScrollbars
+                classNames={{
+                  viewport: classes.viewport,
+                }}
+              >
                 {messages.map((message) => (
                   <Message
                     key={message.id}
@@ -119,8 +132,8 @@ export default function Chat() {
                 autosize
                 minRows={1}
                 maxRows={4}
-                onKeyDown={getHotkeyHandler([['Enter', () => handleSubmit(form.values)]])}
-                {...form.getInputProps('body')}
+                // onKeyDown={getHotkeyHandler([['Enter', () => handleSubmit(form.values)]])}
+                //{...form.getInputProps('body')}
               />
             </Box>
             <Button type="submit">Отправить</Button>
