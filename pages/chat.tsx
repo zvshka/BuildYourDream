@@ -5,6 +5,7 @@ import { useForm } from '@mantine/form';
 import axios from 'axios';
 import Pusher from 'pusher-js';
 import MessagesBlock from '../components/Message/MessagesBlock';
+import { storage } from '../lib/utils';
 
 const useStyles = createStyles((theme) => ({
   inputWrapper: {
@@ -45,15 +46,12 @@ export default function Chat() {
   const form = useForm({
     validateInputOnChange: false,
     initialValues: {
-      author: 'Анон',
       body: '',
     },
   });
   const viewport = useRef<any>();
   const lastMessage = useRef<any>();
   const { classes } = useStyles();
-
-  console.log('CHAT RERENDER');
 
   useShallowEffect(() => {
     axios.get('/api/chat/connect').then((res) => {
@@ -83,7 +81,11 @@ export default function Chat() {
 
   const handleSubmit = (data: typeof form.values) => {
     if (!data.body.length) return;
-    axios.post('/api/chat/messages', data);
+    axios.post('/api/chat/messages', data, {
+      headers: {
+        authorization: `Bearer ${storage.getToken()}`,
+      },
+    });
     form.setFieldValue('body', '');
   };
 

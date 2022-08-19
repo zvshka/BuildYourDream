@@ -1,6 +1,6 @@
 import '../scripts/wdyr';
 import { GetServerSidePropsContext } from 'next';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AppProps } from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
@@ -15,6 +15,7 @@ import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Auth/AuthProvider';
 import Shell from '../components/Shell/Shell';
+import { useRouter } from 'next/router';
 
 dayjs.extend(relativeTime);
 
@@ -39,11 +40,49 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
     [primaryColor]
   );
 
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'ononline' in window && 'onoffline' in window) {
+      setIsOnline(window.navigator.onLine);
+      if (!window.ononline) {
+        window.addEventListener('online', () => {
+          setIsOnline(true);
+        });
+      }
+      if (!window.onoffline) {
+        window.addEventListener('offline', () => {
+          setIsOnline(false);
+        });
+      }
+    }
+  }, []);
+
+  const router = useRouter();
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      // @ts-ignore
+      window.workbox !== undefined &&
+      isOnline
+    ) {
+      // skip index route, because it's already cached under `start-url` caching object
+      if (router.route !== '/') {
+        // @ts-ignore
+        const wb = window.workbox;
+        wb.active.then((worker: any) => {
+          wb.messageSW({ action: 'CACHE_NEW_ROUTE' });
+        });
+      }
+    }
+  }, [isOnline, router.route]);
+
   return (
     <>
       <Head>
         <title>Build Your Dream</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+        <meta name="theme-color" content={colorScheme === 'dark' ? '#1A1B1E' : '#FFF'} />
         <link rel="shortcut icon" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/favicon.svg" />

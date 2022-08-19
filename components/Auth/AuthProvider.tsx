@@ -5,7 +5,7 @@ import { AuthResponse } from '../../types/AuthResponse';
 import { User } from '../../types/User';
 
 export async function handleUserResponse(data: AuthResponse) {
-  const { jwt, user } = data;
+  const { accessToken: jwt, user } = data;
   storage.setToken(jwt);
   return user;
 }
@@ -20,7 +20,7 @@ async function loadUser() {
           authorization: `Bearer ${storage.getToken()}`,
         },
       })
-      .then((res) => res.data);
+      .then((res) => res.data?.user);
   }
   return user;
 }

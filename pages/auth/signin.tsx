@@ -50,7 +50,7 @@ export default function SignIn() {
           message: `Добро пожаловать, ${userData.username}`,
           color: 'green',
         });
-        router.push('/');
+        router.push('/').then(() => toggle());
       })
       .catch((e) => {
         showNotification({
@@ -58,8 +58,7 @@ export default function SignIn() {
           message: e.response.data.message,
           color: 'red',
         });
-      })
-      .finally(() => toggle());
+      });
   };
 
   return (

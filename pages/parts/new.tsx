@@ -77,7 +77,7 @@ export default function CreatePart() {
   }, [form.values.type]);
 
   return (
-    <Shell>
+    <>
       <Container>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stepper active={active} onStepClick={setActive} breakpoint="sm" iconPosition="left">
@@ -144,6 +144,6 @@ export default function CreatePart() {
           </Group>
         </form>
       </Container>
-    </Shell>
+    </>
   );
 }
