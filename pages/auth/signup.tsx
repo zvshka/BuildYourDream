@@ -203,3 +203,5 @@ export default function SignUp() {
     </form>
   );
 }
+
+SignUp.noShell = true;

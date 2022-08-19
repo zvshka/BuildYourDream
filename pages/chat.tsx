@@ -1,10 +1,9 @@
 import { Box, Button, createStyles, Group, Stack, Textarea } from '@mantine/core';
 import { getHotkeyHandler, useListState, useShallowEffect } from '@mantine/hooks';
-import { useEffect, useRef, useState } from 'react';
-import Pusher from 'pusher-js';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
-import Shell from '../components/Shell/Shell';
+import Pusher from 'pusher-js';
 import MessagesBlock from '../components/Message/MessagesBlock';
 
 const useStyles = createStyles((theme) => ({
@@ -54,6 +53,8 @@ export default function Chat() {
   const lastMessage = useRef<any>();
   const { classes } = useStyles();
 
+  console.log('CHAT RERENDER');
+
   useShallowEffect(() => {
     axios.get('/api/chat/connect').then((res) => {
       setPusher(
@@ -87,8 +88,9 @@ export default function Chat() {
   };
 
   return (
-    <Shell>
+    <>
       <form onSubmit={form.onSubmit(handleSubmit)} className={classes.container}>
+        {/*<form className={classes.container}>*/}
         <Stack className={classes.container}>
           <MessagesBlock messages={messages} viewport={viewport} lastMessage={lastMessage} />
           <Group>
@@ -106,7 +108,7 @@ export default function Chat() {
           </Group>
         </Stack>
       </form>
-    </Shell>
+    </>
   );
 }
 

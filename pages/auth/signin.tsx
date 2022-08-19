@@ -94,3 +94,5 @@ export default function SignIn() {
     </form>
   );
 }
+
+SignIn.noShell = true;

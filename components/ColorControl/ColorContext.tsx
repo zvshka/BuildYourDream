@@ -16,5 +16,5 @@ export const ColorProvider = ({
 }) =>
   useMemo(
     () => <ColorContext.Provider value={{ value, setValue }}>{children}</ColorContext.Provider>,
-    [value]
+    [value, children]
   );

@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { AppShell, useMantineTheme } from '@mantine/core';
 import { NavbarSimpleColored } from '../Navbar/Navbar';
 import { HeaderWithLogo } from '../Header/HeaderWithLogo';

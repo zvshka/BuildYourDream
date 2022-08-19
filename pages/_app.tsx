@@ -1,6 +1,6 @@
 import '../scripts/wdyr';
 import { GetServerSidePropsContext } from 'next';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { AppProps } from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
@@ -14,6 +14,7 @@ import { ColorProvider } from '../components/ColorControl/ColorContext';
 import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Auth/AuthProvider';
+import Shell from '../components/Shell/Shell';
 
 dayjs.extend(relativeTime);
 
@@ -23,17 +24,20 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
   const [primaryColor, setPrimaryColor] = useState(props.primaryColor);
-
+  //
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
     setColorScheme(nextColorScheme);
     setCookie('mantine-color-scheme', nextColorScheme, { maxAge: 60 * 60 * 24 * 30 });
   };
-
-  const changePrimaryColor = (value: string) => {
-    setPrimaryColor(value);
-    setCookie('mantine-primary-color', value, { maxAge: 60 * 60 * 24 * 30 });
-  };
+  //
+  const changePrimaryColor = useCallback(
+    (value: string) => {
+      setPrimaryColor(value);
+      setCookie('mantine-primary-color', value, { maxAge: 60 * 60 * 24 * 30 });
+    },
+    [primaryColor]
+  );
 
   return (
     <>
@@ -53,7 +57,14 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
                 <ReactQueryProvider>
                   <AuthProvider>
                     <RouterTransition />
-                    <Component {...pageProps} />
+                    {/*@ts-ignore*/}
+                    {Component.noShell ? (
+                      <Component {...pageProps} />
+                    ) : (
+                      <Shell>
+                        <Component {...pageProps} />
+                      </Shell>
+                    )}
                   </AuthProvider>
                 </ReactQueryProvider>
               </NotificationsProvider>

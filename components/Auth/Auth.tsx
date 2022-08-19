@@ -81,6 +81,7 @@ export function initReactQueryAuth<
     } = useQuery<User, Error>({
       queryKey: [key],
       queryFn: loadUser,
+      refetchInterval: 15000,
     });
 
     const setUser = React.useCallback(
