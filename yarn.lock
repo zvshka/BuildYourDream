@@ -1616,7 +1616,7 @@
   dependencies:
     "@mantine/utils" "5.1.6"
 
-"@mantine/form@^5.1.6":
+"@mantine/form@5.1.6":
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/@mantine/form/-/form-5.1.6.tgz#4a55ff5ee5113258d3f30cdf27fe161ca590f1ca"
   integrity sha512-/KhzNONKYWBnMS6uCAe8VJq8PKnzsBFCMsfq+9WAEGOYItGwgGmseZg7rNhIipnXU6gAWAIdWJraocr5EuUtGA==
@@ -1629,7 +1629,7 @@
   resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-5.1.6.tgz#07d4850d3444526268a749c965ce64eea8cb7583"
   integrity sha512-wD+Cx9W00YQchudIvkiEy52e/UCB0EhTkJs2fr2JbTlfKCWfWSilE/CPbLz6NWmK58bbyB/qjdKUDwXV6qyasw==
 
-"@mantine/modals@^5.1.6":
+"@mantine/modals@5.1.6":
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/@mantine/modals/-/modals-5.1.6.tgz#88815917e9ff78e1ef0ca673d60aa8c46886d489"
   integrity sha512-x95tiHf/sKR5wMEYz2NXAu8qqzazx2CQIvkZTo9Wai8NUyflaj2ZRUvhhgMVBrdtwfhO+qjjc3Yq6JrAnkVJ2g==
@@ -1652,7 +1652,7 @@
     "@mantine/utils" "5.1.6"
     react-transition-group "4.4.2"
 
-"@mantine/nprogress@^5.1.6":
+"@mantine/nprogress@5.1.6":
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/@mantine/nprogress/-/nprogress-5.1.6.tgz#e6b9df5f3d4bce47f002a4461145c48e0178cb4e"
   integrity sha512-kxxZLJiTYGm5RJIHWf7wfCzTFGRGG5Z0aVD11AfDUcqQ16jmGpRkOCD4GnTGsyaGU6C8crtDvYYer1JAshARRg==
@@ -3506,6 +3506,13 @@
     "@webassemblyjs/ast" "1.9.0"
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
+
+"@welldone-software/why-did-you-render@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@welldone-software/why-did-you-render/-/why-did-you-render-7.0.1.tgz#09f487d84844bd8e66435843c2e0305702e61efb"
+  integrity sha512-Qe/8Xxa2G+LMdI6VoazescPzjjkHYduCDa8aHOJR50e9Bgs8ihkfMBY+ev7B4oc3N59Zm547Sgjf8h5y0FOyoA==
+  dependencies:
+    lodash "^4"
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -8813,7 +8820,7 @@ lodash.uniq@4.5.0:
   resolved "https://registry.npmjs.org/lodash.uniq/-/lodash.uniq-4.5.0.tgz"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.7.0:
+lodash@^4, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -10458,7 +10465,7 @@ react-docgen@^5.0.0:
 
 react-dom@18.2.0:
   version "18.2.0"
-  resolved "https://registry.npmjs.org/react-dom/-/react-dom-18.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
   dependencies:
     loose-envify "^1.1.0"
@@ -10525,7 +10532,7 @@ react-transition-group@4.4.2:
 
 react@18.2.0:
   version "18.2.0"
-  resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
   dependencies:
     loose-envify "^1.1.0"
@@ -10980,7 +10987,7 @@ saxes@^5.0.1:
 
 scheduler@^0.23.0:
   version "0.23.0"
-  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.23.0.tgz"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.23.0.tgz#ba8041afc3d30eb206a487b6b384002e4e61fdfe"
   integrity sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==
   dependencies:
     loose-envify "^1.1.0"

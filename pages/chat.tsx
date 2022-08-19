@@ -1,27 +1,11 @@
-import {
-  Box,
-  Button,
-  createStyles,
-  Group,
-  Paper,
-  ScrollArea,
-  Stack,
-  Textarea,
-  TextInput,
-} from '@mantine/core';
-import {
-  getHotkeyHandler,
-  randomId,
-  useHash,
-  useListState,
-  useShallowEffect,
-} from '@mantine/hooks';
+import { Box, Button, createStyles, Group, Stack, Textarea } from '@mantine/core';
+import { getHotkeyHandler, useListState, useShallowEffect } from '@mantine/hooks';
 import { useEffect, useRef, useState } from 'react';
 import Pusher from 'pusher-js';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
 import Shell from '../components/Shell/Shell';
-import { Message } from '../components/Message/Message';
+import MessagesBlock from '../components/Message/MessagesBlock';
 
 const useStyles = createStyles((theme) => ({
   inputWrapper: {
@@ -57,20 +41,20 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function Chat() {
-  const [hash, setHash] = useHash();
   const [messages, handlers] = useListState<any>([]);
   const [pusher, setPusher] = useState<Pusher>();
   const form = useForm({
     validateInputOnChange: false,
     initialValues: {
-      author: '',
+      author: 'Анон',
       body: '',
     },
   });
   const viewport = useRef<any>();
+  const lastMessage = useRef<any>();
   const { classes } = useStyles();
 
-  useEffect(() => {
+  useShallowEffect(() => {
     axios.get('/api/chat/connect').then((res) => {
       setPusher(
         new Pusher(res.data.key, {
@@ -78,22 +62,23 @@ export default function Chat() {
         })
       );
     });
-    axios.get('/api/chat/messages').then((res) => {
-      handlers.setState(res.data.messages);
-      viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' });
-    });
+    axios
+      .get('/api/chat/messages')
+      .then((res) => {
+        handlers.setState(res.data.messages);
+      })
+      .then(() => lastMessage.current.scrollIntoView({ behaviour: 'smooth' }));
   }, []);
 
   useShallowEffect(() => {
-    setHash(randomId());
-    form.setFieldValue('author', hash);
     pusher?.subscribe('chat').bind('new-messages', (data: any) => {
       handlers.append(data);
-      setTimeout(() =>
-        viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' })
-      );
     });
-  }, [pusher]);
+  }, [pusher?.sessionID]);
+
+  useEffect(() => {
+    lastMessage.current.scrollIntoView({ behaviour: 'smooth' });
+  }, [messages]);
 
   const handleSubmit = (data: typeof form.values) => {
     if (!data.body.length) return;
@@ -105,26 +90,7 @@ export default function Chat() {
     <Shell>
       <form onSubmit={form.onSubmit(handleSubmit)} className={classes.container}>
         <Stack className={classes.container}>
-          <Paper className={classes.messagesContainer}>
-            <Stack justify="flex-end" className={classes.messages}>
-              <ScrollArea
-                viewportRef={viewport}
-                offsetScrollbars
-                classNames={{
-                  viewport: classes.viewport,
-                }}
-              >
-                {messages.map((message) => (
-                  <Message
-                    key={message.id}
-                    postedAt={message.createdAt}
-                    body={message.body}
-                    author={message.username}
-                  />
-                ))}
-              </ScrollArea>
-            </Stack>
-          </Paper>
+          <MessagesBlock messages={messages} viewport={viewport} lastMessage={lastMessage} />
           <Group>
             <Box className={classes.inputWrapper}>
               <Textarea
@@ -132,8 +98,8 @@ export default function Chat() {
                 autosize
                 minRows={1}
                 maxRows={4}
-                // onKeyDown={getHotkeyHandler([['Enter', () => handleSubmit(form.values)]])}
-                //{...form.getInputProps('body')}
+                onKeyDown={getHotkeyHandler([['Enter', () => handleSubmit(form.values)]])}
+                {...form.getInputProps('body')}
               />
             </Box>
             <Button type="submit">Отправить</Button>
@@ -143,3 +109,5 @@ export default function Chat() {
     </Shell>
   );
 }
+
+// Chat.whyDidYouRender = true;

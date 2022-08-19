@@ -1,5 +1,6 @@
 import { Avatar, Box, createStyles, Group, Spoiler, Text } from '@mantine/core';
 import dayjs from 'dayjs';
+import React from 'react';
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -12,7 +13,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function Message({ postedAt, body, author }: any) {
+function Message({ postedAt, body, author }: any) {
   const { classes, theme } = useStyles();
   return (
     <Box sx={{ marginTop: theme.spacing.md }}>
@@ -42,3 +43,5 @@ export function Message({ postedAt, body, author }: any) {
     </Box>
   );
 }
+
+export default React.memo(Message);

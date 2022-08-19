@@ -1,15 +1,16 @@
+import '../scripts/wdyr';
 import { GetServerSidePropsContext } from 'next';
 import { useState } from 'react';
 import { AppProps } from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
-import { NotificationsProvider } from '@mantine/notifications';
-import { ModalsProvider } from '@mantine/modals';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { NotificationsProvider } from '@mantine/notifications';
+import { ModalsProvider } from '@mantine/modals';
 import { RouterTransition } from '../components/RouterTransition/RouterTransition';
-import { ColorContext } from '../components/ColorControl/ColorContext';
+import { ColorProvider } from '../components/ColorControl/ColorContext';
 import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Auth/AuthProvider';
@@ -37,14 +38,14 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
   return (
     <>
       <Head>
-        <title>Mantine next example</title>
+        <title>Build Your Dream</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <link rel="shortcut icon" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
       </Head>
 
-      <ColorContext.Provider value={{ value: primaryColor, setValue: changePrimaryColor }}>
+      <ColorProvider value={primaryColor} setValue={changePrimaryColor}>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
             <ModalsProvider>
@@ -59,7 +60,7 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
             </ModalsProvider>
           </MantineProvider>
         </ColorSchemeProvider>
-      </ColorContext.Provider>
+      </ColorProvider>
     </>
   );
 }
@@ -68,3 +69,5 @@ App.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
   colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
   primaryColor: getCookie('mantine-primary-color', ctx) || 'blue',
 });
+
+// App.whyDidYouRender = true;
