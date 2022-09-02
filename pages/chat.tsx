@@ -1,11 +1,12 @@
 import { Box, Button, createStyles, Group, Stack, Textarea } from '@mantine/core';
-import { getHotkeyHandler, useListState, useShallowEffect } from '@mantine/hooks';
+import { getHotkeyHandler, useListState, useMediaQuery, useShallowEffect } from '@mantine/hooks';
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
 import Pusher from 'pusher-js';
 import MessagesBlock from '../components/Message/MessagesBlock';
 import { storage } from '../lib/utils';
+import { IconSend } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   inputWrapper: {
@@ -53,6 +54,8 @@ export default function Chat() {
   const lastMessage = useRef<any>();
   const { classes } = useStyles();
 
+  const isMobile = useMediaQuery('(max-width: 900px)');
+
   useShallowEffect(() => {
     axios.get('/api/chat/connect').then((res) => {
       setPusher(
@@ -79,8 +82,11 @@ export default function Chat() {
     lastMessage.current.scrollIntoView({ behaviour: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = (data: typeof form.values) => {
-    if (!data.body.length) return;
+  const handleSubmit = (data: typeof form.values, event: any, byEnter?: boolean) => {
+    if (isMobile && byEnter) {
+      form.setFieldValue('body', `${data.body}\n`);
+    }
+    if ((isMobile && byEnter) || !data.body.length) return;
     axios.post('/api/chat/messages', data, {
       headers: {
         authorization: `Bearer ${storage.getToken()}`,
@@ -102,11 +108,11 @@ export default function Chat() {
                 autosize
                 minRows={1}
                 maxRows={4}
-                onKeyDown={getHotkeyHandler([['Enter', () => handleSubmit(form.values)]])}
+                onKeyDown={getHotkeyHandler([['Enter', (e) => handleSubmit(form.values, e, true)]])}
                 {...form.getInputProps('body')}
               />
             </Box>
-            <Button type="submit">Отправить</Button>
+            <Button type="submit">{!isMobile ? 'Отправить' : <IconSend />}</Button>
           </Group>
         </Stack>
       </form>

@@ -58,6 +58,7 @@ export default function SignIn() {
           message: e.response.data.message,
           color: 'red',
         });
+        toggle();
       });
   };
 
