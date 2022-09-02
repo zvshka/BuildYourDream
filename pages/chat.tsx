@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
 import Pusher from 'pusher-js';
+import { IconSend } from '@tabler/icons';
 import MessagesBlock from '../components/Message/MessagesBlock';
 import { storage } from '../lib/utils';
-import { IconSend } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   inputWrapper: {
