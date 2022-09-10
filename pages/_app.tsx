@@ -7,6 +7,9 @@ import Head from 'next/head';
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import isToday from 'dayjs/plugin/isToday';
+import duration from 'dayjs/plugin/duration';
+import calendar from 'dayjs/plugin/calendar';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
 import { RouterTransition } from '../components/RouterTransition/RouterTransition';
@@ -18,6 +21,9 @@ import Shell from '../components/Shell/Shell';
 import { useRouter } from 'next/router';
 
 dayjs.extend(relativeTime);
+dayjs.extend(isToday);
+dayjs.extend(duration);
+dayjs.extend(calendar);
 
 dayjs.locale('ru');
 

@@ -15,6 +15,9 @@ const useStyles = createStyles((theme) => ({
 
 function Message({ postedAt, body, author }: any) {
   const { classes, theme } = useStyles();
+
+  const date = dayjs(postedAt);
+
   return (
     <Box sx={{ marginTop: theme.spacing.md }}>
       <Group>
@@ -31,7 +34,11 @@ function Message({ postedAt, body, author }: any) {
             {author}
           </Text>
           <Text size="xs" color="dimmed">
-            {dayjs().to(postedAt)}
+            {date.calendar(null, {
+              sameDay: '[Сегодня] h:mm', // The same day ( Today at 2:30 AM )
+              lastDay: '[Вчера] h:mm', // The day before ( Yesterday at 2:30 AM )
+              sameElse: 'DD/MM/YYYY', // Everything else ( 17/10/2011 )
+            })}
           </Text>
         </Box>
       </Group>
