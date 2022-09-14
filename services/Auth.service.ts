@@ -67,12 +67,16 @@ class AuthService {
   }
 
   async exchange(token: string) {
-    const tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
-    if (!tokenData.id) throw ApiError.UnauthorizedError();
-    const candidate = await UserService.findOneById(tokenData.id);
-    if (!candidate) throw ApiError.UnauthorizedError();
-    const { hashedPassword, ...user } = candidate;
-    return { user };
+    try {
+      const tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+      if (!tokenData.id) return ApiError.UnauthorizedError();
+      const candidate = await UserService.findOneById(tokenData.id);
+      if (!candidate) return ApiError.UnauthorizedError();
+      const { hashedPassword, ...user } = candidate;
+      return { user };
+    } catch (e) {
+      throw ApiError.UnauthorizedError();
+    }
   }
 }
 

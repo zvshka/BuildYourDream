@@ -43,6 +43,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
       borderRadius: theme.radius.sm,
       fontWeight: 500,
       width: '100%',
+      marginBottom: theme.spacing.sm,
 
       '&:hover': {
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],

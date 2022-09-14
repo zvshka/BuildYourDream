@@ -104,7 +104,9 @@ export default function Category() {
       <Paper className={classes.container} shadow="xl">
         <Group position="apart">
           <Title order={3}>{types.find((t) => t.value === router.query.category)?.label}</Title>
-          <Button onClick={() => router.push('/parts')}>Назад</Button>
+          <Button sx={{ height: '28px' }} onClick={() => router.push('/parts')}>
+            Назад
+          </Button>
         </Group>
       </Paper>
       <Box>
@@ -125,26 +127,26 @@ export default function Category() {
               </MediaQuery>
             </Grid.Col>
             <Grid.Col lg={9}>
-              <Stack>
-                <Paper className={classes.container} shadow="xl">
-                  Что-то
-                </Paper>
-                <Paper className={classes.container} shadow="xl">
-                  Что-то
-                </Paper>
-                <Paper className={classes.container} shadow="xl">
-                  Что-то
-                </Paper>
-                <Paper className={classes.container} shadow="xl">
-                  Что-то
-                </Paper>
-                <Paper className={classes.container} shadow="xl">
-                  Что-то
-                </Paper>
-                <Paper className={classes.container} shadow="xl">
-                  Что-то
-                </Paper>
-              </Stack>
+              {/*<Stack>*/}
+              {/*  <Paper className={classes.container} shadow="xl">*/}
+              {/*    Что-то*/}
+              {/*  </Paper>*/}
+              {/*  <Paper className={classes.container} shadow="xl">*/}
+              {/*    Что-то*/}
+              {/*  </Paper>*/}
+              {/*  <Paper className={classes.container} shadow="xl">*/}
+              {/*    Что-то*/}
+              {/*  </Paper>*/}
+              {/*  <Paper className={classes.container} shadow="xl">*/}
+              {/*    Что-то*/}
+              {/*  </Paper>*/}
+              {/*  <Paper className={classes.container} shadow="xl">*/}
+              {/*    Что-то*/}
+              {/*  </Paper>*/}
+              {/*  <Paper className={classes.container} shadow="xl">*/}
+              {/*    Что-то*/}
+              {/*  </Paper>*/}
+              {/*</Stack>*/}
             </Grid.Col>
           </Grid>
         </Container>
