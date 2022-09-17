@@ -3,6 +3,7 @@ import {
   Accordion,
   Box,
   Button,
+  Center,
   Checkbox,
   Container,
   createStyles,
@@ -10,25 +11,16 @@ import {
   Grid,
   Group,
   MediaQuery,
+  Pagination,
   Paper,
   SimpleGrid,
   Stack,
+  TextInput,
   Title,
 } from '@mantine/core';
 import React from 'react';
 import { useToggle } from '@mantine/hooks';
 import { ConfigCard } from '../../components/ConfigCard/ConfigCard';
-
-const types = [
-  { label: 'Видеокарты', value: 'gpus' },
-  { label: 'Материнские платы', value: 'motherboards' },
-  { label: 'Процессоры', value: 'cpus' },
-  { label: 'Оперативная память', value: 'ram' },
-  { label: 'Блоки питания', value: 'psu' },
-  { label: 'Корпуса', value: 'cases' },
-  { label: 'Охлаждение', value: 'coolers' },
-  { label: 'Накопители', value: 'drives' },
-];
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -115,6 +107,9 @@ const Filters = () => {
         <Title order={4}>Фильтрация</Title>
       </Paper>
       <Paper className={classes.container} shadow="xl">
+        <TextInput placeholder="Поиск по описанию или названию..." />
+      </Paper>
+      <Paper className={classes.container} shadow="xl">
         <Accordion variant="filled">
           <Accordion.Item value="manufacturer">
             <Accordion.Control>Произовдитель</Accordion.Control>
@@ -159,7 +154,7 @@ export default function Category() {
           <Grid>
             <Grid.Col lg={3}>
               <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
-                <Box>
+                <Box sx={{ position: 'sticky', top: '11%' }}>
                   <Filters />
                 </Box>
               </MediaQuery>
@@ -172,13 +167,37 @@ export default function Category() {
               </MediaQuery>
             </Grid.Col>
             <Grid.Col lg={9}>
-              <SimpleGrid cols={4}>
-                <ConfigCard />
-                <ConfigCard />
-                <ConfigCard />
-                <ConfigCard />
-                <ConfigCard />
-              </SimpleGrid>
+              <Stack>
+                <SimpleGrid
+                  breakpoints={[
+                    { maxWidth: 'xs', cols: 1 },
+                    { minWidth: 'sm', cols: 2 },
+                    { minWidth: 'md', cols: 3 },
+                  ]}
+                >
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                  <ConfigCard />
+                </SimpleGrid>
+                <Stack sx={{ width: '100%' }}>
+                  <Button>Загрузить еще...</Button>
+                  <Center>
+                    <Pagination total={10} />
+                  </Center>
+                </Stack>
+              </Stack>
             </Grid.Col>
           </Grid>
         </Container>
