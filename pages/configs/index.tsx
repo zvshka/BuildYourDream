@@ -2,6 +2,7 @@ import {
   Accordion,
   Box,
   Button,
+  Center,
   Checkbox,
   Container,
   createStyles,
@@ -9,9 +10,11 @@ import {
   Grid,
   Group,
   MediaQuery,
+  Pagination,
   Paper,
   SimpleGrid,
   Stack,
+  TextInput,
   Title,
 } from '@mantine/core';
 import React from 'react';
@@ -103,6 +106,9 @@ const Filters = () => {
         <Title order={4}>Фильтрация</Title>
       </Paper>
       <Paper className={classes.container} shadow="xl">
+        <TextInput placeholder="Поиск по описанию или названию..." />
+      </Paper>
+      <Paper className={classes.container} shadow="xl">
         <Accordion variant="filled">
           <Accordion.Item value="manufacturer">
             <Accordion.Control>Произовдитель</Accordion.Control>
@@ -149,7 +155,7 @@ export default function Configs() {
           <Grid>
             <Grid.Col lg={3}>
               <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
-                <Box>
+                <Box sx={{ position: 'sticky', top: '11%' }}>
                   <Filters />
                 </Box>
               </MediaQuery>
@@ -162,7 +168,13 @@ export default function Configs() {
               </MediaQuery>
             </Grid.Col>
             <Grid.Col lg={9}>
-              <SimpleGrid cols={4}>
+              <SimpleGrid
+                cols={4}
+                breakpoints={[
+                { maxWidth: 'xs', cols: 1 },
+                { minWidth: 'sm', cols: 2 },
+                { minWidth: 'md', cols: 3 },
+              ]}>
                 <ConfigCard
                   configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
                 />
@@ -179,6 +191,12 @@ export default function Configs() {
                   configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
                 />
               </SimpleGrid>
+              <Stack sx={{ width: '100%' }}>
+                <Button>Загрузить еще...</Button>
+                <Center>
+                  <Pagination total={10} />
+                </Center>
+              </Stack>
             </Grid.Col>
           </Grid>
         </Container>
