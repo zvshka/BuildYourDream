@@ -1,5 +1,6 @@
 import { Card, createStyles, Group, Image, ScrollArea, Stack, Text } from '@mantine/core';
 import { IconCurrencyRubel, IconMessage, IconMessage2, IconStar } from '@tabler/icons';
+import { NextLink } from '@mantine/next';
 
 const useStyles = createStyles((theme) => ({
   cardBody: {
@@ -19,7 +20,14 @@ const useStyles = createStyles((theme) => ({
 export const ConfigCard = ({ configData }: { configData: any }) => {
   const { classes } = useStyles();
   return (
-    <Card shadow="sm" p="lg" withBorder>
+    <Card
+      shadow="sm"
+      p="lg"
+      withBorder
+      sx={{ cursor: 'pointer' }}
+      component={NextLink}
+      href={`/configs/${configData?.id}`}
+    >
       <Card.Section>
         <Image src={configData?.image} height={160} alt="Config Image" withPlaceholder />
       </Card.Section>
@@ -36,16 +44,11 @@ export const ConfigCard = ({ configData }: { configData: any }) => {
 
           <ScrollArea style={{ height: 90 }} offsetScrollbars>
             <Text size="sm" color="dimmed">
-              Эта великолепная сборка затащит любую игру которая может выйти в ближайшие 200 лет
-              потому что ртх 4090 ебет райзен по шине памяти жетского диска так что вам нужна только
-              эта сборка собирайте срочно
+              {configData.description}
             </Text>
           </ScrollArea>
         </Stack>
 
-        {/*<Button variant="light" color="blue" fullWidth mt="md" radius="md">*/}
-        {/*  Book classic tour now*/}
-        {/*</Button>*/}
         <Group position="apart">
           <Group spacing="xs">
             <IconMessage2 />

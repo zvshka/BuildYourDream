@@ -46,7 +46,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
       marginBottom: theme.spacing.sm,
 
       '&:hover': {
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[2],
         color: theme.colorScheme === 'dark' ? theme.white : theme.black,
 
         [`& .${icon}`]: {
@@ -96,11 +96,11 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const data = [
   { link: '/', label: 'Конфигуратор', icon: IconCpu },
   { link: '/configs', label: 'Пользовательские сборки', icon: IconWorld },
-  { link: '/profile', label: 'Профиль', icon: IconUser },
+  // { link: '/profile', label: 'Профиль', icon: IconUser },
   { link: '/notifications', label: 'Уведомления', icon: IconBell },
   { link: '/parts', label: 'Комплектующие', icon: Icon3dCubeSphere },
   { link: '/chat', label: 'Чат', icon: IconMessage },
-  { link: '/other', label: 'Прочее', icon: IconDots },
+  // { link: '/other', label: 'Прочее', icon: IconDots },
 ];
 
 export function NavbarSimpleColored({ opened }: any) {
@@ -153,12 +153,10 @@ export function NavbarSimpleColored({ opened }: any) {
         {user && (
           <>
             <Collapse in={visible}>
-              <Link href="/change-user">
-                <a className={classes.link}>
-                  <IconUsers className={classes.linkIcon} stroke={1.5} />
-                  <span>Сменить пользователя</span>
-                </a>
-              </Link>
+              <UnstyledButton href="/profile" component={NextLink} className={classes.link}>
+                <IconUser className={classes.linkIcon} stroke={1.5} />
+                <span>Профиль</span>
+              </UnstyledButton>
               <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>
                 <IconLogout className={classes.linkIcon} stroke={1.5} />
                 <span>Выйти</span>
@@ -173,7 +171,12 @@ export function NavbarSimpleColored({ opened }: any) {
           </>
         )}
         {!user && (
-          <UnstyledButton className={classes.link} component={NextLink} href="/auth/signin">
+          <UnstyledButton
+            className={classes.link}
+            sx={{ marginBottom: 0 }}
+            component={NextLink}
+            href="/auth/signin"
+          >
             <IconLogout className={classes.linkIcon} stroke={1.5} />
             <span>Вход</span>
           </UnstyledButton>

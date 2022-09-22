@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import {
   Accordion,
   Box,
@@ -18,17 +17,6 @@ import {
 import React from 'react';
 import { useToggle } from '@mantine/hooks';
 import { ConfigCard } from '../../components/ConfigCard/ConfigCard';
-
-const types = [
-  { label: 'Видеокарты', value: 'gpus' },
-  { label: 'Материнские платы', value: 'motherboards' },
-  { label: 'Процессоры', value: 'cpus' },
-  { label: 'Оперативная память', value: 'ram' },
-  { label: 'Блоки питания', value: 'psu' },
-  { label: 'Корпуса', value: 'cases' },
-  { label: 'Охлаждение', value: 'coolers' },
-  { label: 'Накопители', value: 'drives' },
-];
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -142,8 +130,10 @@ const Filters = () => {
   );
 };
 
-export default function Category() {
-  const router = useRouter();
+const description =
+  'Эта великолепная сборка затащит любую игру которая может выйти в ближайшие 200 лет потому что ртх 4090 ебет райзен по шине памяти жетского диска так что вам нужна только эта сборка собирайте срочно';
+
+export default function Configs() {
   const { classes } = useStyles();
   const [showFilters, toggleFilters] = useToggle();
 
@@ -173,11 +163,21 @@ export default function Category() {
             </Grid.Col>
             <Grid.Col lg={9}>
               <SimpleGrid cols={4}>
-                <ConfigCard />
-                <ConfigCard />
-                <ConfigCard />
-                <ConfigCard />
-                <ConfigCard />
+                <ConfigCard
+                  configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
+                />
+                <ConfigCard
+                  configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
+                />
+                <ConfigCard
+                  configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
+                />
+                <ConfigCard
+                  configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
+                />
+                <ConfigCard
+                  configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
+                />
               </SimpleGrid>
             </Grid.Col>
           </Grid>
