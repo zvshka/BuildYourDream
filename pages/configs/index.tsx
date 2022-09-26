@@ -171,10 +171,11 @@ export default function Configs() {
               <SimpleGrid
                 cols={4}
                 breakpoints={[
-                { maxWidth: 'xs', cols: 1 },
-                { minWidth: 'sm', cols: 2 },
-                { minWidth: 'md', cols: 3 },
-              ]}>
+                  { maxWidth: 'xs', cols: 1 },
+                  { minWidth: 'sm', cols: 2 },
+                  { minWidth: 'md', cols: 3 },
+                ]}
+              >
                 <ConfigCard
                   configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
                 />
@@ -191,7 +192,7 @@ export default function Configs() {
                   configData={{ id: 1, title: 'CONFIG TITLE', totalPrice: 50000, description }}
                 />
               </SimpleGrid>
-              <Stack sx={{ width: '100%' }}>
+              <Stack sx={{ width: '100%' }} mt="md">
                 <Button>Загрузить еще...</Button>
                 <Center>
                   <Pagination total={10} />
