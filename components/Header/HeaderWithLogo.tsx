@@ -13,7 +13,7 @@ import {
 const useStyles = createStyles((theme) => ({
   version: {
     backgroundColor: theme.fn.lighten(
-      theme.fn.variant({ variant: 'filled', color: theme.primaryColor }).background,
+      theme.fn.variant({ variant: 'filled', color: theme.primaryColor }).background as string,
       0.1
     ),
     color: theme.white,

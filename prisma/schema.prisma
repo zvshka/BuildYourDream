@@ -73,14 +73,14 @@ enum FieldType {
     BOOL
     TEXT
     NUMBER
-
 }
 
 model Field {
   id     String @id @default(cuid())
+
   type   FieldType
   name   String
-  label  String
+  required Boolean
 
   form   Form   @relation(fields: [formId], references: [id])
   formId String
@@ -88,5 +88,7 @@ model Field {
 
 model Form {
   id     String  @id @default(cuid())
+  name   String  @unique
+
   fields Field[]
 }
