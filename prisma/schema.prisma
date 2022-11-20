@@ -41,117 +41,52 @@ model Message {
   updatedAt DateTime @updatedAt
 }
 
+enum ConfigPartType {
+  CPU
+  GPU
+  PSU
+  CASE
+  MOTHERBOARD
+  COOLER
+  FAN
+  RAM
+  DRIVE
+}
+
+model Component {
+  id   String         @id @default(cuid())
+  data Json
+  type ConfigPartType
+
+  configs Config[]
+}
+
 model Config {
   id          String @id @default(cuid())
   title       String
   description String
 
-  cpu         Processor          @relation(fields: [processorId], references: [id])
-  motherboard Motherboard        @relation(fields: [motherboardId], references: [id])
-  psu         Powersupply        @relation(fields: [powersupplyId], references: [id])
-  case        Case               @relation(fields: [caseId], references: [id])
-  cooler      Cooler             @relation(fields: [coolerId], references: [id])
-  drives      DriveInConfig[]
-  ram         MemoryInConfig[]
-  gpus        GraphicsInConfig[]
-  fans        FansInConfig[]
-
-  processorId   String
-  graphicsId    String
-  powersupplyId String
-  caseId        String
-  motherboardId String
-  coolerId      String
+  components Component[]
 }
 
-model GraphicsInConfig {
-  config   Config   @relation(fields: [configId], references: [id])
-  gpu      Graphics @relation(fields: [gpuId], references: [id])
-  configId String
-  gpuId    String
+enum FieldType {
+    BOOL
+    TEXT
+    NUMBER
 
-  @@id([configId, gpuId])
 }
 
-model FansInConfig {
-  config   Config @relation(fields: [configId], references: [id])
-  fan      Fan    @relation(fields: [fanId], references: [id])
-  configId String
-  fanId    String
+model Field {
+  id     String @id @default(cuid())
+  type   FieldType
+  name   String
+  label  String
 
-  @@id([configId, fanId])
+  form   Form   @relation(fields: [formId], references: [id])
+  formId String
 }
 
-model DriveInConfig {
-  config   Config @relation(fields: [configId], references: [id])
-  drive    Drive  @relation(fields: [driveId], references: [id])
-  configId String
-  driveId  String
-
-  @@id([configId, driveId])
-}
-
-model MemoryInConfig {
-  config   Config @relation(fields: [configId], references: [id])
-  memory   Memory @relation(fields: [memoryId], references: [id])
-  configId String
-  memoryId String
-
-  @@id([configId, memoryId])
-}
-
-model Drive {
-  id      String          @id @default(cuid())
-  title   String
-  type    String
-  configs DriveInConfig[]
-}
-
-model Motherboard {
-  id      String   @id @default(cuid())
-  title   String
-  configs Config[]
-}
-
-model Processor {
-  id      String   @id @default(cuid())
-  title   String
-  configs Config[]
-}
-
-model Cooler {
-  id      String   @id @default(cuid())
-  title   String
-  type    String
-  configs Config[]
-}
-
-model Memory {
-  id      String           @id @default(cuid())
-  title   String
-  configs MemoryInConfig[]
-}
-
-model Powersupply {
-  id      String   @id @default(cuid())
-  title   String
-  configs Config[]
-}
-
-model Case {
-  id      String   @id @default(cuid())
-  title   String
-  configs Config[]
-}
-
-model Graphics {
-  id      String             @id @default(cuid())
-  title   String
-  configs GraphicsInConfig[]
-}
-
-model Fan {
-  id      String         @id @default(cuid())
-  title   String
-  configs FansInConfig[]
+model Form {
+  id     String  @id @default(cuid())
+  fields Field[]
 }

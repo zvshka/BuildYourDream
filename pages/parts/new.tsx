@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { randomId } from '@mantine/hooks';
 import { IconTrash } from '@tabler/icons';
-import Shell from '../../components/Shell/Shell';
 import { psuData, PsuForm } from '../../components/Parts/PsuForm/PsuForm';
 
 const initialShop = () => ({ name: '', price: 0, url: '', key: randomId() });
@@ -43,32 +42,6 @@ export default function CreatePart() {
     console.log(data);
   };
 
-  const shops = form.values.shops.map((item, index) => (
-    <Group key={item.key} mt="xs">
-      <TextInput
-        placeholder="Название"
-        required
-        sx={{ flex: 1 }}
-        {...form.getInputProps(`shops.${index}.name`)}
-      />
-      <NumberInput
-        placeholder="Примерная цена"
-        required
-        sx={{ flex: 1 }}
-        {...form.getInputProps(`shops.${index}.price`)}
-      />
-      <TextInput
-        placeholder="Ссылка на товар"
-        required
-        sx={{ flex: 1 }}
-        {...form.getInputProps(`shops.${index}.url`)}
-      />
-      <ActionIcon color="red" onClick={() => form.removeListItem('shops', index)}>
-        <IconTrash size={16} />
-      </ActionIcon>
-    </Group>
-  ));
-
   useEffect(() => {
     form.setFieldValue('data', {
       name: '',
@@ -78,7 +51,7 @@ export default function CreatePart() {
 
   return (
     <>
-      <Container>
+      <Container size="xs">
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stepper active={active} onStepClick={setActive} breakpoint="sm" iconPosition="left">
             <Stepper.Step label="Первый шаг" description="Выбор типа">
@@ -107,26 +80,6 @@ export default function CreatePart() {
               </Center>
               <TextInput label="Название" {...form.getInputProps('data.name')} />
               {form.values.type === 'psu' && <PsuForm form={form} />}
-              <Text
-                sx={(theme) => ({
-                  fontWeight: 600,
-                  fontSize: theme.fontSizes.sm,
-                  marginTop: theme.spacing.sm,
-                })}
-              >
-                Магазины
-              </Text>
-              {shops.length < 1 && (
-                <Text color="dimmed" align="center">
-                  Не указаны магазины...
-                </Text>
-              )}
-              {shops}
-              <Group position="center" mt="md">
-                <Button onClick={() => form.insertListItem('shops', initialShop())}>
-                  Добавить магазин
-                </Button>
-              </Group>
             </Stepper.Step>
             <Stepper.Completed>
               Completed, click back button to get to previous step

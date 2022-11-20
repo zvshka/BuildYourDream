@@ -155,6 +155,7 @@ export default function SignUp() {
           message: e.response.data.message,
           color: 'red',
         });
+        toggle();
       });
   };
 
