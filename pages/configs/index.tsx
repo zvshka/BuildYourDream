@@ -140,7 +140,7 @@ const description =
   'Эта великолепная сборка затащит любую игру которая может выйти в ближайшие 200 лет потому что ртх 4090 ебет райзен по шине памяти жетского диска так что вам нужна только эта сборка собирайте срочно';
 
 export default function Configs() {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const [showFilters, toggleFilters] = useToggle();
 
   return (
@@ -155,7 +155,7 @@ export default function Configs() {
           <Grid>
             <Grid.Col lg={3}>
               <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
-                <Box sx={{ position: 'sticky', top: '11%' }}>
+                <Box sx={{ position: 'sticky', top: theme.spacing.xl * 3.5 }}>
                   <Filters />
                 </Box>
               </MediaQuery>

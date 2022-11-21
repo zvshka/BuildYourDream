@@ -1,33 +1,25 @@
 import {
-  ActionIcon,
   Button,
   Center,
   Container,
   Group,
-  NumberInput,
+  Paper,
   Select,
   Stepper,
   Text,
-  TextInput,
   Title,
 } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
-import { randomId } from '@mantine/hooks';
-import { IconTrash } from '@tabler/icons';
-import { psuData, PsuForm } from '../../components/Parts/PsuForm/PsuForm';
+import axios from 'axios';
+import { Form } from '../../components/Parts/Form';
 
-const initialShop = () => ({ name: '', price: 0, url: '', key: randomId() });
-const options = [{ label: 'Блок питания', value: 'psu' }];
 export default function CreatePart() {
-  const form = useForm({
+  const [forms, setForms] = useState([]);
+  const [selectedForm, setSelectedForm] = useState<any>({});
+  const form = useForm<Record<any, any>>({
     initialValues: {
-      type: '',
-      shops: [{ name: '', price: 0, url: '', key: randomId() }],
-      data: {},
-    },
-    validate: {
-      type: (value) => (value ? null : 'Выбери тип'),
+      tier: 0,
     },
   });
 
@@ -43,43 +35,41 @@ export default function CreatePart() {
   };
 
   useEffect(() => {
-    form.setFieldValue('data', {
-      name: '',
-      ...psuData,
+    axios.get('/api/forms').then((res) => {
+      setForms(res.data.map((formData: any) => ({ label: formData.name, value: formData })));
     });
-  }, [form.values.type]);
+  }, []);
 
   return (
     <>
-      <Container size="xs">
+      <Container size="sm">
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stepper active={active} onStepClick={setActive} breakpoint="sm" iconPosition="left">
             <Stepper.Step label="Первый шаг" description="Выбор типа">
               <Center>
-                <Text>Шаг 1. Выбери тип того, что хочешь добавить</Text>
+                <Text>Шаг 1. Выбери форму того компонента, который хочешь добавить</Text>
               </Center>
               <Select
-                data={options}
+                data={forms}
                 label="Тип"
                 searchable
-                clearable
-                creatable
                 required
-                getCreateLabel={(query) => `+ Create ${query}`}
-                {...form.getInputProps('type')}
+                value={selectedForm}
+                onChange={(value) => setSelectedForm(value)}
               />
             </Stepper.Step>
             <Stepper.Step label="Второй шаг" description="Информация">
               <Center>
                 <Text>Шаг 2. Заполни форму настолько, насколько возможно</Text>
               </Center>
-              <Center>
-                <Title order={4}>
-                  {options.find((opt) => opt.value === form.values.type)?.label}
-                </Title>
-              </Center>
-              <TextInput label="Название" {...form.getInputProps('data.name')} />
-              {form.values.type === 'psu' && <PsuForm form={form} />}
+              <Paper p="sm" shadow="xl" my="sm">
+                <Center>
+                  <Title order={4}>{selectedForm.name}</Title>
+                </Center>
+              </Paper>
+              <Paper p="sm" shadow="xl">
+                <Form fields={selectedForm.fields} name={selectedForm.name} form={form} />
+              </Paper>
             </Stepper.Step>
             <Stepper.Completed>
               Completed, click back button to get to previous step
@@ -87,12 +77,12 @@ export default function CreatePart() {
           </Stepper>
           <Group position="center" mt="xl">
             <Button variant="default" onClick={prevStep}>
-              Back
+              Назад
             </Button>
             {active === 2 ? (
-              <Button type="submit">Save</Button>
+              <Button type="submit">Сохранить</Button>
             ) : (
-              <Button onClick={nextStep}>Next step</Button>
+              <Button onClick={nextStep}>Далее</Button>
             )}
           </Group>
         </form>

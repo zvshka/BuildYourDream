@@ -73,22 +73,26 @@ enum FieldType {
     BOOL
     TEXT
     NUMBER
+    LARGE_TEXT
+    RANGE
 }
 
-model Field {
-  id     String @id @default(cuid())
-
-  type   FieldType
-  name   String
-  required Boolean
-
-  form   Form   @relation(fields: [formId], references: [id])
-  formId String
-}
+//model Field {
+//  id     String @id @default(cuid())
+//
+//  type   FieldType
+//  name   String
+//  description String
+//  required Boolean
+//
+//  form   Form   @relation(fields: [formId], references: [id])
+//  formId String
+//}
 
 model Form {
   id     String  @id @default(cuid())
   name   String  @unique
 
-  fields Field[]
+  fields Json
+//  fields Field[]
 }
