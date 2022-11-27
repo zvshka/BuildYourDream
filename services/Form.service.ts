@@ -10,8 +10,25 @@ class FormService {
     });
   }
 
-  async getList() {
+  getList() {
     return prisma.form.findMany({});
+  }
+
+  getFormById(id: string) {
+    return prisma.form.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  updateFormById({ id, data }: any) {
+    return prisma.form.update({
+      where: {
+        id,
+      },
+      data,
+    });
   }
 }
 

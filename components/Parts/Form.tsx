@@ -3,6 +3,7 @@ import {
   Group,
   Input,
   NumberInput,
+  Select,
   Slider,
   Stack,
   Switch,
@@ -15,6 +16,7 @@ const getColSpan = (type: string): number => {
   switch (type) {
     case 'TEXT':
     case 'RANGE':
+    case 'SELECT':
       toReturn = 3;
       break;
     case 'LARGE_TEXT':
@@ -77,6 +79,13 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
                 label={field.name}
                 required={field.required}
                 {...(form ? form.getInputProps(field.name) : {})}
+              />
+            )}
+            {field.type === 'SELECT' && (
+              <Select
+                data={field.options.map((data: string) => ({ value: data, label: data }))}
+                label={field.name}
+                required={field.required}
               />
             )}
           </Grid.Col>

@@ -59,9 +59,9 @@ const useStyles = createStyles((theme, _params, getRef) => {
       '&:hover': {
         backgroundColor:
           theme.colorScheme === 'dark'
-            ? theme.fn.darken(theme.fn.variant({ variant: 'filled', color: 'red' }).background, 0.2)
+            ? theme.fn.darken(theme.fn.variant({ variant: 'filled', color: 'red' }).background as string, 0.2)
             : theme.fn.lighten(
-                theme.fn.variant({ variant: 'filled', color: 'red' }).background,
+                theme.fn.variant({ variant: 'filled', color: 'red' }).background as string,
                 0.2
               ),
       },

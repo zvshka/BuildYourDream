@@ -1,3 +1,6 @@
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   Button,
   Container,
@@ -8,51 +11,44 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
-import axios from 'axios';
-import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { Form } from '../../components/Parts/Form';
-import { FormField } from '../../components/Parts/FormField';
+import { useAuth } from '../../../components/Auth/AuthProvider';
+import { Form } from '../../../components/Parts/Form';
+import { FormField } from '../../../components/Parts/FormField';
 
-export default function createForms() {
+interface IForm {
+  name: string;
+  id: string;
+  fields: any[];
+}
+
+export default function EditForm() {
   const modals = useModals();
+  const [formData, setFormData] = useState<IForm>();
   const [loading, toggleLoading] = useToggle();
-  const form = useForm({
+
+  const router = useRouter();
+
+  const form = useForm<IForm>({
     initialValues: {
+      id: '',
       name: '',
-      fields: [
-        {
-          name: 'Название',
-          type: 'TEXT',
-          description: '',
-          haveDescription: false,
-          required: true,
-          deletable: false,
-          editable: false,
-        },
-        {
-          name: 'Цена',
-          type: 'RANGE',
-          description: '',
-          haveDescription: false,
-          required: true,
-          deletable: false,
-          editable: false,
-        },
-        {
-          name: 'Описание детали',
-          type: 'LARGE_TEXT',
-          description: '',
-          haveDescription: false,
-          required: true,
-          deletable: false,
-          editable: false,
-        },
-      ],
+      fields: [],
     },
   });
+
+  useEffect(() => {
+    axios.get(`/api/forms/${router.query.formId}`).then((res) => setFormData(res.data));
+  }, []);
+
+  useEffect(() => {
+    if (formData) {
+      form.setValues(formData);
+    }
+  }, [formData]);
 
   const handleAddField = () => {
     form.insertListItem('fields', {
@@ -76,7 +72,7 @@ export default function createForms() {
   const handleSubmit = async (values: typeof form.values) => {
     toggleLoading();
     axios
-      .post('/api/forms', {
+      .patch(`/api/forms/${router.query.formId}`, {
         name: values.name,
         fields: values.fields,
       })
@@ -106,7 +102,7 @@ export default function createForms() {
     <Container size="md">
       <Stack>
         <Paper p="sm" shadow="xl">
-          <Title order={4}>Создание формы</Title>
+          <Title order={4}>Изменение формы: {formData && formData.name}</Title>
         </Paper>
         <Paper p="sm" style={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />

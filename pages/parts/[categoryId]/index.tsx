@@ -1,21 +1,26 @@
-import { useRouter } from 'next/router';
 import {
   Accordion,
   Box,
   Checkbox,
+  Container,
   createStyles,
+  Drawer,
   Grid,
+  Group,
+  MediaQuery,
+  NumberInput,
   Paper,
+  Select,
   Stack,
   TextInput,
   Title,
-  Button,
-  Container,
-  Drawer,
-  MediaQuery,
-  Group,
+  Button
 } from '@mantine/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../../components/Auth/AuthProvider';
+import { NextLink } from '@mantine/next';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 import { useToggle } from '@mantine/hooks';
 
 const types = [
@@ -59,7 +64,13 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const Filters = () => {
+const boolValues = [
+  { value: 'all', label: 'Все' },
+  { value: 'true', label: 'Да' },
+  { value: 'false', label: 'Нет' },
+];
+
+const Filters = ({ fields }: any) => {
   const { classes } = useStyles();
   return (
     <Stack>
@@ -68,45 +79,72 @@ const Filters = () => {
       </Paper>
       <Paper className={classes.container} shadow="xl">
         <Accordion variant="filled">
-          <Accordion.Item value="manufacturer">
-            <Accordion.Control>Произовдитель</Accordion.Control>
-            <Accordion.Panel>
-              <Checkbox.Group orientation="vertical">
-                <Checkbox label="AMD" />
-                <Checkbox label="Nvidia" />
-                <Checkbox label="Intel" />
-              </Checkbox.Group>
-            </Accordion.Panel>
-          </Accordion.Item>
-          <Accordion.Item value="memory_type">
-            <Accordion.Control>Тип памяти</Accordion.Control>
-            <Accordion.Panel>
-              <Checkbox.Group orientation="vertical">
-                <Checkbox label="DDR3" />
-                <Checkbox label="DDR4" />
-                <Checkbox label="DDR5" />
-              </Checkbox.Group>
-            </Accordion.Panel>
-          </Accordion.Item>
+          {fields &&
+            fields
+              .filter((field: any) => !['TEXT', 'LARGE_TEXT'].includes(field.type))
+              .map((field: any) => (
+                <Accordion.Item value={field.name}>
+                  <Accordion.Control>{field.name}</Accordion.Control>
+                  <Accordion.Panel>
+                    {field.type === 'SELECT' && (
+                      <Checkbox.Group orientation="vertical">
+                        {field.options.map((option: string) => (
+                          <Checkbox label={option} />
+                        ))}
+                      </Checkbox.Group>
+                    )}
+                    {field.type === 'RANGE' && (
+                      <Group>
+                        <Group grow>
+                          <NumberInput placeholder="От" />
+                          <NumberInput placeholder="До" />
+                        </Group>
+                      </Group>
+                    )}
+                    {field.type === 'NUMBER' && <NumberInput placeholder="228" />}
+                    {field.type === 'BOOL' && <Select data={boolValues} defaultValue="all"/>}
+                  </Accordion.Panel>
+                </Accordion.Item>
+              ))}
         </Accordion>
       </Paper>
     </Stack>
   );
 };
 
+interface IForm {
+  name: string;
+  id: string;
+  fields: any[];
+}
+
 export default function Category() {
   const router = useRouter();
   const { classes } = useStyles();
   const [showFilters, toggleFilters] = useToggle();
 
+  const [formData, setFormData] = useState<IForm>();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    axios.get(`/api/forms/${router.query.categoryId}`).then((res) => setFormData(res.data));
+  }, []);
+
   return (
     <Stack>
       <Paper className={classes.container} shadow="xl">
         <Group position="apart">
-          <Title order={3}>{types.find((t) => t.value === router.query.category)?.label}</Title>
-          <Button sx={{ height: '28px' }} onClick={() => router.push('/parts')}>
-            Назад
-          </Button>
+          <Title order={3}>{formData && formData.name}</Title>
+          <Group>
+            {user && user.role === 'ADMIN' && (
+              <Button href={`/forms/edit/${router.query.categoryId}`} component={NextLink}>
+                Изменить
+              </Button>
+            )}
+            <Button href="/parts" component={NextLink}>
+              Назад
+            </Button>
+          </Group>
         </Group>
       </Paper>
       <Box>
@@ -115,7 +153,7 @@ export default function Category() {
             <Grid.Col lg={3}>
               <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
                 <Box>
-                  <Filters />
+                  <Filters fields={formData?.fields} />
                 </Box>
               </MediaQuery>
               <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
@@ -126,28 +164,7 @@ export default function Category() {
                 </Paper>
               </MediaQuery>
             </Grid.Col>
-            <Grid.Col lg={9}>
-              {/*<Stack>*/}
-              {/*  <Paper className={classes.container} shadow="xl">*/}
-              {/*    Что-то*/}
-              {/*  </Paper>*/}
-              {/*  <Paper className={classes.container} shadow="xl">*/}
-              {/*    Что-то*/}
-              {/*  </Paper>*/}
-              {/*  <Paper className={classes.container} shadow="xl">*/}
-              {/*    Что-то*/}
-              {/*  </Paper>*/}
-              {/*  <Paper className={classes.container} shadow="xl">*/}
-              {/*    Что-то*/}
-              {/*  </Paper>*/}
-              {/*  <Paper className={classes.container} shadow="xl">*/}
-              {/*    Что-то*/}
-              {/*  </Paper>*/}
-              {/*  <Paper className={classes.container} shadow="xl">*/}
-              {/*    Что-то*/}
-              {/*  </Paper>*/}
-              {/*</Stack>*/}
-            </Grid.Col>
+            <Grid.Col lg={9}></Grid.Col>
           </Grid>
         </Container>
       </Box>
@@ -158,7 +175,7 @@ export default function Category() {
         padding="xl"
         size="xl"
       >
-        <Filters />
+        <Filters fields={formData?.fields} />
       </Drawer>
     </Stack>
   );

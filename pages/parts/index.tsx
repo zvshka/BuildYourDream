@@ -1,6 +1,19 @@
-import { Box, createStyles, Paper, SimpleGrid, Stack, Title, Text, Container } from '@mantine/core';
-import React from 'react';
+import {
+  Box,
+  Button,
+  Container,
+  createStyles,
+  Group,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
+import React, { useEffect, useState } from 'react';
 import { NextLink } from '@mantine/next';
+import { useAuth } from '../../components/Auth/AuthProvider';
+import axios from 'axios';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -43,9 +56,9 @@ const types = [
 const Category = React.memo(({ data }: { data: any }) => {
   const { classes } = useStyles();
   return (
-    <Paper className={classes.box} shadow="xl" component={NextLink} href={`/parts/${data.value}`}>
+    <Paper className={classes.box} shadow="xl" component={NextLink} href={`/parts/${data.id}`}>
       <Box className={classes.boxContent}>
-        <Text>{data.label}</Text>
+        <Text>{data.name}</Text>
       </Box>
     </Paper>
   );
@@ -53,20 +66,38 @@ const Category = React.memo(({ data }: { data: any }) => {
 
 export default function Parts() {
   const { classes } = useStyles();
+  const { user } = useAuth();
+
+  const [forms, setForms] = useState([]);
+
+  useEffect(() => {
+    axios.get('/api/forms').then((res) => setForms(res.data));
+  }, []);
+
   return (
     <Stack>
       <Paper className={classes.container} shadow="xl">
-        <Title order={3}>Комплектующие</Title>
+        <Group position="apart">
+          <Title order={3}>Комплектующие</Title>
+          <Group>
+            {user && user.role === 'ADMIN' && (
+              <Button component={NextLink} href="/parts/create">
+                Добавить деталь
+              </Button>
+            )}
+            {user && user.role === 'ADMIN' && (
+              <Button component={NextLink} href="/forms/create">
+                Добавить группу/форму
+              </Button>
+            )}
+          </Group>
+        </Group>
       </Paper>
-      <Box>
-        <Container size="xl" p={0}>
-          <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 4 }]}>
-            {types.map((t) => (
-              <Category key={t.value} data={t} />
-            ))}
-          </SimpleGrid>
-        </Container>
-      </Box>
+      <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 8 }]}>
+        {forms.map((form: any) => (
+          <Category key={form.id} data={form} />
+        ))}
+      </SimpleGrid>
     </Stack>
   );
 }
