@@ -20,6 +20,8 @@ export default function CreatePart() {
   const form = useForm<Record<any, any>>({
     initialValues: {
       tier: 0,
+      pros: [],
+      cons: [],
     },
   });
 
@@ -64,7 +66,7 @@ export default function CreatePart() {
               </Center>
               <Paper p="sm" shadow="xl" my="sm">
                 <Center>
-                  <Title order={4}>{selectedForm.name}</Title>
+                  <Title order={4}>Добавление компонента: {selectedForm.name}</Title>
                 </Center>
               </Paper>
               <Paper p="sm" shadow="xl">

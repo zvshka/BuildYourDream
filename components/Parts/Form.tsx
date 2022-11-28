@@ -1,4 +1,6 @@
 import {
+  ActionIcon,
+  Button,
   Grid,
   Group,
   Input,
@@ -10,6 +12,7 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core';
+import { IconTrashX } from '@tabler/icons';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -31,23 +34,17 @@ const getColSpan = (type: string): number => {
 };
 
 export const Form = ({ fields, name, form }: { fields: any[]; name: string; form?: any }) => {
+  const handleAddCons = () => {
+    form.insertListItem('cons', '');
+  };
+
+  const handleAddPros = () => {
+    form.insertListItem('pros', '');
+  };
+
   return (
     <Stack spacing="md">
       <Grid columns={6}>
-        <Grid.Col span={6} mb="md">
-          <Input.Wrapper label="Тир компонента">
-            <Slider
-              step={50}
-              label={null}
-              marks={[
-                { value: 0, label: 'Low' },
-                { value: 50, label: 'Medium' },
-                { value: 100, label: 'High' },
-              ]}
-              {...(form ? form.getInputProps('tier') : {})}
-            />
-          </Input.Wrapper>
-        </Grid.Col>
         {fields.map((field, index) => (
           <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
             {field.type === 'TEXT' && <TextInput label={field.name} required={field.required} />}
@@ -90,6 +87,64 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
             )}
           </Grid.Col>
         ))}
+        <Grid.Col span={6} mb="md">
+          <Input.Wrapper label="Тир компонента">
+            <Slider
+              step={50}
+              label={null}
+              marks={[
+                { value: 0, label: 'Low' },
+                { value: 50, label: 'Medium' },
+                { value: 100, label: 'High' },
+              ]}
+              {...(form ? form.getInputProps('tier') : {})}
+            />
+          </Input.Wrapper>
+        </Grid.Col>
+        <Grid.Col span={6} mb="md">
+          <Input.Wrapper label="Плюсы и минусы">
+            <Group grow align="normal">
+              <Stack>
+                {form.values.pros.map((value: string, index: number) => (
+                  <TextInput
+                    required
+                    {...form.getInputProps(`pros.${index}`)}
+                    rightSection={
+                      <ActionIcon
+                        style={{ maxWidth: 28 }}
+                        color="red"
+                        variant="filled"
+                        onClick={() => form.removeListItem('pros', index)}
+                      >
+                        <IconTrashX />
+                      </ActionIcon>
+                    }
+                  />
+                ))}
+                <Button onClick={handleAddPros}>Добавить плюс</Button>
+              </Stack>
+              <Stack>
+                {form.values.cons.map((value: string, index: number) => (
+                  <TextInput
+                    required
+                    {...form.getInputProps(`cons.${index}`)}
+                    rightSection={
+                      <ActionIcon
+                        style={{ maxWidth: 28 }}
+                        color="red"
+                        variant="filled"
+                        onClick={() => form.removeListItem('cons', index)}
+                      >
+                        <IconTrashX />
+                      </ActionIcon>
+                    }
+                  />
+                ))}
+                <Button onClick={handleAddCons}>Добавить минус</Button>
+              </Stack>
+            </Group>
+          </Input.Wrapper>
+        </Grid.Col>
       </Grid>
     </Stack>
   );

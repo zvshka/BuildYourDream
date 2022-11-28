@@ -1,6 +1,7 @@
 import {
   Accordion,
   Box,
+  Button,
   Checkbox,
   Container,
   createStyles,
@@ -11,10 +12,10 @@ import {
   NumberInput,
   Paper,
   Select,
+  Slider,
   Stack,
   TextInput,
   Title,
-  Button
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../components/Auth/AuthProvider';
@@ -79,6 +80,21 @@ const Filters = ({ fields }: any) => {
       </Paper>
       <Paper className={classes.container} shadow="xl">
         <Accordion variant="filled">
+          <Accordion.Item value="tier">
+            <Accordion.Control>Тир компонента</Accordion.Control>
+            <Accordion.Panel>
+              <Slider
+                step={50}
+                label={null}
+                marks={[
+                  { value: 0, label: 'Low' },
+                  { value: 50, label: 'Medium' },
+                  { value: 100, label: 'High' },
+                ]}
+                mb="sm"
+              />
+            </Accordion.Panel>
+          </Accordion.Item>
           {fields &&
             fields
               .filter((field: any) => !['TEXT', 'LARGE_TEXT'].includes(field.type))
@@ -88,21 +104,22 @@ const Filters = ({ fields }: any) => {
                   <Accordion.Panel>
                     {field.type === 'SELECT' && (
                       <Checkbox.Group orientation="vertical">
-                        {field.options.map((option: string) => (
-                          <Checkbox label={option} />
+                        {field.options.map((option: string, key: number) => (
+                          <Checkbox
+                            label={option}
+                            value={option}
+                            key={`${field.name}_option_${key}`}
+                          />
                         ))}
                       </Checkbox.Group>
                     )}
-                    {field.type === 'RANGE' && (
-                      <Group>
-                        <Group grow>
-                          <NumberInput placeholder="От" />
-                          <NumberInput placeholder="До" />
-                        </Group>
+                    {(field.type === 'RANGE' || field.type === 'NUMBER') && (
+                      <Group grow>
+                        <NumberInput placeholder="От" />
+                        <NumberInput placeholder="До" />
                       </Group>
                     )}
-                    {field.type === 'NUMBER' && <NumberInput placeholder="228" />}
-                    {field.type === 'BOOL' && <Select data={boolValues} defaultValue="all"/>}
+                    {field.type === 'BOOL' && <Select data={boolValues} defaultValue="all" />}
                   </Accordion.Panel>
                 </Accordion.Item>
               ))}
