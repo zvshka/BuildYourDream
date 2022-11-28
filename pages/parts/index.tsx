@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   createStyles,
   Group,
   Paper,
@@ -12,8 +11,8 @@ import {
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { NextLink } from '@mantine/next';
-import { useAuth } from '../../components/Auth/AuthProvider';
 import axios from 'axios';
+import { useAuth } from '../../components/Auth/AuthProvider';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -93,7 +92,7 @@ export default function Parts() {
           </Group>
         </Group>
       </Paper>
-      <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 8 }]}>
+      <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
         {forms.map((form: any) => (
           <Category key={form.id} data={form} />
         ))}

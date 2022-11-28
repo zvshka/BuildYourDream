@@ -13,6 +13,8 @@ import {
   TextInput,
 } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons';
+import { useEffect } from 'react';
+import { RangeInput } from '../RangeInput/RangeInput';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -47,7 +49,13 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
       <Grid columns={6}>
         {fields.map((field, index) => (
           <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
-            {field.type === 'TEXT' && <TextInput label={field.name} required={field.required} />}
+            {field.type === 'TEXT' && (
+              <TextInput
+                label={field.name}
+                required={field.required}
+                {...(form ? form.getInputProps(field.name) : {})}
+              />
+            )}
             {field.type === 'NUMBER' && (
               <NumberInput
                 label={field.name}
@@ -59,17 +67,16 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
               <Input.Wrapper label={field.name} required={field.required}>
                 <Switch
                   required={field.required}
-                  {...(form ? form.getInputProps(field.name) : {})}
+                  {...(form ? form.getInputProps(field.name, { type: 'checkbox' }) : {})}
                 />
               </Input.Wrapper>
             )}
             {field.type === 'RANGE' && (
-              <Input.Wrapper label={field.name} required={field.required}>
-                <Group grow>
-                  <NumberInput placeholder="Цена от" required={field.required} />
-                  <NumberInput placeholder="Цена до" required={field.required} />
-                </Group>
-              </Input.Wrapper>
+              <RangeInput
+                label={field.name}
+                required={field.required}
+                {...(form ? form.getInputProps(field.name) : {})}
+              />
             )}
             {field.type === 'LARGE_TEXT' && (
               <Textarea
@@ -83,6 +90,7 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
                 data={field.options.map((data: string) => ({ value: data, label: data }))}
                 label={field.name}
                 required={field.required}
+                {...(form ? form.getInputProps(field.name) : {})}
               />
             )}
           </Grid.Col>
@@ -107,6 +115,7 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
               <Stack>
                 {form.values.pros.map((value: string, index: number) => (
                   <TextInput
+                    key={`pros_${index}`}
                     required
                     {...form.getInputProps(`pros.${index}`)}
                     rightSection={
@@ -126,6 +135,7 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
               <Stack>
                 {form.values.cons.map((value: string, index: number) => (
                   <TextInput
+                    key={`cons_${index}`}
                     required
                     {...form.getInputProps(`cons.${index}`)}
                     rightSection={

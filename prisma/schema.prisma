@@ -41,22 +41,12 @@ model Message {
   updatedAt DateTime @updatedAt
 }
 
-enum ConfigPartType {
-  CPU
-  GPU
-  PSU
-  CASE
-  MOTHERBOARD
-  COOLER
-  FAN
-  RAM
-  DRIVE
-}
-
 model Component {
   id   String         @id @default(cuid())
   data Json
-  type ConfigPartType
+
+  form    Form     @relation(fields: [formId], references: [id])
+  formId  String
 
   configs Config[]
 }
@@ -70,29 +60,17 @@ model Config {
 }
 
 enum FieldType {
-    BOOL
-    TEXT
-    NUMBER
-    LARGE_TEXT
-    RANGE
+  BOOL
+  TEXT
+  NUMBER
+  LARGE_TEXT
+  RANGE
 }
 
-//model Field {
-//  id     String @id @default(cuid())
-//
-//  type   FieldType
-//  name   String
-//  description String
-//  required Boolean
-//
-//  form   Form   @relation(fields: [formId], references: [id])
-//  formId String
-//}
-
 model Form {
-  id     String  @id @default(cuid())
-  name   String  @unique
+  id   String @id @default(cuid())
+  name String @unique
 
-  fields Json
-//  fields Field[]
+  components Component[]
+  fields     Json
 }

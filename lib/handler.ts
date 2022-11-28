@@ -4,6 +4,7 @@ import { ApiError } from './ApiError';
 
 export const handler = () =>
   nc<NextApiRequest, NextApiResponse>({
+    attachParams: true,
     onError: (err, req, res, next) => {
       console.log(err);
       if (err instanceof ApiError) {

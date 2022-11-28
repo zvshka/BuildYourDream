@@ -26,14 +26,16 @@ export default function CreatePart() {
   });
 
   const [active, setActive] = useState(0);
-  const nextStep = () => {
-    if (form.validate().hasErrors) return;
-    setActive((current) => (current < 3 ? current + 1 : current));
-  };
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
 
   const handleSubmit = (data: typeof form.values) => {
-    console.log(data);
+    if (active < 2) return setActive((current) => (current < 3 ? current + 1 : current));
+    axios
+      .post('/api/parts', {
+        data,
+        formId: selectedForm.id,
+      })
+      .then((res) => console.log(res.data));
   };
 
   useEffect(() => {
@@ -41,6 +43,30 @@ export default function CreatePart() {
       setForms(res.data.map((formData: any) => ({ label: formData.name, value: formData })));
     });
   }, []);
+
+  const handleSelectForm = (value: any) => {
+    setSelectedForm(value);
+    value.fields.forEach((field: any) => {
+      switch (field.type) {
+        case 'TEXT':
+        case 'LARGE_TEXT':
+          form.setFieldValue(field.name, form.values[field.name] || '');
+          break;
+        case 'NUMBER':
+          form.setFieldValue(field.name, form.values[field.name] || 0);
+          break;
+        case 'BOOL':
+          form.setFieldValue(field.name, form.values[field.name] || false);
+          break;
+        case 'RANGE':
+          form.setFieldValue(field.name, form.values[field.name] || [0, 0]);
+          break;
+        case 'SELECT':
+          form.setFieldValue(field.name, form.values[field.name] || '');
+          break;
+      }
+    });
+  };
 
   return (
     <>
@@ -57,7 +83,7 @@ export default function CreatePart() {
                 searchable
                 required
                 value={selectedForm}
-                onChange={(value) => setSelectedForm(value)}
+                onChange={handleSelectForm}
               />
             </Stepper.Step>
             <Stepper.Step label="Второй шаг" description="Информация">
@@ -81,11 +107,7 @@ export default function CreatePart() {
             <Button variant="default" onClick={prevStep}>
               Назад
             </Button>
-            {active === 2 ? (
-              <Button type="submit">Сохранить</Button>
-            ) : (
-              <Button onClick={nextStep}>Далее</Button>
-            )}
+            <Button type="submit">{active === 2 ? 'Сохранить' : 'Далее'}</Button>
           </Group>
         </form>
       </Container>

@@ -14,6 +14,7 @@ import {
   Select,
   Slider,
   Stack,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core';
@@ -141,10 +142,12 @@ export default function Category() {
   const [showFilters, toggleFilters] = useToggle();
 
   const [formData, setFormData] = useState<IForm>();
+  const [parts, setParts] = useState([]);
   const { user } = useAuth();
 
   useEffect(() => {
     axios.get(`/api/forms/${router.query.categoryId}`).then((res) => setFormData(res.data));
+    axios.get(`/api/parts/${router.query.categoryId}`).then((res) => setParts(res.data));
   }, []);
 
   return (
@@ -181,7 +184,29 @@ export default function Category() {
                 </Paper>
               </MediaQuery>
             </Grid.Col>
-            <Grid.Col lg={9}></Grid.Col>
+            <Grid.Col lg={9}>
+              <Stack>
+                {parts.length > 0 &&
+                  parts.map((part: any) => (
+                    <Paper
+                      href={`/parts/details/${part.id}`}
+                      shadow="xl"
+                      p="md"
+                      key={part.id}
+                      component={NextLink}
+                    >
+                      <Text>{part.data['Название']}</Text>
+                      <Text>
+                        Примерная цена: {part.data['Цена'][0]} - {part.data['Цена'][1]} Руб.
+                      </Text>
+                      <Text>
+                        Tier компонента:{' '}
+                        {part.data.tier === 0 ? 'Low' : part.data.tier === 50 ? 'Medium' : 'High'}
+                      </Text>
+                    </Paper>
+                  ))}
+              </Stack>
+            </Grid.Col>
           </Grid>
         </Container>
       </Box>
