@@ -10,15 +10,10 @@ const withPWA = require('next-pwa')({
   skipWaiting: true,
   disable: !production,
 });
-
-module.exports = async (phase, { defaultConfig }) => {
-  return withPWA(
-    withBundleAnalyzer({
-      ...defaultConfig,
-      reactStrictMode: false,
-      eslint: {
-        ignoreDuringBuilds: true,
-      },
-    })
-  );
+module.exports = {
+  ...withPWA(),
+  reactStrictMode: false,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };

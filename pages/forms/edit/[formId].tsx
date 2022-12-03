@@ -15,9 +15,9 @@ import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { useAuth } from '../../../components/Auth/AuthProvider';
 import { Form } from '../../../components/Parts/Form';
 import { FormField } from '../../../components/Parts/FormField';
+import { Block } from '../../../components/Block/Block';
 
 interface IForm {
   name: string;
@@ -101,10 +101,10 @@ export default function EditForm() {
   return (
     <Container size="md">
       <Stack>
-        <Paper p="sm" shadow="xl">
+        <Block>
           <Title order={4}>Изменение формы: {formData && formData.name}</Title>
-        </Paper>
-        <Paper p="sm" style={{ position: 'relative' }}>
+        </Block>
+        <Block style={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Group position="apart">
@@ -123,7 +123,7 @@ export default function EditForm() {
             />
             {fields}
           </form>
-        </Paper>
+        </Block>
       </Stack>
     </Container>
   );

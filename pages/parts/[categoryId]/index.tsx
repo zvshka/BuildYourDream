@@ -24,17 +24,7 @@ import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useToggle } from '@mantine/hooks';
-
-const types = [
-  { label: 'Видеокарты', value: 'gpus' },
-  { label: 'Материнские платы', value: 'motherboards' },
-  { label: 'Процессоры', value: 'cpus' },
-  { label: 'Оперативная память', value: 'ram' },
-  { label: 'Блоки питания', value: 'psu' },
-  { label: 'Корпуса', value: 'cases' },
-  { label: 'Охлаждение', value: 'coolers' },
-  { label: 'Накопители', value: 'drives' },
-];
+import { Block } from '../../../components/Block/Block';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -152,7 +142,7 @@ export default function Category() {
 
   return (
     <Stack>
-      <Paper className={classes.container} shadow="xl">
+      <Block>
         <Group position="apart">
           <Title order={3}>{formData && formData.name}</Title>
           <Group>
@@ -161,12 +151,17 @@ export default function Category() {
                 Изменить
               </Button>
             )}
+            {user && user.role === 'ADMIN' && (
+              <Button href={`/parts/create?formId=${router.query.categoryId}`} component={NextLink}>
+                Добавить
+              </Button>
+            )}
             <Button href="/parts" component={NextLink}>
               Назад
             </Button>
           </Group>
         </Group>
-      </Paper>
+      </Block>
       <Box>
         <Container size={1600} p={0}>
           <Grid>
@@ -189,7 +184,7 @@ export default function Category() {
                 {parts.length > 0 &&
                   parts.map((part: any) => (
                     <Paper
-                      href={`/parts/details/${part.id}`}
+                      href={`/parts/${router.query.categoryId}/${part.id}`}
                       shadow="xl"
                       p="md"
                       key={part.id}

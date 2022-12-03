@@ -15,6 +15,7 @@ import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { Form } from '../../components/Parts/Form';
 import { FormField } from '../../components/Parts/FormField';
+import { Block } from '../../components/Block/Block';
 
 export default function createForms() {
   const modals = useModals();
@@ -105,10 +106,10 @@ export default function createForms() {
   return (
     <Container size="md">
       <Stack>
-        <Paper p="sm" shadow="xl">
+        <Block>
           <Title order={4}>Создание формы</Title>
-        </Paper>
-        <Paper p="sm" style={{ position: 'relative' }}>
+        </Block>
+        <Block style={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Group position="apart">
@@ -127,7 +128,7 @@ export default function createForms() {
             />
             {fields}
           </form>
-        </Paper>
+        </Block>
       </Stack>
     </Container>
   );

@@ -96,27 +96,24 @@ export default function Chat() {
   };
 
   return (
-    <>
-      <form onSubmit={form.onSubmit(handleSubmit)} className={classes.container}>
-        {/*<form className={classes.container}>*/}
-        <Stack className={classes.container}>
-          <MessagesBlock messages={messages} viewport={viewport} lastMessage={lastMessage} />
-          <Group>
-            <Box className={classes.inputWrapper}>
-              <Textarea
-                className={classes.textInput}
-                autosize
-                minRows={1}
-                maxRows={4}
-                onKeyDown={getHotkeyHandler([['Enter', (e) => handleSubmit(form.values, e, true)]])}
-                {...form.getInputProps('body')}
-              />
-            </Box>
-            <Button type="submit">{!isMobile ? 'Отправить' : <IconSend />}</Button>
-          </Group>
-        </Stack>
-      </form>
-    </>
+    <form onSubmit={form.onSubmit(handleSubmit)} className={classes.container}>
+      <Stack className={classes.container}>
+        <MessagesBlock messages={messages} viewport={viewport} lastMessage={lastMessage} />
+        <Group>
+          <Box className={classes.inputWrapper}>
+            <Textarea
+              className={classes.textInput}
+              autosize
+              minRows={1}
+              maxRows={4}
+              onKeyDown={getHotkeyHandler([['Enter', (e) => handleSubmit(form.values, e, true)]])}
+              {...form.getInputProps('body')}
+            />
+          </Box>
+          <Button type="submit">{!isMobile ? 'Отправить' : <IconSend />}</Button>
+        </Group>
+      </Stack>
+    </form>
   );
 }
 

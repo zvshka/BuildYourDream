@@ -12,9 +12,11 @@ import {
 import { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 import { Form } from '../../components/Parts/Form';
 
 export default function CreatePart() {
+  const router = useRouter();
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState<any>({});
   const form = useForm<Record<any, any>>({
@@ -67,6 +69,21 @@ export default function CreatePart() {
       }
     });
   };
+
+  useEffect(() => {
+    if (
+      forms &&
+      forms.length > 0 &&
+      router.query &&
+      router.query.formId &&
+      forms.map((f: any) => f.value.id).includes(router.query.formId as string)
+    ) {
+      const possibleForm: any = forms.find((f: any) => f.value.id === router.query.formId);
+      if (possibleForm) {
+        handleSelectForm(possibleForm.value);
+      }
+    }
+  }, [forms]);
 
   return (
     <>

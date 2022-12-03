@@ -13,11 +13,9 @@ import React, { useEffect, useState } from 'react';
 import { NextLink } from '@mantine/next';
 import axios from 'axios';
 import { useAuth } from '../../components/Auth/AuthProvider';
+import { Block } from '../../components/Block/Block';
 
 const useStyles = createStyles((theme) => ({
-  container: {
-    padding: theme.spacing.sm,
-  },
   box: {
     position: 'relative',
     width: '100%',
@@ -38,33 +36,23 @@ const useStyles = createStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
+    textAlign: 'center',
+    justifyContent: 'center',
   },
 }));
-
-const types = [
-  { label: 'Видеокарты', value: 'gpus' },
-  { label: 'Материнские платы', value: 'motherboards' },
-  { label: 'Процессоры', value: 'cpus' },
-  { label: 'Оперативная память', value: 'ram' },
-  { label: 'Блоки питания', value: 'psu' },
-  { label: 'Корпуса', value: 'cases' },
-  { label: 'Охлаждение', value: 'coolers' },
-  { label: 'Накопители', value: 'drives' },
-];
 
 const Category = React.memo(({ data }: { data: any }) => {
   const { classes } = useStyles();
   return (
     <Paper className={classes.box} shadow="xl" component={NextLink} href={`/parts/${data.id}`}>
       <Box className={classes.boxContent}>
-        <Text>{data.name}</Text>
+        <Text weight={700} size={24}>{data.name}</Text>
       </Box>
     </Paper>
   );
 });
 
 export default function Parts() {
-  const { classes } = useStyles();
   const { user } = useAuth();
 
   const [forms, setForms] = useState([]);
@@ -75,7 +63,7 @@ export default function Parts() {
 
   return (
     <Stack>
-      <Paper className={classes.container} shadow="xl">
+      <Block>
         <Group position="apart">
           <Title order={3}>Комплектующие</Title>
           <Group>
@@ -91,7 +79,7 @@ export default function Parts() {
             )}
           </Group>
         </Group>
-      </Paper>
+      </Block>
       <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
         {forms.map((form: any) => (
           <Category key={form.id} data={form} />

@@ -6,12 +6,19 @@ import {
   Group,
   Image,
   Paper,
-  Stack, Tabs,
+  Stack,
+  Tabs,
   Text,
-  TextInput,
 } from '@mantine/core';
+import {
+  IconBrandDiscord,
+  IconBrandVk,
+  IconMessageCircle,
+  IconPhoto,
+  IconSettings,
+} from '@tabler/icons';
 import { useAuth } from '../components/Auth/AuthProvider';
-import { IconBrandDiscord, IconBrandVk, IconMessageCircle, IconPhoto, IconSettings } from '@tabler/icons';
+import { Block } from '../components/Block/Block';
 
 const useStyles = createStyles((theme) => ({
   avatar: {
@@ -19,12 +26,6 @@ const useStyles = createStyles((theme) => ({
     borderRadius: theme.radius.sm,
   },
 }));
-
-const Block = ({ children }: any) => (
-  <Paper p="sm" shadow="xl" sx={{width: '100%'}}>
-    {children}
-  </Paper>
-);
 
 export default function Profile() {
   const { classes } = useStyles();
@@ -59,10 +60,18 @@ export default function Profile() {
         <Block>
           <Tabs radius="xs" defaultValue="gallery">
             <Tabs.List>
-              <Tabs.Tab value="general" icon={<IconPhoto size={14} />}>Общая информация</Tabs.Tab>
-              <Tabs.Tab value="messages" icon={<IconMessageCircle size={14} />}>Комментарии</Tabs.Tab>
-              <Tabs.Tab value="configs" icon={<IconSettings size={14} />}>Сборки</Tabs.Tab>
-              <Tabs.Tab value="settings" icon={<IconSettings size={14} />}>Настройки</Tabs.Tab>
+              <Tabs.Tab value="general" icon={<IconPhoto size={14} />}>
+                Общая информация
+              </Tabs.Tab>
+              <Tabs.Tab value="messages" icon={<IconMessageCircle size={14} />}>
+                Комментарии
+              </Tabs.Tab>
+              <Tabs.Tab value="configs" icon={<IconSettings size={14} />}>
+                Сборки
+              </Tabs.Tab>
+              <Tabs.Tab value="settings" icon={<IconSettings size={14} />}>
+                Настройки
+              </Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="general" pt="xs">
