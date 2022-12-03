@@ -14,6 +14,14 @@ class PartService {
       },
     });
   }
+
+  getPartById(partId: string) {
+    return prisma.component.findUnique({
+      where: {
+        id: partId,
+      },
+    });
+  }
 }
 
 export default new PartService();
