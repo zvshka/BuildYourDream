@@ -21,6 +21,7 @@ model User {
   email          String    @unique
   emailVerified  DateTime?
   username       String    @unique
+  avatarURL String?
   hashedPassword String
 
   createdAt DateTime @default(now())
@@ -74,3 +75,11 @@ model Form {
   components Component[]
   fields     Json
 }
+
+model Image {
+  filename String @unique
+  filepath String
+  mimetype String
+  size     Int
+}
+

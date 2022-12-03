@@ -1,43 +1,62 @@
-import {
-  Button,
-  Center,
-  Container,
-  Group,
-  Paper,
-  Select,
-  Stepper,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Button, Center, Container, Group, Select, Stepper, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { useForm } from '@mantine/form';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { Form } from '../../components/Parts/Form';
+import { Block } from '../../components/Block/Block';
+import { IField } from '../../types/Form';
+import { FormsFormProvider, useFormsForm } from '../../components/Parts/FormContext';
 
 export default function CreatePart() {
   const router = useRouter();
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState<any>({});
-  const form = useForm<Record<any, any>>({
+  const form = useFormsForm({
     initialValues: {
       tier: 0,
       pros: [],
       cons: [],
+      image: {
+        base64: '',
+        file: null,
+      },
     },
   });
 
   const [active, setActive] = useState(0);
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
 
+  const uploadImage = (file: File) => {
+    const formData = new FormData();
+    formData.append('upload', file);
+    return axios.post('/api/images', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  };
+
+  const saveData = (data: typeof form.values, image = null) =>
+    axios.post('/api/parts', {
+      data: {
+        ...data,
+        image,
+      },
+      formId: selectedForm.id,
+    });
+
   const handleSubmit = (data: typeof form.values) => {
     if (active < 2) return setActive((current) => (current < 3 ? current + 1 : current));
-    axios
-      .post('/api/parts', {
-        data,
-        formId: selectedForm.id,
-      })
-      .then((res) => console.log(res.data));
+    if (data.image.file) {
+      uploadImage(data.image.file)
+        .then((res) => saveData(data, res.data).catch(console.log))
+        .catch(console.log);
+    } else {
+      saveData(data)
+        .then((res) => {})
+        .catch(console.log);
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -48,7 +67,7 @@ export default function CreatePart() {
 
   const handleSelectForm = (value: any) => {
     setSelectedForm(value);
-    value.fields.forEach((field: any) => {
+    value.fields.forEach((field: IField) => {
       switch (field.type) {
         case 'TEXT':
         case 'LARGE_TEXT':
@@ -86,48 +105,46 @@ export default function CreatePart() {
   }, [forms]);
 
   return (
-    <>
+    <FormsFormProvider form={form}>
       <Container size="sm">
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Stepper active={active} onStepClick={setActive} breakpoint="sm" iconPosition="left">
-            <Stepper.Step label="Первый шаг" description="Выбор типа">
-              <Center>
-                <Text>Шаг 1. Выбери форму того компонента, который хочешь добавить</Text>
-              </Center>
-              <Select
-                data={forms}
-                label="Тип"
-                searchable
-                required
-                value={selectedForm}
-                onChange={handleSelectForm}
-              />
-            </Stepper.Step>
-            <Stepper.Step label="Второй шаг" description="Информация">
-              <Center>
-                <Text>Шаг 2. Заполни форму настолько, насколько возможно</Text>
-              </Center>
-              <Paper p="sm" shadow="xl" my="sm">
+        <Block>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Stepper active={active} onStepClick={setActive} breakpoint="sm" iconPosition="left">
+              <Stepper.Step label="Первый шаг" description="Выбор типа">
                 <Center>
-                  <Title order={4}>Добавление компонента: {selectedForm.name}</Title>
+                  <Text>Шаг 1. Выбери форму того компонента, который хочешь добавить</Text>
                 </Center>
-              </Paper>
-              <Paper p="sm" shadow="xl">
-                <Form fields={selectedForm.fields} name={selectedForm.name} form={form} />
-              </Paper>
-            </Stepper.Step>
-            <Stepper.Completed>
-              Completed, click back button to get to previous step
-            </Stepper.Completed>
-          </Stepper>
-          <Group position="center" mt="xl">
-            <Button variant="default" onClick={prevStep}>
-              Назад
-            </Button>
-            <Button type="submit">{active === 2 ? 'Сохранить' : 'Далее'}</Button>
-          </Group>
-        </form>
+                <Select
+                  data={forms}
+                  label="Тип"
+                  searchable
+                  required
+                  value={selectedForm}
+                  onChange={handleSelectForm}
+                />
+              </Stepper.Step>
+              <Stepper.Step label="Второй шаг" description="Информация">
+                <Center>
+                  <Text>Шаг 2. Заполни форму настолько, насколько возможно</Text>
+                </Center>
+                <Center mb="md">
+                  <Title order={2}>Добавление компонента: {selectedForm.name}</Title>
+                </Center>
+                <Form formFields={selectedForm.fields} />
+              </Stepper.Step>
+              <Stepper.Completed>
+                <Text>Отлично! Можно сохранять</Text>
+              </Stepper.Completed>
+            </Stepper>
+            <Group position="center" mt="xl">
+              <Button variant="default" onClick={prevStep}>
+                Назад
+              </Button>
+              <Button type="submit">{active === 2 ? 'Сохранить' : 'Далее'}</Button>
+            </Group>
+          </form>
+        </Block>
       </Container>
-    </>
+    </FormsFormProvider>
   );
 }

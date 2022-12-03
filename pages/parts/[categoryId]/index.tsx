@@ -8,6 +8,7 @@ import {
   Drawer,
   Grid,
   Group,
+  Image,
   MediaQuery,
   NumberInput,
   Paper,
@@ -144,7 +145,7 @@ export default function Category() {
     <Stack>
       <Block>
         <Group position="apart">
-          <Title order={3}>{formData && formData.name}</Title>
+          <Title order={2}>{formData && formData.name}</Title>
           <Group>
             {user && user.role === 'ADMIN' && (
               <Button href={`/forms/edit/${router.query.categoryId}`} component={NextLink}>
@@ -183,22 +184,37 @@ export default function Category() {
               <Stack>
                 {parts.length > 0 &&
                   parts.map((part: any) => (
-                    <Paper
+                    <Block
                       href={`/parts/${router.query.categoryId}/${part.id}`}
-                      shadow="xl"
-                      p="md"
                       key={part.id}
                       component={NextLink}
                     >
-                      <Text>{part.data['Название']}</Text>
-                      <Text>
-                        Примерная цена: {part.data['Цена'][0]} - {part.data['Цена'][1]} Руб.
-                      </Text>
-                      <Text>
-                        Tier компонента:{' '}
-                        {part.data.tier === 0 ? 'Low' : part.data.tier === 50 ? 'Medium' : 'High'}
-                      </Text>
-                    </Paper>
+                      <Group align="normal">
+                        <Image
+                          withPlaceholder
+                          radius="sm"
+                          width={256 / 1.5}
+                          height={256 / 1.5}
+                          {...(part.data.image
+                            ? { src: `${part.data.image.url}?quality=60` }
+                            : {})}
+                        />
+                        <Box>
+                          <Title order={3}>{part.data['Название']}</Title>
+                          <Text>
+                            Примерная цена: {part.data['Цена'][0]} - {part.data['Цена'][1]} Руб.
+                          </Text>
+                          <Text>
+                            Tier компонента:{' '}
+                            {part.data.tier === 0
+                              ? 'Low'
+                              : part.data.tier === 50
+                              ? 'Medium'
+                              : 'High'}
+                          </Text>
+                        </Box>
+                      </Group>
+                    </Block>
                   ))}
               </Stack>
             </Grid.Col>

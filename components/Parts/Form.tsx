@@ -1,8 +1,10 @@
 import {
   ActionIcon,
   Button,
+  FileButton,
   Grid,
   Group,
+  Image,
   Input,
   NumberInput,
   Select,
@@ -13,8 +15,9 @@ import {
   TextInput,
 } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { RangeInput } from '../RangeInput/RangeInput';
+import { useFormsFormContext } from './FormContext';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -35,7 +38,16 @@ const getColSpan = (type: string): number => {
   return toReturn;
 };
 
-export const Form = ({ fields, name, form }: { fields: any[]; name: string; form?: any }) => {
+export const Form = ({ formFields }) => {
+  const form = useFormsFormContext();
+  const resetRef = useRef<() => void>(null);
+
+  const clearFile = () => {
+    resetRef.current?.();
+    form.setFieldValue('image.base64', '');
+    form.setFieldValue('image.file', null);
+  };
+
   const handleAddCons = () => {
     form.insertListItem('cons', '');
   };
@@ -44,10 +56,36 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
     form.insertListItem('pros', '');
   };
 
+  useEffect(() => {
+    if (!form.values.image.file) return;
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(form.values.image.file);
+    fileReader.onload = () => {
+      form.setFieldValue('image.base64', fileReader.result);
+    };
+  }, [form.values.image.file]);
+
   return (
     <Stack spacing="md">
       <Grid columns={6}>
-        {fields.map((field, index) => (
+        <Grid.Col span={6}>
+          <Stack align="center">
+            <Image withPlaceholder width={256} height={256} src={form.values.image.base64} />
+            <Group spacing="xs">
+              <FileButton
+                resetRef={resetRef}
+                onChange={(file) => form.setFieldValue('image.file', file)}
+                accept="image/png,image/jpeg"
+              >
+                {(props) => <Button {...props}>Загрузить изображение</Button>}
+              </FileButton>
+              <Button disabled={!form.values.image.file} color="red" onClick={clearFile}>
+                Сбросить
+              </Button>
+            </Group>
+          </Stack>
+        </Grid.Col>
+        {formFields.map((field, index) => (
           <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
             {field.type === 'TEXT' && (
               <TextInput
@@ -87,7 +125,7 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
             )}
             {field.type === 'SELECT' && (
               <Select
-                data={field.options.map((data: string) => ({ value: data, label: data }))}
+                data={field.options?.map((data: string) => ({ value: data, label: data }))}
                 label={field.name}
                 required={field.required}
                 {...(form ? form.getInputProps(field.name) : {})}
@@ -113,43 +151,47 @@ export const Form = ({ fields, name, form }: { fields: any[]; name: string; form
           <Input.Wrapper label="Плюсы и минусы">
             <Group grow align="normal">
               <Stack>
-                {form.values.pros.map((value: string, index: number) => (
-                  <TextInput
-                    key={`pros_${index}`}
-                    required
-                    {...form.getInputProps(`pros.${index}`)}
-                    rightSection={
-                      <ActionIcon
-                        style={{ maxWidth: 28 }}
-                        color="red"
-                        variant="filled"
-                        onClick={() => form.removeListItem('pros', index)}
-                      >
-                        <IconTrashX />
-                      </ActionIcon>
-                    }
-                  />
-                ))}
+                {form.values &&
+                  form.values.pros &&
+                  form.values.pros.map((value: string, index: number) => (
+                    <TextInput
+                      key={`pros_${index}`}
+                      required
+                      {...form.getInputProps(`pros.${index}`)}
+                      rightSection={
+                        <ActionIcon
+                          style={{ maxWidth: 28 }}
+                          color="red"
+                          variant="filled"
+                          onClick={() => form.removeListItem('pros', index)}
+                        >
+                          <IconTrashX />
+                        </ActionIcon>
+                      }
+                    />
+                  ))}
                 <Button onClick={handleAddPros}>Добавить плюс</Button>
               </Stack>
               <Stack>
-                {form.values.cons.map((value: string, index: number) => (
-                  <TextInput
-                    key={`cons_${index}`}
-                    required
-                    {...form.getInputProps(`cons.${index}`)}
-                    rightSection={
-                      <ActionIcon
-                        style={{ maxWidth: 28 }}
-                        color="red"
-                        variant="filled"
-                        onClick={() => form.removeListItem('cons', index)}
-                      >
-                        <IconTrashX />
-                      </ActionIcon>
-                    }
-                  />
-                ))}
+                {form.values &&
+                  form.values.cons &&
+                  form.values.cons.map((value: string, index: number) => (
+                    <TextInput
+                      key={`cons_${index}`}
+                      required
+                      {...form.getInputProps(`cons.${index}`)}
+                      rightSection={
+                        <ActionIcon
+                          style={{ maxWidth: 28 }}
+                          color="red"
+                          variant="filled"
+                          onClick={() => form.removeListItem('cons', index)}
+                        >
+                          <IconTrashX />
+                        </ActionIcon>
+                      }
+                    />
+                  ))}
                 <Button onClick={handleAddCons}>Добавить минус</Button>
               </Stack>
             </Group>

@@ -19,6 +19,8 @@ import {
 } from '@tabler/icons';
 import { useAuth } from '../components/Auth/AuthProvider';
 import { Block } from '../components/Block/Block';
+import { Welcome } from '../components/Welcome/Welcome';
+import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
 
 const useStyles = createStyles((theme) => ({
   avatar: {
@@ -83,7 +85,8 @@ export default function Profile() {
             </Tabs.Panel>
 
             <Tabs.Panel value="settings" pt="xs">
-              Settings tab content
+              <Welcome/>
+              <ColorSchemeToggle/>
             </Tabs.Panel>
           </Tabs>
         </Block>

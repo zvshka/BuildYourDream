@@ -11,15 +11,7 @@ import {
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 import { useEffect } from 'react';
-
-const types = [
-  { value: 'TEXT', label: 'Текстовое' },
-  { value: 'NUMBER', label: 'Числовое' },
-  { value: 'BOOL', label: 'Булевое' },
-  { value: 'LARGE_TEXT', label: 'Много текста' },
-  { value: 'RANGE', label: 'Промежуток' },
-  { value: 'SELECT', label: 'Выбор' },
-];
+import { fieldTypes } from '../../types/Form';
 
 export const FormField = ({ item, form, index }: any) => {
   useEffect(() => {
@@ -42,7 +34,7 @@ export const FormField = ({ item, form, index }: any) => {
           required
         />
         <Select
-          data={types}
+          data={fieldTypes}
           {...form.getInputProps(`fields.${index}.type`)}
           disabled={!item.editable}
           required

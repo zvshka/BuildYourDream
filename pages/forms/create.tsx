@@ -1,13 +1,4 @@
-import {
-  Button,
-  Container,
-  Group,
-  LoadingOverlay,
-  Paper,
-  Stack,
-  TextInput,
-  Title,
-} from '@mantine/core';
+import { Button, Container, Group, LoadingOverlay, Stack, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
 import axios from 'axios';
@@ -16,6 +7,7 @@ import { showNotification } from '@mantine/notifications';
 import { Form } from '../../components/Parts/Form';
 import { FormField } from '../../components/Parts/FormField';
 import { Block } from '../../components/Block/Block';
+import { NextLink } from '@mantine/next';
 
 export default function createForms() {
   const modals = useModals();
@@ -70,7 +62,13 @@ export default function createForms() {
     modals.openModal({
       title: 'Предпросмотр',
       size: 'lg',
-      children: <Form fields={form.values.fields} name={form.values.name} />,
+      children: (
+        <Form
+          fields={form.values.fields}
+          name={form.values.name}
+          form={form}
+        />
+      ),
     });
   };
 
@@ -107,7 +105,12 @@ export default function createForms() {
     <Container size="md">
       <Stack>
         <Block>
-          <Title order={4}>Создание формы</Title>
+          <Group position="apart">
+            <Title order={2}>Создание группы</Title>
+            <Button href="/parts" component={NextLink}>
+              Назад
+            </Button>
+          </Group>
         </Block>
         <Block style={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />

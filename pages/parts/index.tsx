@@ -65,7 +65,7 @@ export default function Parts() {
     <Stack>
       <Block>
         <Group position="apart">
-          <Title order={3}>Комплектующие</Title>
+          <Title order={2}>Комплектующие</Title>
           <Group>
             {user && user.role === 'ADMIN' && (
               <Button component={NextLink} href="/parts/create">
