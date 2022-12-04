@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { Center, Container, Group, Stack, Title, Button } from '@mantine/core';
 import { FormsFormProvider, useFormsForm } from '../../../components/Parts/FormContext';
 import { IField, IFormValues } from '../../../types/Form';
-import { Container } from '@mantine/core';
 import { Form } from '../../../components/Parts/Form';
 import { Block } from '../../../components/Block/Block';
 
@@ -30,7 +30,7 @@ export default function editPartPage() {
     },
   });
   useEffect(() => {
-    axios.get(`/api/parts/details/${router.query.partId}`).then((res) => setPartData(res.data));
+    axios.get(`/api/parts/${router.query.partId}`).then((res) => setPartData(res.data));
   }, []);
 
   useEffect(() => {
@@ -70,10 +70,50 @@ export default function editPartPage() {
     }
   }, [formData]);
 
+  const uploadImage = (file: File) => {
+    const fd = new FormData();
+    fd.append('upload', file);
+    return axios.post('/api/images', fd, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  };
+
+  const saveData = (data: typeof form.values, image: null | Record<string, string>) =>
+    axios.patch(`/api/parts/${partData?.id}`, {
+      data: {
+        ...data,
+        image,
+      },
+      formId: partData?.formId,
+    });
+
+  const handleSubmit = (data: typeof form.values) => {
+    if (data.image.file) {
+      uploadImage(data.image.file).then((res) => saveData(data, res.data));
+    } else {
+      saveData(data, { url: form.values.image.base64 }).then((res) => {
+      });
+    }
+  };
+
   return (
     <FormsFormProvider form={form}>
       <Container size="sm">
-        <Block>{formData && formIsReady && <Form formFields={formData?.fields} />}</Block>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Stack>
+            <Block>
+              <Center mb="md">
+                <Title order={2}>Изменение компонента: {partData?.data['Название']}</Title>
+              </Center>
+            </Block>
+            <Block>{formData && formIsReady && <Form formFields={formData?.fields} />}</Block>
+            <Group position="center">
+              <Button type="submit">Сохранить</Button>
+            </Group>
+          </Stack>
+        </form>
       </Container>
     </FormsFormProvider>
   );

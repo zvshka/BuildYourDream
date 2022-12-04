@@ -138,7 +138,7 @@ export default function Category() {
 
   useEffect(() => {
     axios.get(`/api/forms/${router.query.categoryId}`).then((res) => setFormData(res.data));
-    axios.get(`/api/parts/${router.query.categoryId}`).then((res) => setParts(res.data));
+    axios.get(`/api/forms/${router.query.categoryId}/list`).then((res) => setParts(res.data));
   }, []);
 
   return (

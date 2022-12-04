@@ -44,7 +44,7 @@ export default function partPage() {
   const [formData, setFormData] = useState<IFormData>();
 
   useEffect(() => {
-    axios.get(`/api/parts/details/${router.query.partId}`).then((res) => setPartData(res.data));
+    axios.get(`/api/parts/${router.query.partId}`).then((res) => setPartData(res.data));
     axios.get(`/api/forms/${router.query.categoryId}`).then((res) => setFormData(res.data));
   }, []);
 
@@ -125,41 +125,43 @@ export default function partPage() {
                     ))}
               </Stack>
             </Block>
-            <Block>
-              <Group align="normal" sx={{ width: '100%' }} grow>
-                <Stack sx={{ maxWidth: '50%' }}>
-                  {partData &&
-                    (partData.data.pros.length > 0 ? (
-                      partData.data.pros.map((pros: string) => (
-                        <Group spacing="xs" align="normal" sx={{ flexWrap: 'nowrap' }}>
-                          <IconCirclePlus color="green" />
-                          <Text>{pros}</Text>
-                        </Group>
-                      ))
-                    ) : (
-                      <Center>
-                        <Text>Нет плюсов</Text>
-                      </Center>
-                    ))}
-                </Stack>
-                <Divider size="lg" orientation="vertical" sx={{ maxWidth: 10 }} />
-                <Stack sx={{ maxWidth: '50%' }}>
-                  {partData &&
-                    (partData.data.cons.length > 0 ? (
-                      partData.data.cons.map((cons: string) => (
-                        <Group spacing="xs" align="normal" sx={{ flexWrap: 'nowrap' }}>
-                          <IconCircleMinus color="red" />
-                          <Text>{cons}</Text>
-                        </Group>
-                      ))
-                    ) : (
-                      <Center>
-                        <Text>Нет минусов</Text>
-                      </Center>
-                    ))}
-                </Stack>
-              </Group>
-            </Block>
+            <Box sx={{ flex: 1 }}>
+              <Block>
+                <Group align="normal" grow spacing={0}>
+                  <Stack style={{ flex: 1, maxWidth: '100%' }}>
+                    {partData &&
+                      (partData.data.pros.length > 0 ? (
+                        partData.data.pros.map((pros: string) => (
+                          <Group spacing="xs" align="normal" sx={{ flexWrap: 'nowrap' }}>
+                            <IconCirclePlus color="green" />
+                            <Text>{pros}</Text>
+                          </Group>
+                        ))
+                      ) : (
+                        <Center>
+                          <Text>Нет плюсов</Text>
+                        </Center>
+                      ))}
+                  </Stack>
+                  <Divider size="lg" orientation="vertical" style={{ maxWidth: 10 }} />
+                  <Stack style={{ flex: 1, maxWidth: '100%' }}>
+                    {partData &&
+                      (partData.data.cons.length > 0 ? (
+                        partData.data.cons.map((cons: string) => (
+                          <Group spacing="xs" align="normal" sx={{ flexWrap: 'nowrap' }}>
+                            <IconCircleMinus color="red" />
+                            <Text>{cons}</Text>
+                          </Group>
+                        ))
+                      ) : (
+                        <Center>
+                          <Text>Нет минусов</Text>
+                        </Center>
+                      ))}
+                  </Stack>
+                </Group>
+              </Block>
+            </Box>
           </Group>
         </Stack>
       </Group>

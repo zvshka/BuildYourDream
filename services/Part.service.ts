@@ -22,6 +22,15 @@ class PartService {
       },
     });
   }
+
+  updatePartById(partId: string, data: any) {
+    return prisma.component.update({
+      where: {
+        id: partId,
+      },
+      data,
+    });
+  }
 }
 
 export default new PartService();

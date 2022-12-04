@@ -48,20 +48,17 @@ export default function CreatePart() {
   const handleSubmit = (data: typeof form.values) => {
     if (active < 2) return setActive((current) => (current < 3 ? current + 1 : current));
     if (data.image.file) {
-      uploadImage(data.image.file)
-        .then((res) => saveData(data, res.data).catch(console.log))
-        .catch(console.log);
+      uploadImage(data.image.file).then((res) => saveData(data, res.data));
     } else {
-      saveData(data)
-        .then((res) => {})
-        .catch(console.log);
+      saveData(data).then((res) => {
+      });
     }
     return true;
   };
 
   useEffect(() => {
     axios.get('/api/forms').then((res) => {
-      setForms(res.data.map((formData: any) => ({ label: formData.name, value: formData })));
+      setForms(res.data.map((formData: any) => ({label: formData.name, value: formData})));
     });
   }, []);
 
@@ -130,7 +127,7 @@ export default function CreatePart() {
                 <Center mb="md">
                   <Title order={2}>Добавление компонента: {selectedForm.name}</Title>
                 </Center>
-                <Form formFields={selectedForm.fields} />
+                <Form formFields={selectedForm.fields}/>
               </Stepper.Step>
               <Stepper.Completed>
                 <Text>Отлично! Можно сохранять</Text>
