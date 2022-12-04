@@ -16,13 +16,14 @@ export interface IField {
   name: string;
   type: FieldTypes;
   value: FieldValues;
-  required: boolean
-  options?: string[]
+  required: boolean;
+  options?: string[];
 }
 
 export interface IPartImage {
   base64: string;
   file: File | null;
+  url?: string
 }
 
 export interface IFormValues {
@@ -30,5 +31,11 @@ export interface IFormValues {
   pros: string[];
   cons: string[];
   image: IPartImage;
-  [name: string]: any
+
+  [name: string]: any;
+}
+
+export interface IForm {
+  fields: IField[];
+  name: string
 }

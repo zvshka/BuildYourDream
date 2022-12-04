@@ -54,7 +54,7 @@ export default function partPage() {
         <Group position="apart">
           <Title order={2}>{partData && partData.data['Название']}</Title>
           <Group>
-            <Button href={`/parts/${router.query.categoryId}`} component={NextLink}>
+            <Button href={`/parts/edit/${router.query.partId}`} component={NextLink}>
               Изменить
             </Button>
             <Button href={`/parts/${router.query.categoryId}`} component={NextLink}>
