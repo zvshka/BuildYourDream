@@ -3,9 +3,10 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Center, Container, Group, Stack, Title, Button } from '@mantine/core';
 import { FormsFormProvider, useFormsForm } from '../../../components/Parts/FormContext';
-import { IField, IFormValues } from '../../../types/Form';
+import { IFormValues } from '../../../types/Form';
 import { Form } from '../../../components/Parts/Form';
 import { Block } from '../../../components/Block/Block';
+import { IField } from '../../../lib/Field';
 
 interface IPart {
   id: string;
@@ -64,7 +65,7 @@ export default function editPartPage() {
 
       form.setFieldValue('pros', partData?.data.pros || []);
       form.setFieldValue('cons', partData?.data.cons || []);
-      form.setFieldValue('image.base64', partData?.data.image.url);
+      form.setFieldValue('image.base64', partData?.data?.image?.url);
 
       setFormIsReady(true);
     }
@@ -93,8 +94,7 @@ export default function editPartPage() {
     if (data.image.file) {
       uploadImage(data.image.file).then((res) => saveData(data, res.data));
     } else {
-      saveData(data, { url: form.values.image.base64 }).then((res) => {
-      });
+      saveData(data, { url: form.values.image.base64 }).then((res) => {});
     }
   };
 

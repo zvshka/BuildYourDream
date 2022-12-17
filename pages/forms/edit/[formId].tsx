@@ -2,11 +2,11 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
+  Box,
   Button,
   Container,
   Group,
   LoadingOverlay,
-  Paper,
   Stack,
   TextInput,
   Title,
@@ -18,11 +18,12 @@ import { showNotification } from '@mantine/notifications';
 import { Form } from '../../../components/Parts/Form';
 import { FormField } from '../../../components/Parts/FormField';
 import { Block } from '../../../components/Block/Block';
+import { CreateField } from '../../../lib/Field';
 
 interface IForm {
   name: string;
   id: string;
-  fields: any[];
+  fields: IField[];
 }
 
 export default function EditForm() {
@@ -51,14 +52,13 @@ export default function EditForm() {
   }, [formData]);
 
   const handleAddField = () => {
-    form.insertListItem('fields', {
-      name: `Поле ${form.values.fields.length + 1}`,
-      type: 'TEXT',
-      haveDescription: false,
-      required: false,
-      deletable: true,
-      editable: true,
-    });
+    form.insertListItem(
+      'fields',
+      CreateField({
+        name: `Поле ${form.values.fields.length + 1}`,
+        type: 'TEXT',
+      })
+    );
   };
 
   const openPreview = () => {
@@ -104,26 +104,28 @@ export default function EditForm() {
         <Block>
           <Title order={4}>Изменение формы: {formData && formData.name}</Title>
         </Block>
-        <Block style={{ position: 'relative' }}>
+        <Box style={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />
           <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Group position="apart">
-              <Button onClick={handleAddField}>Добавить поле</Button>
-              <Group>
-                <Button onClick={openPreview}>Предпросмотр</Button>
-                <Button type="submit">Сохранить</Button>
+            <Block>
+              <Group position="apart">
+                <Button onClick={handleAddField}>Добавить поле</Button>
+                <Group>
+                  <Button onClick={openPreview}>Предпросмотр</Button>
+                  <Button type="submit">Сохранить</Button>
+                </Group>
               </Group>
-            </Group>
-            <TextInput
-              {...form.getInputProps('name')}
-              placeholder="Название формы"
-              label="Название формы"
-              required
-              mt="xs"
-            />
-            {fields}
+              <TextInput
+                {...form.getInputProps('name')}
+                placeholder="Название формы"
+                label="Название формы"
+                required
+                mt="xs"
+              />
+            </Block>
+            <Stack mt="md">{fields}</Stack>
           </form>
-        </Block>
+        </Box>
       </Stack>
     </Container>
   );

@@ -4,8 +4,8 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { Form } from '../../components/Parts/Form';
 import { Block } from '../../components/Block/Block';
-import { IField } from '../../types/Form';
 import { FormsFormProvider, useFormsForm } from '../../components/Parts/FormContext';
+import { IField } from '../../lib/Field';
 
 export default function CreatePart() {
   const router = useRouter();
@@ -50,15 +50,14 @@ export default function CreatePart() {
     if (data.image.file) {
       uploadImage(data.image.file).then((res) => saveData(data, res.data));
     } else {
-      saveData(data).then((res) => {
-      });
+      saveData(data).then((res) => {});
     }
     return true;
   };
 
   useEffect(() => {
     axios.get('/api/forms').then((res) => {
-      setForms(res.data.map((formData: any) => ({label: formData.name, value: formData})));
+      setForms(res.data.map((formData: any) => ({ label: formData.name, value: formData })));
     });
   }, []);
 
@@ -127,7 +126,7 @@ export default function CreatePart() {
                 <Center mb="md">
                   <Title order={2}>Добавление компонента: {selectedForm.name}</Title>
                 </Center>
-                <Form formFields={selectedForm.fields}/>
+                <Form formFields={selectedForm.fields} />
               </Stepper.Step>
               <Stepper.Completed>
                 <Text>Отлично! Можно сохранять</Text>

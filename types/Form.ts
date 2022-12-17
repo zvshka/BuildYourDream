@@ -12,18 +12,10 @@ const values = fieldTypes.map((field) => field.value);
 export type FieldTypes = typeof values[number];
 export type FieldValues = number | string | [number, number] | boolean;
 
-export interface IField {
-  name: string;
-  type: FieldTypes;
-  value: FieldValues;
-  required: boolean;
-  options?: string[];
-}
-
 export interface IPartImage {
   base64: string;
   file: File | null;
-  url?: string
+  url?: string;
 }
 
 export interface IFormValues {
@@ -33,9 +25,4 @@ export interface IFormValues {
   image: IPartImage;
 
   [name: string]: any;
-}
-
-export interface IForm {
-  fields: IField[];
-  name: string
 }

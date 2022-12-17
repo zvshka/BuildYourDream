@@ -1,13 +1,23 @@
-import { Button, Container, Group, LoadingOverlay, Stack, TextInput, Title } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Container,
+  Group,
+  LoadingOverlay,
+  Stack,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
 import axios from 'axios';
 import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
+import { NextLink } from '@mantine/next';
 import { Form } from '../../components/Parts/Form';
 import { FormField } from '../../components/Parts/FormField';
 import { Block } from '../../components/Block/Block';
-import { NextLink } from '@mantine/next';
+import { CreateField } from '../../lib/Field';
 
 export default function createForms() {
   const modals = useModals();
@@ -16,59 +26,43 @@ export default function createForms() {
     initialValues: {
       name: '',
       fields: [
-        {
+        CreateField({
           name: 'Название',
           type: 'TEXT',
-          description: '',
-          haveDescription: false,
-          required: true,
           deletable: false,
           editable: false,
-        },
-        {
+        }),
+        CreateField({
           name: 'Цена',
           type: 'RANGE',
-          description: '',
-          haveDescription: false,
-          required: true,
           deletable: false,
           editable: false,
-        },
-        {
+        }),
+        CreateField({
           name: 'Описание детали',
           type: 'LARGE_TEXT',
-          description: '',
-          haveDescription: false,
-          required: true,
           deletable: false,
           editable: false,
-        },
+        }),
       ],
     },
   });
 
   const handleAddField = () => {
-    form.insertListItem('fields', {
-      name: `Поле ${form.values.fields.length + 1}`,
-      type: 'TEXT',
-      haveDescription: false,
-      required: false,
-      deletable: true,
-      editable: true,
-    });
+    form.insertListItem(
+      'fields',
+      CreateField({
+        name: `Поле ${form.values.fields.length + 1}`,
+        type: 'TEXT',
+      })
+    );
   };
 
   const openPreview = () => {
     modals.openModal({
       title: 'Предпросмотр',
       size: 'lg',
-      children: (
-        <Form
-          fields={form.values.fields}
-          name={form.values.name}
-          form={form}
-        />
-      ),
+      children: <Form fields={form.values.fields} name={form.values.name} form={form} />,
     });
   };
 
@@ -112,26 +106,31 @@ export default function createForms() {
             </Button>
           </Group>
         </Block>
-        <Block style={{ position: 'relative' }}>
+        <Box style={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />
           <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Group position="apart">
-              <Button onClick={handleAddField}>Добавить поле</Button>
-              <Group>
-                <Button onClick={openPreview}>Предпросмотр</Button>
-                <Button type="submit">Сохранить</Button>
+            <Block>
+              <Group position="apart">
+                <Group>
+                  <Button onClick={handleAddField}>Добавить поле</Button>
+                  <Button>Добавить категорию</Button>
+                </Group>
+                <Group>
+                  <Button onClick={openPreview}>Предпросмотр</Button>
+                  <Button type="submit">Сохранить</Button>
+                </Group>
               </Group>
-            </Group>
-            <TextInput
-              {...form.getInputProps('name')}
-              placeholder="Название формы"
-              label="Название формы"
-              required
-              mt="xs"
-            />
-            {fields}
+              <TextInput
+                {...form.getInputProps('name')}
+                placeholder="Название формы"
+                label="Название формы"
+                required
+                mt="xs"
+              />
+            </Block>
+            <Stack mt="md">{fields}</Stack>
           </form>
-        </Block>
+        </Box>
       </Stack>
     </Container>
   );

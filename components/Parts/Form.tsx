@@ -38,7 +38,7 @@ const getColSpan = (type: string): number => {
   return toReturn;
 };
 
-export const Form = ({ formFields }) => {
+export const Form = ({ formFields }: any) => {
   const form = useFormsFormContext();
   const resetRef = useRef<() => void>(null);
 

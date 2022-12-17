@@ -1,11 +1,22 @@
-import { Box, Button, Center, Divider, Group, Image, Stack, Text, Title } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Center,
+  Divider,
+  Grid,
+  Group,
+  Image,
+  Spoiler,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Block } from '../../../components/Block/Block';
-import { IField } from '../../../types/Form';
-import { IconCircleMinus, IconCirclePlus } from '@tabler/icons';
+import { IField } from '../../../lib/Field';
 
 interface IPart {
   data: Record<string, any>;
@@ -20,22 +31,26 @@ interface IFormData {
 }
 
 const Field = ({ data }) => (
-  <Group grow align="normal">
-    <Box sx={{ borderBottom: '1px solid #aaa', flex: '1 1 auto' }} style={{ maxWidth: 600 }}>
-      <Text size={16} weight={700}>
-        {data.name}:
-      </Text>
-    </Box>
-    <Box sx={{ borderBottom: '1px solid #aaa', maxWidth: 120, width: 120 }}>
-      {['NUMBER', 'TEXT', 'SELECT'].includes(data.type) && <Text>{data.value}</Text>}
-      {data.type === 'BOOL' && <Text>{data.value ? 'Да' : 'Нет'}</Text>}
-      {data.type === 'RANGE' && (
-        <Text>
-          {data.value[0]} - {data.value[1]}
+  <Fragment key={data.name}>
+    <Grid.Col span={4}>
+      <Box sx={{ borderBottom: '1px solid #aaa' }}>
+        <Text size={16} weight={700}>
+          {data.name}:
         </Text>
-      )}
-    </Box>
-  </Group>
+      </Box>
+    </Grid.Col>
+    <Grid.Col span={2}>
+      <Box sx={{ borderBottom: '1px solid #aaa' }}>
+        {['NUMBER', 'TEXT', 'SELECT'].includes(data.type) && <Text>{data.value}</Text>}
+        {data.type === 'BOOL' && <Text>{data.value ? 'Да' : 'Нет'}</Text>}
+        {data.type === 'RANGE' && (
+          <Text>
+            {data.value[0]} - {data.value[1]}
+          </Text>
+        )}
+      </Box>
+    </Grid.Col>
+  </Fragment>
 );
 
 export default function partPage() {
@@ -63,108 +78,128 @@ export default function partPage() {
           </Group>
         </Group>
       </Block>
-      <Group align="normal" grow>
-        <Box style={{ flexGrow: 0 }}>
-          <Stack>
-            <Block>
-              <Image
-                width={256 * 1.5}
-                height={256 * 1.5}
-                withPlaceholder
-                {...(partData?.data.image ? { src: `${partData.data?.image.url}?quality=60` } : {})}
-              />
-            </Block>
-            <Block>
-              <Stack align="center">
-                <Text weight={700} size={16}>
-                  Примерная цена:
-                </Text>
-                <Text size={20}>
-                  {partData?.data['Цена'][0]} - {partData?.data['Цена'][1]}
-                </Text>
-              </Stack>
-            </Block>
-            <Block>
-              <Stack align="center">
-                <Text weight={700} size={16}>
-                  Наша оценка
-                </Text>
-                <Text size={20}>
-                  {partData &&
-                    (partData.data.tier > 0
-                      ? partData.data.tier > 50
-                        ? 'High'
-                        : 'Medium'
-                      : 'Low')}{' '}
-                  tier
-                </Text>
-              </Stack>
-            </Block>
-          </Stack>
-        </Box>
-        <Stack style={{ maxWidth: '100%', flex: 1 }}>
-          <Block sx={{ display: 'flex', flex: 1 }}>{partData?.data['Описание детали']}</Block>
-          <Group align="normal" grow>
-            <Block sx={{ maxWidth: 620 }}>
-              <Stack>
-                {formData &&
-                  partData &&
-                  formData.fields
-                    .filter(
-                      (field) => !['Название', 'Описание детали', 'Цена'].includes(field.name)
-                    )
-                    .map((field) => (
-                      <Field
-                        data={{
-                          name: field.name,
-                          value:
-                            field.name in partData.data ? partData.data[field.name] : 'Нет данных',
-                          type: field.name in partData.data ? field.type : 'TEXT',
-                        }}
-                      />
-                    ))}
-              </Stack>
-            </Block>
-            <Box sx={{ flex: 1 }}>
-              <Block>
-                <Group align="normal" grow spacing={0}>
-                  <Stack style={{ flex: 1, maxWidth: '100%' }}>
-                    {partData &&
-                      (partData.data.pros.length > 0 ? (
-                        partData.data.pros.map((pros: string) => (
-                          <Group spacing="xs" align="normal" sx={{ flexWrap: 'nowrap' }}>
-                            <IconCirclePlus color="green" />
-                            <Text>{pros}</Text>
-                          </Group>
-                        ))
-                      ) : (
-                        <Center>
-                          <Text>Нет плюсов</Text>
-                        </Center>
-                      ))}
-                  </Stack>
-                  <Divider size="lg" orientation="vertical" style={{ maxWidth: 10 }} />
-                  <Stack style={{ flex: 1, maxWidth: '100%' }}>
-                    {partData &&
-                      (partData.data.cons.length > 0 ? (
-                        partData.data.cons.map((cons: string) => (
-                          <Group spacing="xs" align="normal" sx={{ flexWrap: 'nowrap' }}>
-                            <IconCircleMinus color="red" />
-                            <Text>{cons}</Text>
-                          </Group>
-                        ))
-                      ) : (
-                        <Center>
-                          <Text>Нет минусов</Text>
-                        </Center>
-                      ))}
-                  </Stack>
-                </Group>
+      <Box>
+        <Grid columns={3}>
+          <Grid.Col span={1}>
+            <Stack>
+              <Block sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Image
+                  withPlaceholder
+                  {...(partData?.data.image
+                    ? { src: `${partData.data?.image.url}?quality=60` }
+                    : {})}
+                />
               </Block>
-            </Box>
-          </Group>
-        </Stack>
-      </Group>
+              <Block>
+                <Stack align="center">
+                  <Text weight={700} size={16}>
+                    Примерная цена:
+                  </Text>
+                  <Text size={20}>
+                    {partData?.data['Цена'][0]} - {partData?.data['Цена'][1]}
+                  </Text>
+                </Stack>
+              </Block>
+              <Block>
+                <Stack align="center">
+                  <Text weight={700} size={16}>
+                    Наша оценка
+                  </Text>
+                  <Text size={20}>
+                    {partData &&
+                      (partData.data.tier > 0
+                        ? partData.data.tier > 50
+                          ? 'High'
+                          : 'Medium'
+                        : 'Low')}{' '}
+                    tier
+                  </Text>
+                </Stack>
+              </Block>
+            </Stack>
+          </Grid.Col>
+          <Grid.Col span={2}>
+            <Grid columns={4}>
+              <Grid.Col>
+                <Block>
+                  <Spoiler maxHeight={100} hideLabel="Спрятать" showLabel="Показать больше">
+                    {partData?.data['Описание детали']}
+                  </Spoiler>
+                </Block>
+              </Grid.Col>
+              <Grid.Col span={2}>
+                <Block>
+                  <Grid columns={6}>
+                    {formData &&
+                      partData &&
+                      formData.fields
+                        .filter(
+                          (field) => !['Название', 'Описание детали', 'Цена'].includes(field.name)
+                        )
+                        .map((field) => (
+                          <Field
+                            data={{
+                              name: field.name,
+                              value:
+                                field.name in partData.data
+                                  ? partData.data[field.name]
+                                  : 'Нет данных',
+                              type: field.name in partData.data ? field.type : 'TEXT',
+                            }}
+                          />
+                        ))}
+                  </Grid>
+                </Block>
+              </Grid.Col>
+              <Grid.Col span={2}>
+                <Block>
+                  <Grid columns={40}>
+                    <Grid.Col span={18}>
+                      <Stack>
+                        {partData &&
+                          (partData.data.pros.length > 0 ? (
+                            partData.data.pros.map((pros: string) => (
+                              <Text color="green" weight={600}>
+                                {pros}
+                              </Text>
+                            ))
+                          ) : (
+                            <Center>
+                              <Text>Нет плюсов</Text>
+                            </Center>
+                          ))}
+                      </Stack>
+                    </Grid.Col>
+                    <Grid.Col span={2}>
+                      <Divider
+                        size="lg"
+                        orientation="vertical"
+                        style={{ maxWidth: 10, height: '100%' }}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={18}>
+                      <Stack>
+                        {partData &&
+                          (partData.data.cons.length > 0 ? (
+                            partData.data.cons.map((cons: string) => (
+                              <Text color="red" weight={600}>
+                                {cons}
+                              </Text>
+                            ))
+                          ) : (
+                            <Center>
+                              <Text>Нет минусов</Text>
+                            </Center>
+                          ))}
+                      </Stack>
+                    </Grid.Col>
+                  </Grid>
+                </Block>
+              </Grid.Col>
+            </Grid>
+          </Grid.Col>
+        </Grid>
+      </Box>
     </Stack>
   );
 }
