@@ -18,35 +18,13 @@ import { Form } from '../../components/Parts/Form';
 import { FormField } from '../../components/Parts/FormField';
 import { Block } from '../../components/Block/Block';
 import { CreateField } from '../../lib/Field';
+import { FormsFormProvider, useFormsFormContext } from '../../components/Parts/FormContext';
+import { ICreateForm } from '../../types/Form';
 
-export default function createForms() {
+const MainComponent = () => {
   const modals = useModals();
   const [loading, toggleLoading] = useToggle();
-  const form = useForm({
-    initialValues: {
-      name: '',
-      fields: [
-        CreateField({
-          name: 'Название',
-          type: 'TEXT',
-          deletable: false,
-          editable: false,
-        }),
-        CreateField({
-          name: 'Цена',
-          type: 'RANGE',
-          deletable: false,
-          editable: false,
-        }),
-        CreateField({
-          name: 'Описание детали',
-          type: 'LARGE_TEXT',
-          deletable: false,
-          editable: false,
-        }),
-      ],
-    },
-  });
+  const form = useFormsFormContext();
 
   const handleAddField = () => {
     form.insertListItem(
@@ -62,7 +40,11 @@ export default function createForms() {
     modals.openModal({
       title: 'Предпросмотр',
       size: 'lg',
-      children: <Form fields={form.values.fields} name={form.values.name} form={form} />,
+      children: (
+        <FormsFormProvider form={form}>
+          <Form />
+        </FormsFormProvider>
+      ),
     });
   };
 
@@ -133,5 +115,41 @@ export default function createForms() {
         </Box>
       </Stack>
     </Container>
+  );
+};
+export default function createForms() {
+  const form = useForm<ICreateForm>({
+    initialValues: {
+      name: '',
+      tier: 0,
+      pros: [],
+      cons: [],
+      fields: [
+        CreateField({
+          name: 'Название',
+          type: 'TEXT',
+          deletable: false,
+          editable: false,
+        }),
+        CreateField({
+          name: 'Цена',
+          type: 'RANGE',
+          deletable: false,
+          editable: false,
+        }),
+        CreateField({
+          name: 'Описание детали',
+          type: 'LARGE_TEXT',
+          deletable: false,
+          editable: false,
+        }),
+      ],
+    },
+  });
+
+  return (
+    <FormsFormProvider form={form}>
+      <MainComponent />
+    </FormsFormProvider>
   );
 }

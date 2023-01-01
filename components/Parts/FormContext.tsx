@@ -1,5 +1,5 @@
 import { createFormContext } from '@mantine/form';
-import { IFormValues } from '../../types/Form';
+import { ICreateForm, ICreatePart } from '../../types/Form';
 
 export const [FormsFormProvider, useFormsFormContext, useFormsForm] =
-  createFormContext<IFormValues>();
+  createFormContext<ICreatePart | ICreateForm>();

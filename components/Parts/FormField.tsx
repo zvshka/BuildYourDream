@@ -23,7 +23,7 @@ export const FormField = ({ item, form, index }: { item: IField; form: any; inde
 
   return (
     <Block key={`field_${index}`}>
-      <Stack mt="xs" spacing={0}>
+      <Stack mt="xs" spacing="xs">
         <Group>
           <TextInput
             placeholder="Название"

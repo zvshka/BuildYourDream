@@ -10,10 +10,12 @@ export interface IField {
 }
 
 export const CreateField = (props: IField) => {
-  const { options, name, type, ...other } = props;
+  const { options, editable, deletable, name, type, ...other } = props;
   const toReturn: IField = { name, type, ...other };
   if (type === 'SELECT') {
     toReturn.options = options;
   }
+  toReturn.editable = editable ?? true;
+  toReturn.deletable = deletable ?? true;
   return toReturn;
 };

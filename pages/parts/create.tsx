@@ -4,24 +4,14 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { Form } from '../../components/Parts/Form';
 import { Block } from '../../components/Block/Block';
-import { FormsFormProvider, useFormsForm } from '../../components/Parts/FormContext';
+import { FormsFormProvider, useFormsForm, useFormsFormContext } from '../../components/Parts/FormContext';
 import { IField } from '../../lib/Field';
 
 export default function CreatePart() {
   const router = useRouter();
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState<any>({});
-  const form = useFormsForm({
-    initialValues: {
-      tier: 0,
-      pros: [],
-      cons: [],
-      image: {
-        base64: '',
-        file: null,
-      },
-    },
-  });
+  const form = useFormsFormContext();
 
   const [active, setActive] = useState(0);
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
@@ -47,7 +37,7 @@ export default function CreatePart() {
 
   const handleSubmit = (data: typeof form.values) => {
     if (active < 2) return setActive((current) => (current < 3 ? current + 1 : current));
-    if (data.image.file) {
+    if ('image' in data && data.image.file) {
       uploadImage(data.image.file).then((res) => saveData(data, res.data));
     } else {
       saveData(data).then((res) => {});
@@ -126,7 +116,7 @@ export default function CreatePart() {
                 <Center mb="md">
                   <Title order={2}>Добавление компонента: {selectedForm.name}</Title>
                 </Center>
-                <Form formFields={selectedForm.fields} />
+                <Form />
               </Stepper.Step>
               <Stepper.Completed>
                 <Text>Отлично! Можно сохранять</Text>

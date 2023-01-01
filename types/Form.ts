@@ -1,3 +1,5 @@
+import { IField } from '../lib/Field';
+
 export const fieldTypes = [
   { value: 'TEXT', label: 'Текстовое' },
   { value: 'NUMBER', label: 'Числовое' },
@@ -7,22 +9,21 @@ export const fieldTypes = [
   { value: 'SELECT', label: 'Выбор' },
 ] as const;
 
-const values = fieldTypes.map((field) => field.value);
-
-export type FieldTypes = typeof values[number];
-export type FieldValues = number | string | [number, number] | boolean;
-
 export interface IPartImage {
   base64: string;
   file: File | null;
   url?: string;
 }
 
-export interface IFormValues {
+export interface ICreateForm {
+  name: string;
   tier: number;
   pros: string[];
   cons: string[];
-  image: IPartImage;
+  fields: IField[];
+}
 
-  [name: string]: any;
+export interface ICreatePart extends ICreateForm {
+  image: IPartImage;
+  [key: string]: any
 }

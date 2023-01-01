@@ -38,7 +38,7 @@ const getColSpan = (type: string): number => {
   return toReturn;
 };
 
-export const Form = ({ formFields }: any) => {
+export const Form = () => {
   const form = useFormsFormContext();
   const resetRef = useRef<() => void>(null);
 
@@ -85,7 +85,7 @@ export const Form = ({ formFields }: any) => {
             </Group>
           </Stack>
         </Grid.Col>
-        {formFields.map((field, index) => (
+        {form.values.fields.map((field, index) => (
           <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
             {field.type === 'TEXT' && (
               <TextInput
