@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons';
 import { useEffect, useRef } from 'react';
-import { RangeInput } from '../RangeInput/RangeInput';
+import { RangeInput } from '../Layout/RangeInput/RangeInput';
 import { useFormsFormContext } from './FormContext';
 
 const getColSpan = (type: string): number => {

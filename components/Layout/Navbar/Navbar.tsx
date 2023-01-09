@@ -1,22 +1,11 @@
 import { Collapse, createStyles, Navbar, Text, UnstyledButton } from '@mantine/core';
-import {
-  Icon3dCubeSphere,
-  IconBell,
-  IconCpu,
-  IconDots,
-  IconLogout,
-  IconMessage,
-  IconUser,
-  IconUsers,
-  IconWorld,
-} from '@tabler/icons';
+import { Icon3dCubeSphere, IconCpu, IconLogout, IconUser, IconWorld } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { NextLink } from '@mantine/next';
-import Link from 'next/link';
-import { useAuth } from '../Auth/AuthProvider';
+import { useAuth } from '../../Providers/Auth/AuthWrapper';
 import { UserButton } from '../UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => {
@@ -59,7 +48,10 @@ const useStyles = createStyles((theme, _params, getRef) => {
       '&:hover': {
         backgroundColor:
           theme.colorScheme === 'dark'
-            ? theme.fn.darken(theme.fn.variant({ variant: 'filled', color: 'red' }).background as string, 0.2)
+            ? theme.fn.darken(
+                theme.fn.variant({ variant: 'filled', color: 'red' }).background as string,
+                0.2
+              )
             : theme.fn.lighten(
                 theme.fn.variant({ variant: 'filled', color: 'red' }).background as string,
                 0.2
@@ -96,11 +88,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const data = [
   { link: '/', label: 'Конфигуратор', icon: IconCpu },
   { link: '/configs', label: 'Пользовательские сборки', icon: IconWorld },
-  // { link: '/profile', label: 'Профиль', icon: IconUser },
-  { link: '/notifications', label: 'Уведомления', icon: IconBell },
   { link: '/parts', label: 'Комплектующие', icon: Icon3dCubeSphere },
-  { link: '/chat', label: 'Чат', icon: IconMessage },
-  // { link: '/other', label: 'Прочее', icon: IconDots },
 ];
 
 export function NavbarSimpleColored({ opened }: any) {

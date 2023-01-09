@@ -1,4 +1,3 @@
-import '../scripts/wdyr';
 import { GetServerSidePropsContext } from 'next';
 import { useCallback, useEffect, useState } from 'react';
 import { AppProps } from 'next/app';
@@ -12,12 +11,12 @@ import duration from 'dayjs/plugin/duration';
 import calendar from 'dayjs/plugin/calendar';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
-import { RouterTransition } from '../components/RouterTransition/RouterTransition';
-import { ColorProvider } from '../components/ColorControl/ColorContext';
+import { RouterTransition } from '../components/Layout/RouterTransition/RouterTransition';
+import { ColorProvider } from '../components/Layout/ColorControl/ColorContext';
 import 'dayjs/locale/ru';
-import { ReactQueryProvider } from '../components/QueryProvider/QueryProvider';
-import { AuthProvider } from '../components/Auth/AuthProvider';
-import Shell from '../components/Shell/Shell';
+import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
+import { AuthProvider } from '../components/Providers/Auth/AuthWrapper';
+import Layout from '../components/Layout/Layout';
 import { useRouter } from 'next/router';
 
 dayjs.extend(relativeTime);
@@ -31,7 +30,6 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
   const [primaryColor, setPrimaryColor] = useState(props.primaryColor);
-  //
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
     setColorScheme(nextColorScheme);
@@ -106,9 +104,9 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
                     {Component.noShell ? (
                       <Component {...pageProps} />
                     ) : (
-                      <Shell>
+                      <Layout>
                         <Component {...pageProps} />
-                      </Shell>
+                      </Layout>
                     )}
                   </AuthProvider>
                 </ReactQueryProvider>
@@ -125,5 +123,3 @@ App.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
   colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
   primaryColor: getCookie('mantine-primary-color', ctx) || 'blue',
 });
-
-// App.whyDidYouRender = true;

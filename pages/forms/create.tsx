@@ -1,30 +1,41 @@
-import {
-  Box,
-  Button,
-  Container,
-  Group,
-  LoadingOverlay,
-  Stack,
-  TextInput,
-  Title,
-} from '@mantine/core';
+import { Box, Button, Container, Group, LoadingOverlay, Stack, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
-import axios from 'axios';
 import { useToggle } from '@mantine/hooks';
-import { showNotification } from '@mantine/notifications';
 import { NextLink } from '@mantine/next';
 import { Form } from '../../components/Parts/Form';
 import { FormField } from '../../components/Parts/FormField';
-import { Block } from '../../components/Block/Block';
+import { Block } from '../../components/Layout/Block/Block';
 import { CreateField } from '../../lib/Field';
 import { FormsFormProvider, useFormsFormContext } from '../../components/Parts/FormContext';
 import { ICreateForm } from '../../types/Form';
+import { PageHeader } from '../../components/Layout';
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 const MainComponent = () => {
   const modals = useModals();
   const [loading, toggleLoading] = useToggle();
   const form = useFormsFormContext();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleAddField = () => {
     form.insertListItem(
@@ -50,44 +61,54 @@ const MainComponent = () => {
 
   const handleSubmit = async (values: typeof form.values) => {
     toggleLoading();
-    axios
-      .post('/api/forms', {
-        name: values.name,
-        fields: values.fields,
-      })
-      .then(() => {
-        showNotification({
-          title: 'Успех',
-          message: 'Форма успешно создана',
-          color: 'green',
-        });
-        toggleLoading();
-      })
-      .catch(() => {
-        showNotification({
-          title: 'Ошибка',
-          message: 'Во время сохранения формы произошла ошибка',
-          color: 'red',
-        });
-        toggleLoading();
-      });
+    // axios
+    //   .post('/api/forms', {
+    //     name: values.name,
+    //     fields: values.fields,
+    //   })
+    //   .then(() => {
+    //     showNotification({
+    //       title: 'Успех',
+    //       message: 'Форма успешно создана',
+    //       color: 'green',
+    //     });
+    //     toggleLoading();
+    //   })
+    //   .catch(() => {
+    //     showNotification({
+    //       title: 'Ошибка',
+    //       message: 'Во время сохранения формы произошла ошибка',
+    //       color: 'red',
+    //     });
+    //     toggleLoading();
+    //   });
+    console.log(values);
   };
 
-  const fields = form.values.fields.map((item, index) => (
-    <FormField key={`field_${index}`} form={form} index={index} item={item} />
-  ));
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const items = form.values.fields;
+      const oldIndex = items.findIndex(item => item.id === active.id);
+      const newIndex = items.findIndex(item => item.id === over.id);
+
+      const newItems = arrayMove(items, oldIndex, newIndex);
+      form.setFieldValue('fields', newItems);
+    }
+  }
 
   return (
     <Container size="md">
       <Stack>
-        <Block>
-          <Group position="apart">
-            <Title order={2}>Создание группы</Title>
+        <PageHeader
+          title="Создание группы"
+          rightSection={
             <Button href="/parts" component={NextLink}>
               Назад
             </Button>
-          </Group>
-        </Block>
+          }
+        />
         <Box style={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />
           <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -110,7 +131,20 @@ const MainComponent = () => {
                 mt="xs"
               />
             </Block>
-            <Stack mt="md">{fields}</Stack>
+            <Stack mt="md">
+              <DndContext
+                id="dnd"
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={form.values.fields} strategy={verticalListSortingStrategy}>
+                  {form.values.fields.map((item, index) => (
+                    <FormField key={`field_${index}`} index={index} item={item} />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            </Stack>
           </form>
         </Box>
       </Stack>

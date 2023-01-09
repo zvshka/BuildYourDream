@@ -1,7 +1,3 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
-
 const production = process.env.NODE_ENV === 'production';
 
 const withPWA = require('next-pwa')({

@@ -22,7 +22,7 @@ import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
 import { validateEmail } from '../../lib/validateEmail';
-import { useAuth } from '../../components/Auth/AuthProvider';
+import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
 
 const useStyles = createStyles(() => ({
   container: {

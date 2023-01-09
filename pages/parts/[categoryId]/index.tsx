@@ -20,12 +20,13 @@ import {
   Title,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../../components/Auth/AuthProvider';
+import { useAuth } from '../../../components/Providers/Auth/AuthWrapper';
 import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useToggle } from '@mantine/hooks';
-import { Block } from '../../../components/Block/Block';
+import { Block } from '../../../components/Layout/Block/Block';
+import { PageHeader } from '../../../components/Layout';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -143,9 +144,9 @@ export default function Category() {
 
   return (
     <Stack>
-      <Block>
-        <Group position="apart">
-          <Title order={2}>{formData && formData.name}</Title>
+      <PageHeader
+        title={formData?.name ?? ''}
+        rightSection={
           <Group>
             {user && user.role === 'ADMIN' && (
               <Button href={`/forms/edit/${router.query.categoryId}`} component={NextLink}>
@@ -161,8 +162,8 @@ export default function Category() {
               Назад
             </Button>
           </Group>
-        </Group>
-      </Block>
+        }
+      />
       <Box>
         <Container size={1600} p={0}>
           <Grid>
@@ -195,9 +196,7 @@ export default function Category() {
                           radius="sm"
                           width={256 / 1.5}
                           height={256 / 1.5}
-                          {...(part.data.image
-                            ? { src: `${part.data.image.url}?quality=60` }
-                            : {})}
+                          {...(part.data.image ? { src: `${part.data.image.url}?quality=60` } : {})}
                         />
                         <Box>
                           <Title order={3}>{part.data['Название']}</Title>

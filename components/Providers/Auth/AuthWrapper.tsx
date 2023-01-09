@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { initReactQueryAuth } from './Auth';
-import { storage } from '../../lib/utils';
-import { AuthResponse } from '../../types/AuthResponse';
-import { User } from '../../types/User';
+import { initReactQueryAuth } from './AuthProvider';
+import { storage } from '../../../lib/utils';
+import { AuthResponse } from '../../../types/AuthResponse';
+import { User } from '../../../types/User';
 
 export async function handleUserResponse(data: AuthResponse) {
   const { accessToken: jwt, user } = data;
@@ -10,8 +10,8 @@ export async function handleUserResponse(data: AuthResponse) {
   return user;
 }
 
-async function loadUser() {
-  let user = null;
+async function loadUser(): Promise<User> {
+  let user;
 
   if (storage.getToken()) {
     user = await axios
@@ -20,7 +20,7 @@ async function loadUser() {
           authorization: `Bearer ${storage.getToken()}`,
         },
       })
-      .then((res) => res.data?.user);
+      .then((res) => res.data.user);
   }
   return user;
 }

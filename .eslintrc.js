@@ -15,5 +15,6 @@ module.exports = {
     'no-spaced-func': 'off',
     'no-unused-vars': 'warn',
     'linebreak-style': 0,
+    'react/jsx-closing-tag-location': 'off'
   },
 };

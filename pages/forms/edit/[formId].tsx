@@ -17,8 +17,8 @@ import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { Form } from '../../../components/Parts/Form';
 import { FormField } from '../../../components/Parts/FormField';
-import { Block } from '../../../components/Block/Block';
-import { CreateField } from '../../../lib/Field';
+import { Block } from '../../../components/Layout/Block/Block';
+import { CreateField, IField } from '../../../lib/Field';
 
 interface IForm {
   name: string;
@@ -65,7 +65,7 @@ export default function EditForm() {
     modals.openModal({
       title: 'Предпросмотр',
       size: 'lg',
-      children: <Form fields={form.values.fields} name={form.values.name} />,
+      children: <Form />,
     });
   };
 

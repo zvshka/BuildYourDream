@@ -1,9 +1,9 @@
 import React, { ReactElement, useState } from 'react';
 import { AppShell, useMantineTheme } from '@mantine/core';
-import { NavbarSimpleColored } from '../Navbar/Navbar';
-import { HeaderWithLogo } from '../Header/HeaderWithLogo';
+import { NavbarSimpleColored } from './Navbar/Navbar';
+import { HeaderWithLogo } from './Header/HeaderWithLogo';
 
-export default function Shell({
+export default function Layout({
   children,
 }: {
   children: ReactElement | ReactElement[] | string | undefined;

@@ -5,7 +5,7 @@ import { Center, Container, Group, Stack, Title, Button } from '@mantine/core';
 import { FormsFormProvider, useFormsForm } from '../../../components/Parts/FormContext';
 import { IFormValues } from '../../../types/Form';
 import { Form } from '../../../components/Parts/Form';
-import { Block } from '../../../components/Block/Block';
+import { Block } from '../../../components/Layout/Block/Block';
 import { IField } from '../../../lib/Field';
 
 interface IPart {

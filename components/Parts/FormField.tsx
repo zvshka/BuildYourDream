@@ -12,17 +12,32 @@ import {
 import { IconTrash } from '@tabler/icons';
 import { useEffect } from 'react';
 import { fieldTypes } from '../../types/Form';
-import { Block } from '../Block/Block';
-import { CreateField, IField } from '../../lib/Field';
+import { Block } from '../Layout/Block/Block';
+import { CreateField } from '../../lib/Field';
+import { useSortable } from '@dnd-kit/sortable';
+import { useFormsFormContext } from './FormContext';
+import { CSS } from '@dnd-kit/utilities';
 
-export const FormField = ({ item, form, index }: { item: IField; form: any; index: number }) => {
+export const FormField = (props) => {
+  const { item, index } = props;
+  const form = useFormsFormContext();
+
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: item.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   useEffect(() => {
     const field = CreateField(item);
     form.setFieldValue(`fields.${index}`, field);
   }, [form.values.fields[index].type]);
 
   return (
-    <Block key={`field_${index}`}>
+    <Block key={`field_${index}`} ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <Stack mt="xs" spacing="xs">
         <Group>
           <TextInput

@@ -14,7 +14,7 @@ import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../components/Auth/AuthProvider';
+import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
 
 const useStyles = createStyles(() => ({
   container: {

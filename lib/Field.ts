@@ -1,4 +1,7 @@
+import cuid from 'cuid';
+
 export interface IField {
+  id?: string;
   name: string;
   type: string;
   description?: string;
@@ -10,11 +13,10 @@ export interface IField {
 }
 
 export const CreateField = (props: IField) => {
-  const { options, editable, deletable, name, type, ...other } = props;
-  const toReturn: IField = { name, type, ...other };
-  if (type === 'SELECT') {
-    toReturn.options = options;
-  }
+  const { options, editable, deletable, name, type, id, ...other } = props;
+  const toReturn: IField = { name, type, id, ...other };
+  if (type === 'SELECT') toReturn.options = options;
+  if (!toReturn.id) toReturn.id = cuid();
   toReturn.editable = editable ?? true;
   toReturn.deletable = deletable ?? true;
   return toReturn;

@@ -7,7 +7,7 @@ export const fieldTypes = [
   { value: 'LARGE_TEXT', label: 'Много текста' },
   { value: 'RANGE', label: 'Промежуток' },
   { value: 'SELECT', label: 'Выбор' },
-] as const;
+];
 
 export interface IPartImage {
   base64: string;

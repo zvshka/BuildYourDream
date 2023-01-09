@@ -16,7 +16,7 @@ import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Block } from '../../../components/Block/Block';
+import { Block } from '../../../components/Layout/Block/Block';
 import { IField } from '../../../lib/Field';
 
 interface IPart {

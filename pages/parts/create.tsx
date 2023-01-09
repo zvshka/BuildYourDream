@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { Form } from '../../components/Parts/Form';
-import { Block } from '../../components/Block/Block';
+import { Block } from '../../components/Layout/Block/Block';
 import { FormsFormProvider, useFormsForm, useFormsFormContext } from '../../components/Parts/FormContext';
 import { IField } from '../../lib/Field';
 
