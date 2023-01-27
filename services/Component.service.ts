@@ -1,16 +1,16 @@
 import { prisma } from '../lib/prisma';
 
-class PartService {
+class ComponentService {
   create(data: any) {
     return prisma.component.create({
       data,
     });
   }
 
-  getListByForm(formId: string) {
+  getListByTemplate(templateId: string) {
     return prisma.component.findMany({
       where: {
-        formId,
+        templateId,
       },
     });
   }
@@ -33,4 +33,4 @@ class PartService {
   }
 }
 
-export default new PartService();
+export default new ComponentService();

@@ -1,5 +1,5 @@
 import { handler } from '../../../lib/handler';
-import FormService from '../../../services/Form.service';
+import FormService from '../../../services/Template.service';
 
 const api = handler();
 

@@ -11,16 +11,16 @@ import {
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 import { useEffect } from 'react';
-import { fieldTypes } from '../../types/Form';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { fieldTypes } from '../../types/Template';
 import { Block } from '../Layout/Block/Block';
 import { CreateField } from '../../lib/Field';
-import { useSortable } from '@dnd-kit/sortable';
-import { useFormsFormContext } from './FormContext';
-import { CSS } from '@dnd-kit/utilities';
+import { useTemplateFormContext } from './TemplateContext';
 
-export const FormField = (props) => {
+export const TemplateField = (props) => {
   const { item, index } = props;
-  const form = useFormsFormContext();
+  const template = useTemplateFormContext();
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: item.id,
@@ -33,8 +33,8 @@ export const FormField = (props) => {
 
   useEffect(() => {
     const field = CreateField(item);
-    form.setFieldValue(`fields.${index}`, field);
-  }, [form.values.fields[index].type]);
+    template.setFieldValue(`fields.${index}`, field);
+  }, [template.values.fields[index].type]);
 
   return (
     <Block key={`field_${index}`} ref={setNodeRef} style={style} {...attributes} {...listeners}>
@@ -43,13 +43,13 @@ export const FormField = (props) => {
           <TextInput
             placeholder="Название"
             sx={{ flex: 1 }}
-            {...form.getInputProps(`fields.${index}.name`)}
+            {...template.getInputProps(`fields.${index}.name`)}
             disabled={!item.editable}
             required
           />
           <Select
             data={fieldTypes}
-            {...form.getInputProps(`fields.${index}.type`)}
+            {...template.getInputProps(`fields.${index}.type`)}
             disabled={!item.editable}
             required
           />
@@ -62,12 +62,12 @@ export const FormField = (props) => {
               },
             }}
             disabled={!item.editable}
-            {...form.getInputProps(`fields.${index}.required`, { type: 'checkbox' })}
+            {...template.getInputProps(`fields.${index}.required`, { type: 'checkbox' })}
           />
           <ActionIcon
             disabled={!item.deletable}
             color="red"
-            onClick={() => form.removeListItem('fields', index)}
+            onClick={() => template.removeListItem('fields', index)}
           >
             <IconTrash size={18} />
           </ActionIcon>
@@ -76,29 +76,29 @@ export const FormField = (props) => {
           <Stack>
             <Switch
               label="Необходимо пояснение?"
-              {...form.getInputProps(`fields.${index}.haveDescription`, { type: 'checkbox' })}
+              {...template.getInputProps(`fields.${index}.haveDescription`, { type: 'checkbox' })}
             />
-            {form.values.fields[index].haveDescription && (
+            {template.values.fields[index].haveDescription && (
               <Textarea
                 placeholder="Опишите на что влияет это поле или что это значит"
-                {...form.getInputProps(`fields.${index}.description`)}
+                {...template.getInputProps(`fields.${index}.description`)}
               />
             )}
           </Stack>
         </Input.Wrapper>
-        {form.values.fields[index].type === 'SELECT' && (
+        {template.values.fields[index].type === 'SELECT' && (
           <MultiSelect
             creatable
             searchable
             mt="xs"
             data={
-              form
+              template
                 .getInputProps(`fields.${index}.options`)
                 ?.value?.map((value: any) => ({ value, label: value })) || []
             }
-            value={form.getInputProps(`fields.${index}.options`).value}
+            value={template.getInputProps(`fields.${index}.options`).value}
             getCreateLabel={(query) => `+ Добавить ${query}`}
-            onChange={form.getInputProps(`fields.${index}.options`).onChange}
+            onChange={template.getInputProps(`fields.${index}.options`).onChange}
             onCreate={(query) => ({ value: query, label: query })}
           />
         )}

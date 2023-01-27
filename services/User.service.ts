@@ -42,6 +42,16 @@ class UserService {
       },
     });
   }
+
+  async getList() {
+    return prisma.user.findMany({
+      include: {
+        _count: {
+          select: { configs: true },
+        },
+      },
+    });
+  }
 }
 
 export default new UserService();

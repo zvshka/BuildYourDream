@@ -1,4 +1,5 @@
 import {
+  Box,
   Burger,
   Code,
   createStyles,
@@ -9,6 +10,7 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
+import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 
 const useStyles = createStyles((theme) => ({
   version: {
@@ -48,6 +50,11 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
           </Title>
           <Code className={classes.version}>v3.1.3</Code>
         </Group>
+        <MediaQuery smallerThan="xl" styles={{ display: 'none' }}>
+          <Box>
+            <ColorSchemeToggle />
+          </Box>
+        </MediaQuery>
         <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
           <Burger
             opened={opened}

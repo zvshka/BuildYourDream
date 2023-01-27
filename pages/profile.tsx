@@ -9,6 +9,7 @@ import {
   Stack,
   Tabs,
   Text,
+  Textarea,
 } from '@mantine/core';
 import {
   IconBrandDiscord,
@@ -19,8 +20,7 @@ import {
 } from '@tabler/icons';
 import { useAuth } from '../components/Providers/Auth/AuthWrapper';
 import { Block } from '../components/Layout/Block/Block';
-import { Welcome } from '../components/Welcome/Welcome';
-import { ColorSchemeToggle } from '../components/Layout/ColorSchemeToggle/ColorSchemeToggle';
+import { PopupEdit } from '../components/Layout/PopupEdit/PopupEdit';
 
 const useStyles = createStyles((theme) => ({
   avatar: {
@@ -35,30 +35,37 @@ export default function Profile() {
 
   return (
     <Flex gap="sm">
-      <Paper p="sm" shadow="xl">
-        <Stack align="center" spacing="xs">
-          <Box className={classes.avatar}>
-            <Image
-              radius="sm"
-              src="https://cdn.discordapp.com/avatars/263349725099458566/18993e33fb027e11af9d826d74b37fab.png?size=512"
-              alt="avatar"
-            />
-          </Box>
-          <Text weight={600} size="lg">
-            {user?.username}
-          </Text>
-          <Text size="sm">{user?.role}</Text>
-          <Group>
-            <ActionIcon>
-              <IconBrandDiscord />
-            </ActionIcon>
-            <ActionIcon>
-              <IconBrandVk />
-            </ActionIcon>
-          </Group>
-        </Stack>
-      </Paper>
-      <Block>
+      <Box>
+        <Paper p="sm" shadow="xl">
+          <Stack align="center" spacing="xs">
+            <Box className={classes.avatar}>
+              <Image
+                radius="sm"
+                src="https://cdn.discordapp.com/avatars/263349725099458566/18993e33fb027e11af9d826d74b37fab.png?size=512"
+                alt="avatar"
+              />
+            </Box>
+            <Text weight={600} size="lg">
+              {user?.username}
+            </Text>
+            <Text size="sm">{user?.role}</Text>
+            <Group>
+              <ActionIcon>
+                <IconBrandDiscord />
+              </ActionIcon>
+              <ActionIcon>
+                <IconBrandVk />
+              </ActionIcon>
+            </Group>
+          </Stack>
+        </Paper>
+      </Box>
+      <Block
+        sx={{
+          maxWidth: '1400px',
+          width: '100%',
+        }}
+      >
         <Tabs radius="xs" defaultValue="gallery">
           <Tabs.List>
             <Tabs.Tab value="general" icon={<IconPhoto size={14} />}>
@@ -76,16 +83,19 @@ export default function Profile() {
           </Tabs.List>
 
           <Tabs.Panel value="general" pt="xs">
-            Да
+            <Box sx={{ height: '100%' }}>
+              <Textarea autosize minRows={12} label="Опиши себя" sx={{ height: '100%' }} />
+            </Box>
           </Tabs.Panel>
 
           <Tabs.Panel value="messages" pt="xs">
-            Messages tab content
+            <Box>
+              <PopupEdit />
+            </Box>
           </Tabs.Panel>
 
           <Tabs.Panel value="settings" pt="xs">
-            <Welcome/>
-            <ColorSchemeToggle/>
+            Settings
           </Tabs.Panel>
         </Tabs>
       </Block>

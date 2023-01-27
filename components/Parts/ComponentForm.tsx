@@ -17,7 +17,7 @@ import {
 import { IconTrashX } from '@tabler/icons';
 import { useEffect, useRef } from 'react';
 import { RangeInput } from '../Layout/RangeInput/RangeInput';
-import { useFormsFormContext } from './FormContext';
+import { useTemplateFormContext } from './TemplateContext';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -38,74 +38,74 @@ const getColSpan = (type: string): number => {
   return toReturn;
 };
 
-export const Form = () => {
-  const form = useFormsFormContext();
+export const ComponentForm = () => {
+  const template = useTemplateFormContext();
   const resetRef = useRef<() => void>(null);
 
   const clearFile = () => {
     resetRef.current?.();
-    form.setFieldValue('image.base64', '');
-    form.setFieldValue('image.file', null);
+    template.setFieldValue('image.base64', '');
+    template.setFieldValue('image.file', null);
   };
 
   const handleAddCons = () => {
-    form.insertListItem('cons', '');
+    template.insertListItem('cons', '');
   };
 
   const handleAddPros = () => {
-    form.insertListItem('pros', '');
+    template.insertListItem('pros', '');
   };
 
   useEffect(() => {
-    if (!form.values.image.file) return;
+    if (!template.values.image.file) return;
     const fileReader = new FileReader();
-    fileReader.readAsDataURL(form.values.image.file);
+    fileReader.readAsDataURL(template.values.image.file);
     fileReader.onload = () => {
-      form.setFieldValue('image.base64', fileReader.result);
+      template.setFieldValue('image.base64', fileReader.result);
     };
-  }, [form.values.image.file]);
+  }, [template.values.image]);
 
   return (
     <Stack spacing="md">
       <Grid columns={6}>
         <Grid.Col span={6}>
           <Stack align="center">
-            <Image withPlaceholder width={256} height={256} src={form.values.image.base64} />
+            <Image withPlaceholder width={256} height={256} src={template.values.image.base64} />
             <Group spacing="xs">
               <FileButton
                 resetRef={resetRef}
-                onChange={(file) => form.setFieldValue('image.file', file)}
+                onChange={(file) => template.setFieldValue('image.file', file)}
                 accept="image/png,image/jpeg"
               >
                 {(props) => <Button {...props}>Загрузить изображение</Button>}
               </FileButton>
-              <Button disabled={!form.values.image.file} color="red" onClick={clearFile}>
+              <Button disabled={!template.values.image.file} color="red" onClick={clearFile}>
                 Сбросить
               </Button>
             </Group>
           </Stack>
         </Grid.Col>
-        {form.values.fields.map((field, index) => (
+        {template.values.fields.map((field, index) => (
           <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
             {field.type === 'TEXT' && (
               <TextInput
                 label={field.name}
                 required={field.required}
-                {...(form ? form.getInputProps(field.name) : {})}
+                {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
             {field.type === 'NUMBER' && (
               <NumberInput
                 label={field.name}
                 required={field.required}
-                {...(form ? form.getInputProps(field.name) : {})}
+                {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
             {field.type === 'BOOL' && (
               <Input.Wrapper label={field.name} required={field.required}>
                 <Switch
                   required={field.required}
-                  {...(form ? form.getInputProps(field.name, { type: 'checkbox' }) : {})}
+                  {...(template ? template.getInputProps(field.name, { type: 'checkbox' }) : {})}
                 />
               </Input.Wrapper>
             )}
@@ -113,14 +113,14 @@ export const Form = () => {
               <RangeInput
                 label={field.name}
                 required={field.required}
-                {...(form ? form.getInputProps(field.name) : {})}
+                {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
             {field.type === 'LARGE_TEXT' && (
               <Textarea
                 label={field.name}
                 required={field.required}
-                {...(form ? form.getInputProps(field.name) : {})}
+                {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
             {field.type === 'SELECT' && (
@@ -128,7 +128,7 @@ export const Form = () => {
                 data={field.options?.map((data: string) => ({ value: data, label: data }))}
                 label={field.name}
                 required={field.required}
-                {...(form ? form.getInputProps(field.name) : {})}
+                {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
           </Grid.Col>
@@ -143,7 +143,7 @@ export const Form = () => {
                 { value: 50, label: 'Medium' },
                 { value: 100, label: 'High' },
               ]}
-              {...(form ? form.getInputProps('tier') : {})}
+              {...(template ? template.getInputProps('tier') : {})}
             />
           </Input.Wrapper>
         </Grid.Col>
@@ -151,19 +151,19 @@ export const Form = () => {
           <Input.Wrapper label="Плюсы и минусы">
             <Group grow align="normal">
               <Stack>
-                {form.values &&
-                  form.values.pros &&
-                  form.values.pros.map((value: string, index: number) => (
+                {template.values &&
+                  template.values.pros &&
+                  template.values.pros.map((value: string, index: number) => (
                     <TextInput
                       key={`pros_${index}`}
                       required
-                      {...form.getInputProps(`pros.${index}`)}
+                      {...template.getInputProps(`pros.${index}`)}
                       rightSection={
                         <ActionIcon
                           style={{ maxWidth: 28 }}
                           color="red"
                           variant="filled"
-                          onClick={() => form.removeListItem('pros', index)}
+                          onClick={() => template.removeListItem('pros', index)}
                         >
                           <IconTrashX />
                         </ActionIcon>
@@ -173,19 +173,19 @@ export const Form = () => {
                 <Button onClick={handleAddPros}>Добавить плюс</Button>
               </Stack>
               <Stack>
-                {form.values &&
-                  form.values.cons &&
-                  form.values.cons.map((value: string, index: number) => (
+                {template.values &&
+                  template.values.cons &&
+                  template.values.cons.map((value: string, index: number) => (
                     <TextInput
                       key={`cons_${index}`}
                       required
-                      {...form.getInputProps(`cons.${index}`)}
+                      {...template.getInputProps(`cons.${index}`)}
                       rightSection={
                         <ActionIcon
                           style={{ maxWidth: 28 }}
                           color="red"
                           variant="filled"
-                          onClick={() => form.removeListItem('cons', index)}
+                          onClick={() => template.removeListItem('cons', index)}
                         >
                           <IconTrashX />
                         </ActionIcon>

@@ -4,6 +4,7 @@ import { NextLink } from '@mantine/next';
 import axios from 'axios';
 import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
 import { PageHeader } from '../../components/Layout';
+import { ITemplate } from '../../types/Template';
 
 const useStyles = createStyles((theme) => ({
   box: {
@@ -48,10 +49,10 @@ const Category = React.memo(({ data }: { data: any }) => {
 export default function Parts() {
   const { user } = useAuth();
 
-  const [forms, setForms] = useState([]);
+  const [templates, setTemplates] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/forms').then((res) => setForms(res.data));
+    axios.get('/api/templates').then((res) => setTemplates(res.data));
   }, []);
 
   return (
@@ -61,12 +62,12 @@ export default function Parts() {
         rightSection={
           <Group>
             {user && user.role === 'ADMIN' && (
-              <Button component={NextLink} href="/parts/create">
+              <Button component={NextLink} href="/components/create">
                 Добавить деталь
               </Button>
             )}
             {user && user.role === 'ADMIN' && (
-              <Button component={NextLink} href="/forms/create">
+              <Button component={NextLink} href="/templates/create">
                 Добавить группу/форму
               </Button>
             )}
@@ -74,8 +75,8 @@ export default function Parts() {
         }
       />
       <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
-        {forms.map((form: any) => (
-          <Category key={form.id} data={form} />
+        {templates.map((template: ITemplate & { id: string }) => (
+          <Category key={template.id} data={template} />
         ))}
       </SimpleGrid>
     </Stack>

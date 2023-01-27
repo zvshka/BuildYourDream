@@ -1,5 +1,5 @@
 import { handler } from '../../../lib/handler';
-import PartService from '../../../services/Part.service';
+import PartService from '../../../services/Component.service';
 
 const api = handler();
 

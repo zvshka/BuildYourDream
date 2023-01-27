@@ -10,10 +10,10 @@ export function ColorSchemeToggle() {
   const { setValue: changeColor } = useContext(ColorContext);
 
   return (
-    <Group position="center" mt="xl">
+    <Group position="center">
       <ActionIcon
         onClick={() => toggleColorScheme()}
-        size="xl"
+        size="md"
         sx={(th) => ({
           backgroundColor: th.colorScheme === 'dark' ? th.colors.dark[6] : th.colors.gray[0],
           color: th.colorScheme === 'dark' ? th.colors.yellow[4] : th.colors.blue[6],

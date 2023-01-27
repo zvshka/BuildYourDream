@@ -1,8 +1,8 @@
 import { prisma } from '../lib/prisma';
 
-class FormService {
-  create({ name, fields }: any) {
-    return prisma.form.create({
+class TemplateService {
+  create({ name, fields }: { name: string; fields: any[] }) {
+    return prisma.template.create({
       data: {
         name,
         fields,
@@ -11,11 +11,11 @@ class FormService {
   }
 
   getList() {
-    return prisma.form.findMany({});
+    return prisma.template.findMany({});
   }
 
   getFormById(id: string) {
-    return prisma.form.findUnique({
+    return prisma.template.findUnique({
       where: {
         id,
       },
@@ -23,7 +23,7 @@ class FormService {
   }
 
   updateFormById({ id, data }: any) {
-    return prisma.form.update({
+    return prisma.template.update({
       where: {
         id,
       },
@@ -32,4 +32,4 @@ class FormService {
   }
 }
 
-export default new FormService();
+export default new TemplateService();

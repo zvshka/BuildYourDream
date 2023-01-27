@@ -2,16 +2,16 @@ import { Button, Center, Container, Group, Select, Stepper, Text, Title } from '
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { Form } from '../../components/Parts/Form';
+import { ComponentForm } from '../../components/Parts/ComponentForm';
 import { Block } from '../../components/Layout/Block/Block';
-import { FormsFormProvider, useFormsForm, useFormsFormContext } from '../../components/Parts/FormContext';
+import { TemplateFormProvider, useTemplateForm } from '../../components/Parts/TemplateContext';
 import { IField } from '../../lib/Field';
 
 export default function CreatePart() {
   const router = useRouter();
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState<any>({});
-  const form = useFormsFormContext();
+  const form = useTemplateForm();
 
   const [active, setActive] = useState(0);
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
@@ -27,7 +27,7 @@ export default function CreatePart() {
   };
 
   const saveData = (data: typeof form.values, image = null) =>
-    axios.post('/api/parts', {
+    axios.post('/api/components', {
       data: {
         ...data,
         image,
@@ -46,7 +46,7 @@ export default function CreatePart() {
   };
 
   useEffect(() => {
-    axios.get('/api/forms').then((res) => {
+    axios.get('/api/templates').then((res) => {
       setForms(res.data.map((formData: any) => ({ label: formData.name, value: formData })));
     });
   }, []);
@@ -91,7 +91,7 @@ export default function CreatePart() {
   }, [forms]);
 
   return (
-    <FormsFormProvider form={form}>
+    <TemplateFormProvider form={form}>
       <Container size="sm">
         <Block>
           <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -116,7 +116,7 @@ export default function CreatePart() {
                 <Center mb="md">
                   <Title order={2}>Добавление компонента: {selectedForm.name}</Title>
                 </Center>
-                <Form />
+                <ComponentForm />
               </Stepper.Step>
               <Stepper.Completed>
                 <Text>Отлично! Можно сохранять</Text>
@@ -131,6 +131,6 @@ export default function CreatePart() {
           </form>
         </Block>
       </Container>
-    </FormsFormProvider>
+    </TemplateFormProvider>
   );
 }

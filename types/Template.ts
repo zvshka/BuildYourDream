@@ -15,15 +15,16 @@ export interface IPartImage {
   url?: string;
 }
 
-export interface ICreateForm {
+export interface ITemplate {
   name: string;
-  tier: number;
-  pros: string[];
-  cons: string[];
   fields: IField[];
 }
 
-export interface ICreatePart extends ICreateForm {
+export interface IComponent {
   image: IPartImage;
-  [key: string]: any
+  tier: number;
+  pros: string[];
+  cons: string[];
+
+  [key: string]: any;
 }

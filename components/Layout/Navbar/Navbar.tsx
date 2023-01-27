@@ -1,10 +1,18 @@
-import { Collapse, createStyles, Navbar, Text, UnstyledButton } from '@mantine/core';
-import { Icon3dCubeSphere, IconCpu, IconLogout, IconUser, IconWorld } from '@tabler/icons';
+import {
+  Collapse,
+  createStyles,
+  Navbar,
+  SegmentedControl,
+  Text,
+  UnstyledButton,
+} from '@mantine/core';
+import { Icon3dCubeSphere, IconCpu, IconDeviceDesktop, IconLogout, IconUser } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { NextLink } from '@mantine/next';
+import { useState } from 'react';
 import { useAuth } from '../../Providers/Auth/AuthWrapper';
 import { UserButton } from '../UserButton/UserButton';
 
@@ -85,11 +93,18 @@ const useStyles = createStyles((theme, _params, getRef) => {
   };
 });
 
-const data = [
-  { link: '/', label: 'Конфигуратор', icon: IconCpu },
-  { link: '/configs', label: 'Пользовательские сборки', icon: IconWorld },
-  { link: '/parts', label: 'Комплектующие', icon: Icon3dCubeSphere },
-];
+const tabs = {
+  userPages: [
+    { link: '/', label: 'Конфигуратор', icon: IconCpu },
+    { link: '/configs', label: 'Пользовательские сборки', icon: IconDeviceDesktop },
+    { link: '/components', label: 'Комплектующие', icon: Icon3dCubeSphere },
+  ],
+  adminPages: [
+    { link: '/admin/users', label: 'Пользователи', icon: IconUser },
+    { link: '/admin/components', label: 'Комплектующие', icon: Icon3dCubeSphere },
+    { link: '/admin/configs', label: 'Сборки', icon: Icon3dCubeSphere },
+  ],
+};
 
 export function NavbarSimpleColored({ opened }: any) {
   const { classes, cx } = useStyles();
@@ -97,6 +112,7 @@ export function NavbarSimpleColored({ opened }: any) {
   const [visible, toggle] = useToggle();
   const modals = useModals();
   const { user, logout } = useAuth();
+  const [section, setSection] = useState<'userPages' | 'adminPages'>('userPages');
 
   const handleLogout = () => {
     modals.openConfirmModal({
@@ -115,12 +131,15 @@ export function NavbarSimpleColored({ opened }: any) {
     });
   };
 
-  const links = data.map((item) => (
+  const links = tabs[section].map((item) => (
     <UnstyledButton
       href={item.link}
       key={item.label}
       component={NextLink}
-      className={cx(classes.link, { [classes.linkActive]: item.link === router.asPath })}
+      className={cx(classes.link, {
+        [classes.linkActive]:
+          item.link !== '/' ? router.asPath.includes(item.link) : item.link === router.asPath,
+      })}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
@@ -135,7 +154,24 @@ export function NavbarSimpleColored({ opened }: any) {
       hidden={!opened}
       hiddenBreakpoint="sm"
     >
-      <Navbar.Section grow>{links}</Navbar.Section>
+      {user?.role === 'ADMIN' && (
+        <Navbar.Section>
+          <SegmentedControl
+            value={section}
+            onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
+            transitionTimingFunction="ease"
+            fullWidth
+            data={[
+              { label: 'User', value: 'userPages' },
+              { label: 'Admin', value: 'adminPages' },
+            ]}
+          />
+        </Navbar.Section>
+      )}
+
+      <Navbar.Section grow mt={user?.role === 'ADMIN' ? 'xl' : 0}>
+        {links}
+      </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
         {user && (

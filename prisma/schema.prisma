@@ -21,7 +21,7 @@ model User {
   email          String    @unique
   emailVerified  DateTime?
   username       String    @unique
-  avatarURL String?
+  avatarURL      String?
   hashedPassword String
 
   createdAt DateTime @default(now())
@@ -29,6 +29,7 @@ model User {
 
   role     Role      @default(USER)
   messages Message[]
+  configs  Config[]
 }
 
 model Message {
@@ -43,11 +44,11 @@ model Message {
 }
 
 model Component {
-  id   String         @id @default(cuid())
+  id   String @id @default(cuid())
   data Json
 
-  form    Form     @relation(fields: [formId], references: [id])
-  formId  String
+  template   Template @relation(fields: [templateId], references: [id])
+  templateId String
 
   configs Config[]
 }
@@ -57,7 +58,10 @@ model Config {
   title       String
   description String
 
+  author User @relation(fields: [userId], references: [id])
+
   components Component[]
+  userId     String
 }
 
 enum FieldType {
@@ -68,7 +72,7 @@ enum FieldType {
   RANGE
 }
 
-model Form {
+model Template {
   id   String @id @default(cuid())
   name String @unique
 
@@ -82,4 +86,3 @@ model Image {
   mimetype String
   size     Int
 }
-

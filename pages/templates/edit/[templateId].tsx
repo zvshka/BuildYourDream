@@ -15,25 +15,20 @@ import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { Form } from '../../../components/Parts/Form';
-import { FormField } from '../../../components/Parts/FormField';
+import { ComponentForm } from '../../../components/Parts/ComponentForm';
+import { TemplateField } from '../../../components/Parts/TemplateField';
 import { Block } from '../../../components/Layout/Block/Block';
-import { CreateField, IField } from '../../../lib/Field';
-
-interface IForm {
-  name: string;
-  id: string;
-  fields: IField[];
-}
+import { CreateField } from '../../../lib/Field';
+import { ITemplate } from '../../../types/Template';
 
 export default function EditForm() {
   const modals = useModals();
-  const [formData, setFormData] = useState<IForm>();
+  const [formData, setFormData] = useState<ITemplate & { id: string }>();
   const [loading, toggleLoading] = useToggle();
 
   const router = useRouter();
 
-  const form = useForm<IForm>({
+  const form = useForm<ITemplate & { id: string }>({
     initialValues: {
       id: '',
       name: '',
@@ -42,7 +37,7 @@ export default function EditForm() {
   });
 
   useEffect(() => {
-    axios.get(`/api/forms/${router.query.formId}`).then((res) => setFormData(res.data));
+    axios.get(`/api/templates/${router.query.templateId}`).then((res) => setFormData(res.data));
   }, []);
 
   useEffect(() => {
@@ -65,21 +60,21 @@ export default function EditForm() {
     modals.openModal({
       title: 'Предпросмотр',
       size: 'lg',
-      children: <Form />,
+      children: <ComponentForm />,
     });
   };
 
   const handleSubmit = async (values: typeof form.values) => {
     toggleLoading();
     axios
-      .patch(`/api/forms/${router.query.formId}`, {
+      .patch(`/api/templates/${router.query.templateId}`, {
         name: values.name,
         fields: values.fields,
       })
       .then(() => {
         showNotification({
           title: 'Успех',
-          message: 'Форма успешно создана',
+          message: 'Шаблон успешно создан',
           color: 'green',
         });
         toggleLoading();
@@ -87,7 +82,7 @@ export default function EditForm() {
       .catch(() => {
         showNotification({
           title: 'Ошибка',
-          message: 'Во время сохранения формы произошла ошибка',
+          message: 'Во время сохранения шаблона произошла ошибка',
           color: 'red',
         });
         toggleLoading();
@@ -95,7 +90,7 @@ export default function EditForm() {
   };
 
   const fields = form.values.fields.map((item, index) => (
-    <FormField key={`field_${index}`} form={form} index={index} item={item} />
+    <TemplateField key={`field_${index}`} form={form} index={index} item={item} />
   ));
 
   return (
