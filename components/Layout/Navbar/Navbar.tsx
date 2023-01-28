@@ -101,8 +101,8 @@ const tabs = {
   ],
   adminPages: [
     { link: '/admin/users', label: 'Пользователи', icon: IconUser },
-    { link: '/admin/components', label: 'Комплектующие', icon: Icon3dCubeSphere },
     { link: '/admin/configs', label: 'Сборки', icon: Icon3dCubeSphere },
+    { link: '/admin/configurator', label: 'Настройка конфигуратора', icon: Icon3dCubeSphere },
   ],
 };
 
@@ -138,7 +138,7 @@ export function NavbarSimpleColored({ opened }: any) {
       component={NextLink}
       className={cx(classes.link, {
         [classes.linkActive]:
-          item.link !== '/' ? router.asPath.includes(item.link) : item.link === router.asPath,
+          item.link !== '/' ? router.asPath.startsWith(item.link) : item.link === router.asPath,
       })}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />

@@ -1,30 +1,20 @@
 import { Box, Button, Container, Group, LoadingOverlay, Stack, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useModals } from '@mantine/modals';
 import { useToggle } from '@mantine/hooks';
 import { NextLink } from '@mantine/next';
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { TemplateField } from '../../components/Parts/TemplateField';
+import { KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { showNotification } from '@mantine/notifications';
+import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
+import { TemplateField } from '../../components/Components/TemplateField';
 import { Block } from '../../components/Layout/Block/Block';
 import { CreateField } from '../../lib/Field';
-import { ITemplate } from '../../types/Template';
+import { ITemplate, LARGE_TEXT, RANGE, TEXT } from '../../types/Template';
 import { PageHeader } from '../../components/Layout';
-import { TemplateFormProvider } from '../../components/Parts/TemplateContext';
+import { TemplateFormProvider } from '../../components/Components/TemplateContext';
 
-export default function createTemplate() {
+export default function createTemplatePage() {
   const [loading, toggleLoading] = useToggle();
   const template = useForm<ITemplate>({
     initialValues: {
@@ -32,25 +22,51 @@ export default function createTemplate() {
       fields: [
         CreateField({
           name: 'Название',
-          type: 'TEXT',
+          type: TEXT,
           deletable: false,
           editable: false,
         }),
         CreateField({
           name: 'Цена',
-          type: 'RANGE',
+          type: RANGE,
           deletable: false,
           editable: false,
         }),
         CreateField({
           name: 'Описание детали',
-          type: 'LARGE_TEXT',
+          type: LARGE_TEXT,
           deletable: false,
           editable: false,
         }),
       ],
     },
   });
+
+  const createTemplate = useMutation(
+    (templateData: ITemplate) =>
+      axios.post('/api/templates', {
+        name: templateData.name,
+        fields: templateData.fields,
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Форма успешно создана',
+          color: 'green',
+        });
+        toggleLoading();
+      },
+      onError: () => {
+        showNotification({
+          title: 'Ошибка',
+          message: 'Во время сохранения формы произошла ошибка',
+          color: 'red',
+        });
+        toggleLoading();
+      },
+    }
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -71,42 +87,8 @@ export default function createTemplate() {
 
   const handleSubmit = async (values: typeof template.values) => {
     toggleLoading();
-    // axios
-    //   .post('/api/templates', {
-    //     name: values.name,
-    //     fields: values.fields,
-    //   })
-    //   .then(() => {
-    //     showNotification({
-    //       title: 'Успех',
-    //       message: 'Форма успешно создана',
-    //       color: 'green',
-    //     });
-    //     toggleLoading();
-    //   })
-    //   .catch(() => {
-    //     showNotification({
-    //       title: 'Ошибка',
-    //       message: 'Во время сохранения формы произошла ошибка',
-    //       color: 'red',
-    //     });
-    //     toggleLoading();
-    //   });
-    console.log(values);
+    createTemplate.mutate(values);
   };
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      const items = template.values.fields;
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
-
-      const newItems = arrayMove(items, oldIndex, newIndex);
-      template.setFieldValue('fields', newItems);
-    }
-  }
 
   return (
     <TemplateFormProvider form={template}>
@@ -142,21 +124,9 @@ export default function createTemplate() {
                 />
               </Block>
               <Stack mt="md">
-                <DndContext
-                  id="dnd"
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={template.values.fields}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {template.values.fields.map((item, index) => (
-                      <TemplateField key={`field_${index}`} index={index} item={item} />
-                    ))}
-                  </SortableContext>
-                </DndContext>
+                {template.values.fields.map((item, index) => (
+                  <TemplateField key={`field_${index}`} index={index} item={item} />
+                ))}
               </Stack>
             </form>
           </Box>

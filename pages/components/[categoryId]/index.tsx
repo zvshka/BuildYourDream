@@ -20,13 +20,14 @@ import {
   Title,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../../components/Providers/Auth/AuthWrapper';
 import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useToggle } from '@mantine/hooks';
+import { useAuth } from '../../../components/Providers/Auth/AuthWrapper';
 import { Block } from '../../../components/Layout/Block/Block';
 import { PageHeader } from '../../../components/Layout';
+import { ITemplate } from '../../../types/Template';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -121,44 +122,42 @@ const Filters = ({ fields }: any) => {
     </Stack>
   );
 };
-
-interface IForm {
-  name: string;
-  id: string;
-  fields: any[];
-}
-
 export default function Category() {
   const router = useRouter();
   const { classes } = useStyles();
   const [showFilters, toggleFilters] = useToggle();
 
-  const [formData, setFormData] = useState<IForm>();
-  const [parts, setParts] = useState([]);
+  const [templateData, setTemplateData] = useState<ITemplate & { id: string }>();
+  const [components, setComponents] = useState([]);
   const { user } = useAuth();
 
   useEffect(() => {
-    axios.get(`/api/forms/${router.query.categoryId}`).then((res) => setFormData(res.data));
-    axios.get(`/api/forms/${router.query.categoryId}/list`).then((res) => setParts(res.data));
+    axios.get(`/api/templates/${router.query.categoryId}`).then((res) => setTemplateData(res.data));
+    axios
+      .get(`/api/templates/${router.query.categoryId}/list`)
+      .then((res) => setComponents(res.data));
   }, []);
 
   return (
     <Stack>
       <PageHeader
-        title={formData?.name ?? ''}
+        title={templateData?.name ?? ''}
         rightSection={
           <Group>
             {user && user.role === 'ADMIN' && (
-              <Button href={`/forms/edit/${router.query.categoryId}`} component={NextLink}>
+              <Button href={`/templates/edit/${router.query.categoryId}`} component={NextLink}>
                 Изменить
               </Button>
             )}
             {user && user.role === 'ADMIN' && (
-              <Button href={`/parts/create?formId=${router.query.categoryId}`} component={NextLink}>
+              <Button
+                href={`/components/create?templateId=${router.query.categoryId}`}
+                component={NextLink}
+              >
                 Добавить
               </Button>
             )}
-            <Button href="/parts" component={NextLink}>
+            <Button href="/components" component={NextLink}>
               Назад
             </Button>
           </Group>
@@ -170,7 +169,7 @@ export default function Category() {
             <Grid.Col lg={3}>
               <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
                 <Box>
-                  <Filters fields={formData?.fields} />
+                  <Filters fields={templateData?.fields} />
                 </Box>
               </MediaQuery>
               <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
@@ -183,11 +182,11 @@ export default function Category() {
             </Grid.Col>
             <Grid.Col lg={9}>
               <Stack>
-                {parts.length > 0 &&
-                  parts.map((part: any) => (
+                {components.length > 0 &&
+                  components.map((component: any) => (
                     <Block
-                      href={`/parts/${router.query.categoryId}/${part.id}`}
-                      key={part.id}
+                      href={`/components/${router.query.categoryId}/${component.id}`}
+                      key={component.id}
                       component={NextLink}
                     >
                       <Group align="normal">
@@ -196,18 +195,21 @@ export default function Category() {
                           radius="sm"
                           width={256 / 1.5}
                           height={256 / 1.5}
-                          {...(part.data.image ? { src: `${part.data.image.url}?quality=60` } : {})}
+                          {...(component.data.image
+                            ? { src: `${component.data.image.url}?quality=60` }
+                            : {})}
                         />
                         <Box>
-                          <Title order={3}>{part.data['Название']}</Title>
+                          <Title order={3}>{component.data['Название']}</Title>
                           <Text>
-                            Примерная цена: {part.data['Цена'][0]} - {part.data['Цена'][1]} Руб.
+                            Примерная цена: {component.data['Цена'][0]} -{' '}
+                            {component.data['Цена'][1]} Руб.
                           </Text>
                           <Text>
                             Tier компонента:{' '}
-                            {part.data.tier === 0
+                            {component.data.tier === 0
                               ? 'Low'
-                              : part.data.tier === 50
+                              : component.data.tier === 50
                               ? 'Medium'
                               : 'High'}
                           </Text>
@@ -227,7 +229,7 @@ export default function Category() {
         padding="xl"
         size="xl"
       >
-        <Filters fields={formData?.fields} />
+        <Filters fields={templateData?.fields} />
       </Drawer>
     </Stack>
   );

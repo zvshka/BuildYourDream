@@ -1,10 +1,10 @@
 import { Box, Button, createStyles, Group, Paper, SimpleGrid, Stack, Text } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NextLink } from '@mantine/next';
-import axios from 'axios';
 import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
 import { PageHeader } from '../../components/Layout';
 import { ITemplate } from '../../types/Template';
+import { useTemplatesList } from '../../components/hooks/templates';
 
 const useStyles = createStyles((theme) => ({
   box: {
@@ -36,7 +36,7 @@ const useStyles = createStyles((theme) => ({
 const Category = React.memo(({ data }: { data: any }) => {
   const { classes } = useStyles();
   return (
-    <Paper className={classes.box} shadow="xl" component={NextLink} href={`/parts/${data.id}`}>
+    <Paper className={classes.box} shadow="xl" component={NextLink} href={`/components/${data.id}`}>
       <Box className={classes.boxContent}>
         <Text weight={700} size={24}>
           {data.name}
@@ -48,12 +48,7 @@ const Category = React.memo(({ data }: { data: any }) => {
 
 export default function Parts() {
   const { user } = useAuth();
-
-  const [templates, setTemplates] = useState([]);
-
-  useEffect(() => {
-    axios.get('/api/templates').then((res) => setTemplates(res.data));
-  }, []);
+  const { data: templates, isLoading, isError } = useTemplatesList();
 
   return (
     <Stack>
@@ -75,9 +70,11 @@ export default function Parts() {
         }
       />
       <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
-        {templates.map((template: ITemplate & { id: string }) => (
-          <Category key={template.id} data={template} />
-        ))}
+        {!isLoading &&
+          !isError &&
+          templates.map((template: ITemplate & { id: string }) => (
+            <Category key={template.id} data={template} />
+          ))}
       </SimpleGrid>
     </Stack>
   );

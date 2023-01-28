@@ -16,30 +16,32 @@ import {
 } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons';
 import { useEffect, useRef } from 'react';
-import { RangeInput } from '../Layout/RangeInput/RangeInput';
-import { useTemplateFormContext } from './TemplateContext';
+import { RangeInput } from '../Layout';
+import { useComponentFormContext, useTemplateFormContext } from './TemplateContext';
+import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/Template';
+import { IField } from '../../lib/Field';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
   switch (type) {
-    case 'TEXT':
-    case 'RANGE':
-    case 'SELECT':
+    case TEXT:
+    case RANGE:
+    case SELECT:
       toReturn = 3;
       break;
-    case 'LARGE_TEXT':
+    case LARGE_TEXT:
       toReturn = 6;
       break;
-    case 'BOOL':
-    case 'NUMBER':
+    case BOOL:
+    case NUMBER:
       toReturn = 2;
       break;
   }
   return toReturn;
 };
 
-export const ComponentForm = () => {
-  const template = useTemplateFormContext();
+export const ComponentForm = ({ fields }: { fields: IField[] }) => {
+  const template = useComponentFormContext();
   const resetRef = useRef<() => void>(null);
 
   const clearFile = () => {
@@ -57,7 +59,7 @@ export const ComponentForm = () => {
   };
 
   useEffect(() => {
-    if (!template.values.image.file) return;
+    if (!template.values.image?.file) return;
     const fileReader = new FileReader();
     fileReader.readAsDataURL(template.values.image.file);
     fileReader.onload = () => {
@@ -70,7 +72,7 @@ export const ComponentForm = () => {
       <Grid columns={6}>
         <Grid.Col span={6}>
           <Stack align="center">
-            <Image withPlaceholder width={256} height={256} src={template.values.image.base64} />
+            <Image withPlaceholder width={256} height={256} src={template.values?.image?.base64} />
             <Group spacing="xs">
               <FileButton
                 resetRef={resetRef}
@@ -79,13 +81,13 @@ export const ComponentForm = () => {
               >
                 {(props) => <Button {...props}>Загрузить изображение</Button>}
               </FileButton>
-              <Button disabled={!template.values.image.file} color="red" onClick={clearFile}>
+              <Button disabled={!template.values?.image?.file} color="red" onClick={clearFile}>
                 Сбросить
               </Button>
             </Group>
           </Stack>
         </Grid.Col>
-        {template.values.fields.map((field, index) => (
+        {fields.map((field, index) => (
           <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
             {field.type === 'TEXT' && (
               <TextInput
@@ -125,7 +127,7 @@ export const ComponentForm = () => {
             )}
             {field.type === 'SELECT' && (
               <Select
-                data={field.options?.map((data: string) => ({ value: data, label: data }))}
+                data={field.options!.map((data: string) => ({ value: data, label: data }))}
                 label={field.name}
                 required={field.required}
                 {...(template ? template.getInputProps(field.name) : {})}

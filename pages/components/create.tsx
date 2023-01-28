@@ -2,16 +2,20 @@ import { Button, Center, Container, Group, Select, Stepper, Text, Title } from '
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { ComponentForm } from '../../components/Parts/ComponentForm';
-import { Block } from '../../components/Layout/Block/Block';
-import { TemplateFormProvider, useTemplateForm } from '../../components/Parts/TemplateContext';
+import { ComponentForm } from '../../components/Components/ComponentForm';
+import { Block } from '../../components/Layout';
+import {
+  ComponentFormProvider,
+  useComponentForm,
+} from '../../components/Components/TemplateContext';
 import { IField } from '../../lib/Field';
+import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/Template';
 
 export default function CreatePart() {
   const router = useRouter();
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState<any>({});
-  const form = useTemplateForm();
+  const form = useComponentForm();
 
   const [active, setActive] = useState(0);
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
@@ -32,12 +36,12 @@ export default function CreatePart() {
         ...data,
         image,
       },
-      formId: selectedForm.id,
+      templateId: selectedForm?.id,
     });
 
   const handleSubmit = (data: typeof form.values) => {
     if (active < 2) return setActive((current) => (current < 3 ? current + 1 : current));
-    if ('image' in data && data.image.file) {
+    if (data.image?.file) {
       uploadImage(data.image.file).then((res) => saveData(data, res.data));
     } else {
       saveData(data).then((res) => {});
@@ -55,20 +59,20 @@ export default function CreatePart() {
     setSelectedForm(value);
     value.fields.forEach((field: IField) => {
       switch (field.type) {
-        case 'TEXT':
-        case 'LARGE_TEXT':
+        case TEXT:
+        case LARGE_TEXT:
           form.setFieldValue(field.name, form.values[field.name] || '');
           break;
-        case 'NUMBER':
+        case NUMBER:
           form.setFieldValue(field.name, form.values[field.name] || 0);
           break;
-        case 'BOOL':
+        case BOOL:
           form.setFieldValue(field.name, form.values[field.name] || false);
           break;
-        case 'RANGE':
+        case RANGE:
           form.setFieldValue(field.name, form.values[field.name] || [0, 0]);
           break;
-        case 'SELECT':
+        case SELECT:
           form.setFieldValue(field.name, form.values[field.name] || '');
           break;
       }
@@ -80,10 +84,10 @@ export default function CreatePart() {
       forms &&
       forms.length > 0 &&
       router.query &&
-      router.query.formId &&
-      forms.map((f: any) => f.value.id).includes(router.query.formId as string)
+      router.query.templateId &&
+      forms.map((f: any) => f.value.id).includes(router.query.templateId as string)
     ) {
-      const possibleForm: any = forms.find((f: any) => f.value.id === router.query.formId);
+      const possibleForm: any = forms.find((f: any) => f.value.id === router.query.templateId);
       if (possibleForm) {
         handleSelectForm(possibleForm.value);
       }
@@ -91,7 +95,7 @@ export default function CreatePart() {
   }, [forms]);
 
   return (
-    <TemplateFormProvider form={form}>
+    <ComponentFormProvider form={form}>
       <Container size="sm">
         <Block>
           <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -114,9 +118,9 @@ export default function CreatePart() {
                   <Text>Шаг 2. Заполни форму настолько, насколько возможно</Text>
                 </Center>
                 <Center mb="md">
-                  <Title order={2}>Добавление компонента: {selectedForm.name}</Title>
+                  <Title order={2}>Добавление компонента: {selectedForm?.name}</Title>
                 </Center>
-                <ComponentForm />
+                <ComponentForm fields={selectedForm.fields} />
               </Stepper.Step>
               <Stepper.Completed>
                 <Text>Отлично! Можно сохранять</Text>
@@ -131,6 +135,6 @@ export default function CreatePart() {
           </form>
         </Block>
       </Container>
-    </TemplateFormProvider>
+    </ComponentFormProvider>
   );
 }

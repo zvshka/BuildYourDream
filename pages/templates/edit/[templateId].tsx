@@ -13,22 +13,20 @@ import {
 } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
-import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { ComponentForm } from '../../../components/Parts/ComponentForm';
-import { TemplateField } from '../../../components/Parts/TemplateField';
+import { TemplateField } from '../../../components/Components/TemplateField';
 import { Block } from '../../../components/Layout/Block/Block';
 import { CreateField } from '../../../lib/Field';
 import { ITemplate } from '../../../types/Template';
+import { TemplateFormProvider } from '../../../components/Components/TemplateContext';
 
 export default function EditForm() {
-  const modals = useModals();
   const [formData, setFormData] = useState<ITemplate & { id: string }>();
   const [loading, toggleLoading] = useToggle();
 
   const router = useRouter();
 
-  const form = useForm<ITemplate & { id: string }>({
+  const form = useForm<ITemplate & { id?: string }>({
     initialValues: {
       id: '',
       name: '',
@@ -54,14 +52,6 @@ export default function EditForm() {
         type: 'TEXT',
       })
     );
-  };
-
-  const openPreview = () => {
-    modals.openModal({
-      title: 'Предпросмотр',
-      size: 'lg',
-      children: <ComponentForm />,
-    });
   };
 
   const handleSubmit = async (values: typeof form.values) => {
@@ -90,38 +80,37 @@ export default function EditForm() {
   };
 
   const fields = form.values.fields.map((item, index) => (
-    <TemplateField key={`field_${index}`} form={form} index={index} item={item} />
+    <TemplateField key={`field_${index}`} index={index} item={item} />
   ));
 
   return (
-    <Container size="md">
-      <Stack>
-        <Block>
-          <Title order={4}>Изменение формы: {formData && formData.name}</Title>
-        </Block>
-        <Box style={{ position: 'relative' }}>
-          <LoadingOverlay visible={loading} overlayBlur={2} />
-          <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Block>
-              <Group position="apart">
-                <Button onClick={handleAddField}>Добавить поле</Button>
-                <Group>
-                  <Button onClick={openPreview}>Предпросмотр</Button>
+    <TemplateFormProvider form={form}>
+      <Container size="md">
+        <Stack>
+          <Block>
+            <Title order={4}>Изменение формы: {formData && formData.name}</Title>
+          </Block>
+          <Box style={{ position: 'relative' }}>
+            <LoadingOverlay visible={loading} overlayBlur={2} />
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Block>
+                <Group position="apart">
+                  <Button onClick={handleAddField}>Добавить поле</Button>
                   <Button type="submit">Сохранить</Button>
                 </Group>
-              </Group>
-              <TextInput
-                {...form.getInputProps('name')}
-                placeholder="Название формы"
-                label="Название формы"
-                required
-                mt="xs"
-              />
-            </Block>
-            <Stack mt="md">{fields}</Stack>
-          </form>
-        </Box>
-      </Stack>
-    </Container>
+                <TextInput
+                  {...form.getInputProps('name')}
+                  placeholder="Название формы"
+                  label="Название формы"
+                  required
+                  mt="xs"
+                />
+              </Block>
+              <Stack mt="md">{fields}</Stack>
+            </form>
+          </Box>
+        </Stack>
+      </Container>
+    </TemplateFormProvider>
   );
 }
