@@ -1,7 +1,19 @@
-import { Button, Center, Container, Group, Select, Stepper, Text, Title } from '@mantine/core';
+import {
+  Button,
+  Center,
+  Container,
+  Group,
+  LoadingOverlay,
+  Select,
+  Stepper,
+  Text,
+  Title,
+} from '@mantine/core';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { showNotification } from '@mantine/notifications';
+import { useToggle } from '@mantine/hooks';
 import { ComponentForm } from '../../components/Components/ComponentForm';
 import { Block } from '../../components/Layout';
 import {
@@ -15,7 +27,18 @@ export default function CreatePart() {
   const router = useRouter();
   const [forms, setForms] = useState([]);
   const [selectedForm, setSelectedForm] = useState<any>({});
-  const form = useComponentForm();
+  const form = useComponentForm({
+    initialValues: {
+      pros: [],
+      cons: [],
+      tier: 0,
+      image: {
+        base64: '',
+        file: null,
+      },
+    },
+  });
+  const [loading, toggleLoading] = useToggle();
 
   const [active, setActive] = useState(0);
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
@@ -41,10 +64,27 @@ export default function CreatePart() {
 
   const handleSubmit = (data: typeof form.values) => {
     if (active < 2) return setActive((current) => (current < 3 ? current + 1 : current));
+    toggleLoading();
     if (data.image?.file) {
-      uploadImage(data.image.file).then((res) => saveData(data, res.data));
+      uploadImage(data.image.file)
+        .then((res) => saveData(data, res.data))
+        .then((res) => {
+          toggleLoading();
+          showNotification({
+            title: 'Успех',
+            message: 'Компонент успешно сохранен',
+            color: 'green',
+          });
+        });
     } else {
-      saveData(data).then((res) => {});
+      saveData(data).then((res) => {
+        toggleLoading();
+        showNotification({
+          title: 'Успех',
+          message: 'Компонент успешно сохранен',
+          color: 'green',
+        });
+      });
     }
     return true;
   };
@@ -97,7 +137,8 @@ export default function CreatePart() {
   return (
     <ComponentFormProvider form={form}>
       <Container size="sm">
-        <Block>
+        <Block sx={{ position: 'relative' }}>
+          <LoadingOverlay visible={loading} overlayBlur={2} />
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stepper active={active} onStepClick={setActive} breakpoint="sm" iconPosition="left">
               <Stepper.Step label="Первый шаг" description="Выбор типа">

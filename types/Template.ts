@@ -22,9 +22,12 @@ export interface IComponentImage {
   url?: string;
 }
 
+export interface IConstraint {}
+
 export interface ITemplate {
   id?: string;
   name: string;
+  required: boolean;
   fields: IField[];
 }
 

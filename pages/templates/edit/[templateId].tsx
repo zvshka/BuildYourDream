@@ -8,8 +8,8 @@ import {
   Group,
   LoadingOverlay,
   Stack,
+  Switch,
   TextInput,
-  Title,
 } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
@@ -19,9 +19,10 @@ import { Block } from '../../../components/Layout/Block/Block';
 import { CreateField } from '../../../lib/Field';
 import { ITemplate } from '../../../types/Template';
 import { TemplateFormProvider } from '../../../components/Components/TemplateContext';
+import { PageHeader } from '../../../components/Layout';
+import { useTemplateData } from '../../../components/hooks/templates';
 
 export default function EditForm() {
-  const [formData, setFormData] = useState<ITemplate & { id: string }>();
   const [loading, toggleLoading] = useToggle();
 
   const router = useRouter();
@@ -30,19 +31,18 @@ export default function EditForm() {
     initialValues: {
       id: '',
       name: '',
+      required: false,
       fields: [],
     },
   });
 
-  useEffect(() => {
-    axios.get(`/api/templates/${router.query.templateId}`).then((res) => setFormData(res.data));
-  }, []);
+  const { data: templateData, isFetched } = useTemplateData(router.query.templateId as string);
 
   useEffect(() => {
-    if (formData) {
-      form.setValues(formData);
+    if (isFetched) {
+      form.setValues(templateData);
     }
-  }, [formData]);
+  }, [isFetched]);
 
   const handleAddField = () => {
     form.insertListItem(
@@ -60,6 +60,7 @@ export default function EditForm() {
       .patch(`/api/templates/${router.query.templateId}`, {
         name: values.name,
         fields: values.fields,
+        required: values.required,
       })
       .then(() => {
         showNotification({
@@ -87,9 +88,7 @@ export default function EditForm() {
     <TemplateFormProvider form={form}>
       <Container size="md">
         <Stack>
-          <Block>
-            <Title order={4}>Изменение формы: {formData && formData.name}</Title>
-          </Block>
+          <PageHeader title={`Изменение формы: ${isFetched && templateData.name}`} />
           <Box style={{ position: 'relative' }}>
             <LoadingOverlay visible={loading} overlayBlur={2} />
             <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -98,13 +97,21 @@ export default function EditForm() {
                   <Button onClick={handleAddField}>Добавить поле</Button>
                   <Button type="submit">Сохранить</Button>
                 </Group>
-                <TextInput
-                  {...form.getInputProps('name')}
-                  placeholder="Название формы"
-                  label="Название формы"
-                  required
-                  mt="xs"
-                />
+                <Stack>
+                  <TextInput
+                    {...form.getInputProps('name')}
+                    placeholder="Название формы"
+                    label="Название формы"
+                    required
+                    mt="xs"
+                  />
+                  <Switch
+                    label="Обязательный компонент"
+                    {...form.getInputProps('required', {
+                      type: 'checkbox',
+                    })}
+                  />
+                </Stack>
               </Block>
               <Stack mt="md">{fields}</Stack>
             </form>

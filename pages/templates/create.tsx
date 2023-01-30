@@ -1,17 +1,23 @@
-import { Box, Button, Container, Group, LoadingOverlay, Stack, TextInput } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Container,
+  Group,
+  LoadingOverlay,
+  Stack,
+  Switch,
+  TextInput,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { NextLink } from '@mantine/next';
-import { KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { showNotification } from '@mantine/notifications';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { TemplateField } from '../../components/Components/TemplateField';
-import { Block } from '../../components/Layout/Block/Block';
+import { Block, PageHeader } from '../../components/Layout';
 import { CreateField } from '../../lib/Field';
 import { ITemplate, LARGE_TEXT, RANGE, TEXT } from '../../types/Template';
-import { PageHeader } from '../../components/Layout';
 import { TemplateFormProvider } from '../../components/Components/TemplateContext';
 
 export default function createTemplatePage() {
@@ -19,6 +25,7 @@ export default function createTemplatePage() {
   const template = useForm<ITemplate>({
     initialValues: {
       name: '',
+      required: false,
       fields: [
         CreateField({
           name: 'Название',
@@ -68,13 +75,6 @@ export default function createTemplatePage() {
     }
   );
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   const handleAddField = () => {
     template.insertListItem(
       'fields',
@@ -107,21 +107,26 @@ export default function createTemplatePage() {
             <form onSubmit={template.onSubmit(handleSubmit)}>
               <Block>
                 <Group position="apart">
-                  <Group>
-                    <Button onClick={handleAddField}>Добавить поле</Button>
-                    <Button>Добавить категорию</Button>
-                  </Group>
+                  <Button onClick={handleAddField}>Добавить поле</Button>
                   <Group>
                     <Button type="submit">Сохранить</Button>
                   </Group>
                 </Group>
-                <TextInput
-                  {...template.getInputProps('name')}
-                  placeholder="Название формы"
-                  label="Название формы"
-                  required
-                  mt="xs"
-                />
+                <Stack>
+                  <TextInput
+                    {...template.getInputProps('name')}
+                    placeholder="Название формы"
+                    label="Название формы"
+                    required
+                    mt="xs"
+                  />
+                  <Switch
+                    label="Обязательный компонент"
+                    {...template.getInputProps('required', {
+                      type: 'checkbox',
+                    })}
+                  />
+                </Stack>
               </Block>
               <Stack mt="md">
                 {template.values.fields.map((item, index) => (

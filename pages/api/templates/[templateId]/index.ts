@@ -4,13 +4,16 @@ import FormService from '../../../../services/Template.service';
 const api = handler();
 
 api.get(async (req, res) => {
-  const formData = await FormService.getFormById(req.query.id as string);
+  const formData = await FormService.getFormById(req.query.templateId as string);
   res.send(formData);
 });
 
 api.patch(async (req, res) => {
   // TODO: Validation
-  const formData = await FormService.updateFormById({ id: req.query.id as string, data: req.body });
+  const formData = await FormService.updateFormById({
+    id: req.query.templateId as string,
+    data: req.body,
+  });
   res.send(formData);
 });
 

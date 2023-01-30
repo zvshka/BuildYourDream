@@ -14,67 +14,61 @@ import {
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
-import { Fragment, useEffect, useState } from 'react';
-import axios from 'axios';
+import { Fragment } from 'react';
 import { Block } from '../../../components/Layout/Block/Block';
-import { IComponent, ITemplate } from '../../../types/Template';
+import { useComponentData } from '../../../components/hooks/components';
+import { useTemplateData } from '../../../components/hooks/templates';
 
-const Field = ({ data }) => {
-  console.log(data);
-  return (
-    <Fragment key={data.name}>
-      <Grid.Col span={4}>
-        <Box sx={{ borderBottom: '1px solid #aaa' }}>
-          <Text size={16} weight={700}>
-            {data.name}:
+const Field = ({ data }) => (
+  <Fragment key={data.name}>
+    <Grid.Col span={4}>
+      <Box sx={{ borderBottom: '1px solid #aaa' }}>
+        <Text size={16} weight={700}>
+          {data.name}:
+        </Text>
+      </Box>
+    </Grid.Col>
+    <Grid.Col span={2}>
+      <Box
+        sx={{
+          borderBottom: '1px solid #aaa',
+          display: 'flex',
+          justifyContent: 'center',
+          height: '100%',
+          alignItems: 'center',
+        }}
+      >
+        {['NUMBER', 'TEXT', 'SELECT', 'LARGE_TEXT'].includes(data.type) && (
+          <Text>{data.value}</Text>
+        )}
+        {data.type === 'BOOL' && <Text>{data.value ? 'Да' : 'Нет'}</Text>}
+        {data.type === 'RANGE' && (
+          <Text>
+            {data.value[0]} - {data.value[1]}
           </Text>
-        </Box>
-      </Grid.Col>
-      <Grid.Col span={2}>
-        <Box
-          sx={{
-            borderBottom: '1px solid #aaa',
-            display: 'flex',
-            justifyContent: 'center',
-            height: '100%',
-            alignItems: 'center',
-          }}
-        >
-          {['NUMBER', 'TEXT', 'SELECT', 'LARGE_TEXT'].includes(data.type) && (
-            <Text>{data.value}</Text>
-          )}
-          {data.type === 'BOOL' && <Text>{data.value ? 'Да' : 'Нет'}</Text>}
-          {data.type === 'RANGE' && (
-            <Text>
-              {data.value[0]} - {data.value[1]}
-            </Text>
-          )}
-        </Box>
-      </Grid.Col>
-    </Fragment>
-  );
-};
+        )}
+      </Box>
+    </Grid.Col>
+  </Fragment>
+);
 
 export default function partPage() {
   const router = useRouter();
-  const [componentData, setComponentData] = useState<IComponent>();
-  const [templateData, setTemplateData] = useState<ITemplate & { id: string }>();
 
-  useEffect(() => {
-    axios
-      .get(`/api/components/${router.query.componentId}`)
-      .then((res) => setComponentData(res.data));
-    axios.get(`/api/templates/${router.query.categoryId}`).then((res) => setTemplateData(res.data));
-  }, []);
+  const { data: componentData, isFetched: isComponentDataFetched } = useComponentData(
+    router.query.componentId as string
+  );
 
-  console.log(componentData);
+  const { data: templateData, isFetched: isTemplateDataFetched } = useTemplateData(
+    router.query.categoryId as string
+  );
 
   return (
     <Container size="xl" p={0}>
       <Stack>
         <Block>
           <Group position="apart">
-            <Title order={2}>{componentData && componentData.data['Название']}</Title>
+            <Title order={2}>{isComponentDataFetched && componentData.data['Название']}</Title>
             <Group>
               <Button href={`/components/edit/${router.query.componentId}`} component={NextLink}>
                 Изменить
@@ -133,7 +127,7 @@ export default function partPage() {
                 <Grid.Col>
                   <Block>
                     <Spoiler maxHeight={100} hideLabel="Спрятать" showLabel="Показать все">
-                      {componentData?.data['Описание детали']}
+                      <Text>{componentData?.data['Описание детали']}</Text>
                     </Spoiler>
                   </Block>
                 </Grid.Col>
@@ -150,7 +144,7 @@ export default function partPage() {
                       })}
                     >
                       <Grid columns={6}>
-                        {templateData &&
+                        {isTemplateDataFetched &&
                           componentData &&
                           templateData.fields
                             .filter(
@@ -179,7 +173,7 @@ export default function partPage() {
                     <Grid columns={40} grow>
                       <Grid.Col span={18}>
                         <Stack>
-                          {componentData &&
+                          {isComponentDataFetched &&
                             (componentData.data?.pros?.length > 0 ? (
                               componentData.data.pros.map((pros: string, index) => (
                                 <Text key={index} color="green" weight={600}>

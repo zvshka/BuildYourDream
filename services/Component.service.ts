@@ -7,10 +7,18 @@ class ComponentService {
     });
   }
 
-  getListByTemplate(templateId: string) {
+  getListByTemplate(templateId: string, filter: any) {
     return prisma.component.findMany({
       where: {
         templateId,
+        AND: [
+          {
+            data: {
+              path: ['Название'],
+              string_contains: filter?.search || '',
+            },
+          },
+        ],
       },
     });
   }

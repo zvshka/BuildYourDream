@@ -6,6 +6,7 @@ export default function Configs() {
   return (
     <Stack>
       <PageHeader title="Пользовательские сборки" />
+      <Stack></Stack>
     </Stack>
   );
 }

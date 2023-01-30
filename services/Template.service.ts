@@ -1,11 +1,12 @@
 import { prisma } from '../lib/prisma';
 
 class TemplateService {
-  create({ name, fields }: { name: string; fields: any[] }) {
+  create({ name, required, fields }: { name: string; required: boolean; fields: any[] }) {
     return prisma.template.create({
       data: {
         name,
         fields,
+        required,
       },
     });
   }

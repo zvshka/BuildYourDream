@@ -73,8 +73,10 @@ enum FieldType {
 }
 
 model Template {
-  id   String @id @default(cuid())
-  name String @unique
+  id       String  @id @default(cuid())
+  name     String  @unique
+  required Boolean @default(false)
+  maxCount Int     @default(1)
 
   components Component[]
   fields     Json

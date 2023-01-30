@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Button, Center, Container, Group, Stack, Title } from '@mantine/core';
+import { Button, Container, Group, LoadingOverlay, Stack } from '@mantine/core';
+import { useToggle } from '@mantine/hooks';
 import {
   ComponentFormProvider,
   useComponentForm,
 } from '../../../components/Components/TemplateContext';
 import { ComponentForm } from '../../../components/Components/ComponentForm';
-import { Block } from '../../../components/Layout/Block/Block';
+import { Block, PageHeader } from '../../../components/Layout';
 import { IField } from '../../../lib/Field';
 import {
   BOOL,
@@ -19,12 +20,14 @@ import {
   SELECT,
   TEXT,
 } from '../../../types/Template';
+import { showNotification } from '@mantine/notifications';
 
 export default function editComponentPage() {
   const router = useRouter();
   const [componentData, setComponentData] = useState<IComponent>();
   const [templateData, setTemplateData] = useState<ITemplate>();
   const [templateIsReady, setTemplateIsReady] = useState<boolean>(false);
+  const [loading, toggleLoading] = useToggle();
   const form = useComponentForm({
     initialValues: {
       tier: 0,
@@ -36,7 +39,9 @@ export default function editComponentPage() {
       },
     },
   });
+
   useEffect(() => {
+    toggleLoading();
     axios
       .get(`/api/components/${router.query.componentId}`)
       .then((res) => setComponentData(res.data));
@@ -78,6 +83,7 @@ export default function editComponentPage() {
       form.setFieldValue('image', { base64: componentData?.data?.image?.url, file: null });
 
       setTemplateIsReady(true);
+      toggleLoading();
     }
   }, [templateData]);
 
@@ -101,10 +107,27 @@ export default function editComponentPage() {
     });
 
   const handleSubmit = (data: typeof form.values) => {
+    toggleLoading();
     if (data.image?.file) {
-      uploadImage(data.image.file).then((res) => saveData(data, res.data));
+      uploadImage(data.image.file)
+        .then((res) => saveData(data, res.data))
+        .then(() => {
+          showNotification({
+            title: 'Успех',
+            message: 'Компонент успешно сохранен',
+            color: 'green',
+          });
+          toggleLoading();
+        });
     } else {
-      saveData(data, { url: form.values.image?.base64 as string }).then((res) => {});
+      saveData(data, { url: form.values.image?.base64 as string }).then(() => {
+        showNotification({
+          title: 'Успех',
+          message: 'Компонент успешно сохранен',
+          color: 'green',
+        });
+        toggleLoading();
+      });
     }
   };
 
@@ -113,12 +136,9 @@ export default function editComponentPage() {
       <Container size="sm">
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack>
-            <Block>
-              <Center mb="md">
-                <Title order={2}>Изменение компонента: {componentData?.data['Название']}</Title>
-              </Center>
-            </Block>
-            <Block>
+            <PageHeader title={`Изменение компонента: ${componentData?.data['Название']}`} />
+            <Block sx={{ position: 'relative' }}>
+              <LoadingOverlay visible={loading} overlayBlur={2} />
               {templateData && templateIsReady && <ComponentForm fields={templateData.fields} />}
             </Block>
             <Group position="center">

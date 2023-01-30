@@ -4,7 +4,8 @@ import PartService from '../../../../services/Component.service';
 const api = handler();
 
 api.get(async (req, res) => {
-  const parts = await PartService.getListByTemplate(req.query.formId as string);
+  const { templateId, ...filters } = req.query;
+  const parts = await PartService.getListByTemplate(req.query.templateId as string, filters);
   res.send(parts);
 });
 

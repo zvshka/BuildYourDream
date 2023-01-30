@@ -122,6 +122,7 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
               <Textarea
                 label={field.name}
                 required={field.required}
+                autosize
                 {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
