@@ -1,17 +1,15 @@
-import { Box, Input, Popover, Text, TextInput } from '@mantine/core';
-import { useState } from 'react';
-import { getHotkeyHandler } from '@mantine/hooks';
+import { Box, Input, Popover, Text } from '@mantine/core';
+import React, { useRef, useState } from 'react';
+import { useEventListener, useMergedRef } from '@mantine/hooks';
 
-export const PopupEdit = (props: any) => {
-  const [value, setValue] = useState<string>('Hello');
+export const PopupEdit = ({ children }) => {
+  const [currentValue, setCurrentValue] = useState<string>('Hello');
   const [unsaved, setUnsaved] = useState<string>(value);
   const [opened, setOpened] = useState(false);
+  const onChangeRef = useEventListener('change', (value) => console.log(value));
+  const baseRef = useRef<HTMLInputElement>(null);
 
-  const handleSave = () => {
-    setValue(unsaved);
-    setOpened(false);
-  };
-
+  const mergedRef = useMergedRef(baseRef, onChangeRef);
   return (
     <Input.Wrapper>
       <Popover
@@ -24,15 +22,15 @@ export const PopupEdit = (props: any) => {
       >
         <Popover.Target>
           <Box sx={{ maxWidth: 200 }}>
-            <Text onClick={() => setOpened(true)}>{value}</Text>
+            <Text onClick={() => setOpened(true)}>{baseRef.current?.value || 'No data'}</Text>
           </Box>
         </Popover.Target>
         <Popover.Dropdown>
-          <TextInput
-            onKeyDown={getHotkeyHandler([['Enter', handleSave]])}
-            value={unsaved}
-            onChange={(event) => setUnsaved(event.currentTarget.value)}
-          />
+          {React.Children.map(children, (child, index) =>
+            React.cloneElement(child, {
+              ref: mergedRef,
+            })
+          )}
         </Popover.Dropdown>
       </Popover>
     </Input.Wrapper>

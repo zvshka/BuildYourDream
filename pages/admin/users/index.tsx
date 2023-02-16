@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 import { Block, PageHeader } from '../../../components/Layout';
 import { useAuth } from '../../../components/Providers/Auth/AuthWrapper';
-import dayjs from 'dayjs';
 
 function useUsersList(accessToken) {
   return useQuery({
@@ -32,8 +32,6 @@ export default function AdminUsers() {
   }, []);
 
   const { data, isLoading, isFetched, isError } = useUsersList(accessToken);
-
-  console.log(data);
 
   const rows =
     isFetched &&

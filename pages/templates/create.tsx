@@ -16,9 +16,11 @@ import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { TemplateField } from '../../components/Components/TemplateField';
 import { Block, PageHeader } from '../../components/Layout';
-import { CreateField } from '../../lib/Field';
+import { CreateField, IField } from '../../lib/Field';
 import { ITemplate, LARGE_TEXT, RANGE, TEXT } from '../../types/Template';
 import { TemplateFormProvider } from '../../components/Components/TemplateContext';
+import { SortableList } from '../../components/SortableList/SortableList';
+import { DragHandle } from '../../components/SortableList/SortableItem';
 
 export default function createTemplatePage() {
   const [loading, toggleLoading] = useToggle();
@@ -105,7 +107,7 @@ export default function createTemplatePage() {
           <Box style={{ position: 'relative' }}>
             <LoadingOverlay visible={loading} overlayBlur={2} />
             <form onSubmit={template.onSubmit(handleSubmit)}>
-              <Block>
+              <Block mb="md">
                 <Group position="apart">
                   <Button onClick={handleAddField}>Добавить поле</Button>
                   <Group>
@@ -128,11 +130,22 @@ export default function createTemplatePage() {
                   />
                 </Stack>
               </Block>
-              <Stack mt="md">
-                {template.values.fields.map((item, index) => (
-                  <TemplateField key={`field_${index}`} index={index} item={item} />
-                ))}
-              </Stack>
+              <SortableList<IField>
+                items={template.values.fields}
+                onChange={(values) => template.setFieldValue('fields', values)}
+                renderItem={(item, index) =>
+                  item.editable ? (
+                    <SortableList.Item id={item.id} key={item.id}>
+                      <DragHandle />
+                      <TemplateField index={index} item={item} />
+                    </SortableList.Item>
+                  ) : (
+                    <Block key={item.id}>
+                      <TemplateField index={index} item={item} />
+                    </Block>
+                  )
+                }
+              />
             </form>
           </Box>
         </Stack>

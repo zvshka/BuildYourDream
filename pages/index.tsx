@@ -7,18 +7,22 @@ import {
   Drawer,
   Grid,
   Group,
+  Image,
   MediaQuery,
+  Modal,
   Paper,
   Stack,
   Text,
+  Textarea,
+  TextInput,
 } from '@mantine/core';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { Block, PageHeader } from '../components/Layout';
 import { useTemplateData, useTemplatesList } from '../components/hooks/templates';
 import { IComponent, ITemplate } from '../types/Template';
-import { useComponentsList } from '../components/hooks/components';
+import { useComponentData, useComponentsList } from '../components/hooks/components';
 import { useAuth } from '../components/Providers/Auth/AuthWrapper';
 import { Filters } from '../components/Layout/Filters/Filters';
 import { ComponentRow } from '../components/Layout/ComponentRow/ComponentRow';
@@ -51,8 +55,14 @@ const useStyles = createStyles((theme) => ({
   drawerButton: {
     width: '100%',
   },
+  componentRow: {
+    '&:hover': {
+      cursor: 'pointer',
+      boxShadow: '5px 5px 5px gray',
+    },
+  },
 }));
-const ComponentsSelect = ({ template }) => {
+const ComponentsSelect = ({ template, onChange, required }) => {
   const { classes } = useStyles();
   const [showFilters, toggleFilters] = useToggle();
   const { data: templateData } = useTemplateData(template.id);
@@ -81,7 +91,11 @@ const ComponentsSelect = ({ template }) => {
               <Stack>
                 {isComponentsFetched &&
                   components.map((component: IComponent) => (
-                    <Block key={component.id}>
+                    <Block
+                      key={component.id}
+                      onClick={() => onChange(component.id)}
+                      className={classes.componentRow}
+                    >
                       <ComponentRow component={component} />
                     </Block>
                   ))}
@@ -103,8 +117,25 @@ const ComponentsSelect = ({ template }) => {
   );
 };
 
-const TemplateSelect = ({ template, index }: { template: ITemplate; index: number }) => {
+const TemplateRow = ({
+  template,
+  index,
+  onChange,
+  value,
+}: {
+  template: ITemplate;
+  index: number;
+  onChange: any;
+  value: string;
+}) => {
   const [opened, toggle] = useToggle();
+  const { data: componentData, isFetched } = useComponentData(value);
+
+  const handleChange = (v) => {
+    onChange(v);
+    toggle();
+  };
+
   return (
     <Box>
       <Box
@@ -119,12 +150,27 @@ const TemplateSelect = ({ template, index }: { template: ITemplate; index: numbe
         px="md"
       >
         <Group position="apart" align="center" sx={{ height: '100%' }}>
-          <Text>
-            {template.name} {template.required ? '*' : ''}
-          </Text>
-          <Button sx={{ width: 150 }} onClick={() => toggle()}>
-            {!opened ? '+ Добавить' : '- Свернуть'}
-          </Button>
+          {!value && (
+            <Text>
+              {template.name} {template.required ? '*' : ''}
+            </Text>
+          )}
+          {value && (
+            <Group>
+              <Image width={64} height={64} src={isFetched && componentData.data.image.url} />
+              <Text>{isFetched && componentData.data['Название']}</Text>
+            </Group>
+          )}
+          {!value && (
+            <Button sx={{ width: 150 }} onClick={() => toggle()}>
+              {!opened ? '+ Добавить' : '- Свернуть'}
+            </Button>
+          )}
+          {value && (
+            <Button sx={{ width: 150 }} onClick={() => handleChange('')}>
+              <Text>- Убрать</Text>
+            </Button>
+          )}
         </Group>
       </Box>
       <Collapse in={opened} transitionDuration={0}>
@@ -135,7 +181,11 @@ const TemplateSelect = ({ template, index }: { template: ITemplate; index: numbe
             padding: theme.spacing.xl,
           })}
         >
-          <ComponentsSelect template={template} />
+          <ComponentsSelect
+            template={template}
+            onChange={handleChange}
+            required={template.required}
+          />
         </Box>
       </Collapse>
     </Box>
@@ -144,6 +194,8 @@ const TemplateSelect = ({ template, index }: { template: ITemplate; index: numbe
 
 export default function HomePage() {
   const { data: templates, isFetched } = useTemplatesList();
+  const [modalVisible, toggleModal] = useToggle();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const form = useForm({
     initialValues: {
@@ -154,36 +206,50 @@ export default function HomePage() {
 
   const { user } = useAuth();
 
+  const handleSubmit = (values) => {
+    console.log(values);
+  };
+
   return (
     <Stack>
       <PageHeader title="Конфигуратор" />
-      <form>
-        <>
-          <Block p={0}>
-            <Stack spacing="xs">
-              <Box>
-                {isFetched && (
-                  <>
-                    {templates.map((template: ITemplate, i: number) => (
-                      <TemplateSelect
-                        template={template}
-                        key={template.id}
-                        index={i}
-                        {...form.getInputProps(template.name)}
-                      />
-                    ))}
-                  </>
-                )}
-              </Box>
+      <Block p={0}>
+        <form ref={formRef} onSubmit={form.onSubmit(handleSubmit)}>
+          <Modal
+            opened={modalVisible}
+            withinPortal
+            onClose={() => toggleModal()}
+            target={formRef.current as HTMLElement}
+            title="Сохранение сборки"
+          >
+            <Stack>
+              <TextInput label="Название сборки" required {...form.getInputProps('title')} />
+              <Textarea label="Описание сборки" required {...form.getInputProps('description')} />
+              <Button type="submit">Сохранить</Button>
             </Stack>
-          </Block>
-          <Group position="center" mt="xl">
-            <Button type="submit" sx={{ width: 300 }} disabled={!user?.id}>
-              Сохранить
-            </Button>
-          </Group>
-        </>
-      </form>
+          </Modal>
+          <Stack spacing="xs">
+            <Box>
+              {isFetched &&
+                templates
+                  .filter((template: any) => template.showInConfigurator)
+                  .map((template: ITemplate, i: number) => (
+                    <TemplateRow
+                      template={template}
+                      key={template.id}
+                      index={i}
+                      {...form.getInputProps(template.id as string)}
+                    />
+                  ))}
+            </Box>
+          </Stack>
+        </form>
+      </Block>
+      <Group position="center" mt="xl">
+        <Button onClick={() => toggleModal()} sx={{ width: 300 }} disabled={!user?.id}>
+          Сохранить
+        </Button>
+      </Group>
     </Stack>
   );
 }

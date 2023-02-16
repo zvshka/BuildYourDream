@@ -1,26 +1,19 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Button,
-  Container,
-  Group,
-  LoadingOverlay,
-  Stack,
-  Switch,
-  TextInput,
-} from '@mantine/core';
+import { Box, Button, Container, Group, LoadingOverlay, Stack, TextInput } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import { TemplateField } from '../../../components/Components/TemplateField';
 import { Block } from '../../../components/Layout/Block/Block';
-import { CreateField } from '../../../lib/Field';
-import { ITemplate } from '../../../types/Template';
+import { CreateField, IField } from '../../../lib/Field';
+import { ITemplate, TEXT } from '../../../types/Template';
 import { TemplateFormProvider } from '../../../components/Components/TemplateContext';
 import { PageHeader } from '../../../components/Layout';
 import { useTemplateData } from '../../../components/hooks/templates';
+import { SortableList } from '../../../components/SortableList/SortableList';
+import { DragHandle } from '../../../components/SortableList/SortableItem';
 
 export default function EditForm() {
   const [loading, toggleLoading] = useToggle();
@@ -49,7 +42,7 @@ export default function EditForm() {
       'fields',
       CreateField({
         name: `Поле ${form.values.fields.length + 1}`,
-        type: 'TEXT',
+        type: TEXT,
       })
     );
   };
@@ -80,10 +73,6 @@ export default function EditForm() {
       });
   };
 
-  const fields = form.values.fields.map((item, index) => (
-    <TemplateField key={`field_${index}`} index={index} item={item} />
-  ));
-
   return (
     <TemplateFormProvider form={form}>
       <Container size="md">
@@ -92,7 +81,7 @@ export default function EditForm() {
           <Box style={{ position: 'relative' }}>
             <LoadingOverlay visible={loading} overlayBlur={2} />
             <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Block>
+              <Block mb="md">
                 <Group position="apart">
                   <Button onClick={handleAddField}>Добавить поле</Button>
                   <Button type="submit">Сохранить</Button>
@@ -105,15 +94,24 @@ export default function EditForm() {
                     required
                     mt="xs"
                   />
-                  <Switch
-                    label="Обязательный компонент"
-                    {...form.getInputProps('required', {
-                      type: 'checkbox',
-                    })}
-                  />
                 </Stack>
               </Block>
-              <Stack mt="md">{fields}</Stack>
+              <SortableList<IField>
+                items={form.values.fields}
+                onChange={(values) => form.setFieldValue('fields', values)}
+                renderItem={(item, index) =>
+                  item.editable ? (
+                    <SortableList.Item id={item.id} key={item.id}>
+                      <DragHandle />
+                      <TemplateField index={index} item={item} />
+                    </SortableList.Item>
+                  ) : (
+                    <Block key={item.id}>
+                      <TemplateField index={index} item={item} />
+                    </Block>
+                  )
+                }
+              />
             </form>
           </Box>
         </Stack>

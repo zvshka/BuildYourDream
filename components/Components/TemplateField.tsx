@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Box,
   Group,
   Input,
   MultiSelect,
@@ -11,10 +12,7 @@ import {
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 import { useEffect } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { fieldTypes } from '../../types/Template';
-import { Block } from '../Layout/Block/Block';
 import { CreateField } from '../../lib/Field';
 import { useTemplateFormContext } from './TemplateContext';
 
@@ -22,22 +20,13 @@ export const TemplateField = (props) => {
   const { item, index } = props;
   const template = useTemplateFormContext();
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: item.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
   useEffect(() => {
     const field = CreateField(item);
     template.setFieldValue(`fields.${index}`, field);
-  }, [template.values.fields[index].type]);
+  }, [template.values.fields[index]?.type]);
 
   return (
-    <Block key={`field_${index}`} ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <Box>
       <Stack mt="xs" spacing="xs">
         <Group>
           <TextInput
@@ -78,7 +67,7 @@ export const TemplateField = (props) => {
               label="Необходимо пояснение?"
               {...template.getInputProps(`fields.${index}.haveDescription`, { type: 'checkbox' })}
             />
-            {template.values.fields[index].haveDescription && (
+            {template.values.fields[index]?.haveDescription && (
               <Textarea
                 placeholder="Опишите на что влияет это поле или что это значит"
                 {...template.getInputProps(`fields.${index}.description`)}
@@ -86,7 +75,7 @@ export const TemplateField = (props) => {
             )}
           </Stack>
         </Input.Wrapper>
-        {template.values.fields[index].type === 'SELECT' && (
+        {template.values.fields[index]?.type === 'SELECT' && (
           <MultiSelect
             creatable
             searchable
@@ -103,6 +92,6 @@ export const TemplateField = (props) => {
           />
         )}
       </Stack>
-    </Block>
+    </Box>
   );
 };

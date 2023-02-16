@@ -11,9 +11,9 @@ import {
   TextInput,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { IField } from '../../../lib/Field';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/router';
+import { IField } from '../../../lib/Field';
 
 const boolValues = [
   { value: 'all', label: 'Все' },
@@ -90,7 +90,7 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
             fields
               .filter((field: any) => !['TEXT', 'LARGE_TEXT'].includes(field.type))
               .map((field: any) => (
-                <Accordion.Item value={field.name}>
+                <Accordion.Item value={field.name} key={field.name}>
                   <Accordion.Control>{field.name}</Accordion.Control>
                   <Accordion.Panel>
                     {field.type === 'SELECT' && (

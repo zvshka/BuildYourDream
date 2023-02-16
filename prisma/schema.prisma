@@ -77,6 +77,9 @@ model Template {
   name     String  @unique
   required Boolean @default(false)
   maxCount Int     @default(1)
+  position Int     @default(autoincrement())
+
+  showInConfigurator Boolean @default(false)
 
   components Component[]
   fields     Json

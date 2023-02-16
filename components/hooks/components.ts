@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-export function useComponentsList(templateId: string, filter: any) {
-  console.log(filter);
+export function useComponentsList(templateId: string, filter?: any) {
   return useQuery({
     queryKey: ['components', 'list', templateId],
     queryFn: async (ctx) => {
