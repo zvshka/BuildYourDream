@@ -40,15 +40,25 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
   return (
     <Header height={70} p="md" className={classes.header}>
       <Group position="apart" className={classes.container}>
-        <Group position="apart">
-          <Title order={3} className={classes.logo}>
-            <Text
-              color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
-            >
-              Build Your Dream
-            </Text>
-          </Title>
-          <Code className={classes.version}>v3.1.3</Code>
+        <Group>
+          <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
+            <Burger
+              opened={opened}
+              onClick={() => setOpened((o: any) => !o)}
+              size="sm"
+              color={theme.colors.gray[6]}
+            />
+          </MediaQuery>
+          <Group position="apart">
+            <Title order={3} className={classes.logo}>
+              <Text
+                color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
+              >
+                Build Your Dream
+              </Text>
+            </Title>
+            <Code className={classes.version}>v3.1.3</Code>
+          </Group>
         </Group>
         <MediaQuery smallerThan="xl" styles={{ display: 'none' }}>
           <Box>

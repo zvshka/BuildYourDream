@@ -1,9 +1,13 @@
 import {
+  Avatar,
+  Box,
   Collapse,
   createStyles,
+  Group,
   Navbar,
   SegmentedControl,
   Text,
+  Tooltip,
   UnstyledButton,
 } from '@mantine/core';
 import { Icon3dCubeSphere, IconCpu, IconDeviceDesktop, IconLogout, IconUser } from '@tabler/icons';
@@ -20,6 +24,19 @@ const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
 
   return {
+    user: {
+      // padding: theme.spacing.xs / 2,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+      borderRadius: theme.radius.sm,
+      width: '100%',
+      '&:hover': {
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[3],
+      },
+    },
+
     navbar: {
       backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
     },
@@ -41,6 +58,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
       fontWeight: 500,
       width: '100%',
       marginBottom: theme.spacing.sm,
+      gap: theme.spacing.sm,
 
       '&:hover': {
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[2],
@@ -70,7 +88,6 @@ const useStyles = createStyles((theme, _params, getRef) => {
     linkIcon: {
       ref: icon,
       color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
-      marginRight: theme.spacing.sm,
     },
 
     linkActive: {
@@ -92,6 +109,31 @@ const useStyles = createStyles((theme, _params, getRef) => {
     },
   };
 });
+
+function NavbarLink({ item, style }: { item: any; style?: any }) {
+  const { classes, cx } = useStyles();
+  const router = useRouter();
+  return (
+    <Tooltip label={item.label} position="right" transitionDuration={0}>
+      {/*@ts-ignore*/}
+      <UnstyledButton
+        className={cx(classes.link, item.classes, {
+          [classes.linkActive]:
+            item.link !== '/' ? router.asPath.startsWith(item.link) : item.link === router.asPath,
+        })}
+        {...(item.onClick
+          ? { onClick: item.onClick }
+          : {
+              href: item.link,
+              component: NextLink,
+            })}
+        style={style}
+      >
+        <item.icon stroke={1.5} className={classes.linkIcon} />
+      </UnstyledButton>
+    </Tooltip>
+  );
+}
 
 const tabs = {
   userPages: [
@@ -131,30 +173,34 @@ export function NavbarSimpleColored({ opened }: any) {
     });
   };
 
-  const links = tabs[section].map((item) => (
-    <UnstyledButton
-      href={item.link}
-      key={item.label}
-      component={NextLink}
-      className={cx(classes.link, {
-        [classes.linkActive]:
-          item.link !== '/' ? router.asPath.startsWith(item.link) : item.link === router.asPath,
-      })}
-    >
-      <item.icon className={classes.linkIcon} stroke={1.5} />
-      <span>{item.label}</span>
-    </UnstyledButton>
-  ));
+  const links = tabs[section].map((item) =>
+    opened ? (
+      <UnstyledButton
+        href={item.link}
+        key={item.label}
+        component={NextLink}
+        className={cx(classes.link, {
+          [classes.linkActive]:
+            item.link !== '/' ? router.asPath.startsWith(item.link) : item.link === router.asPath,
+        })}
+      >
+        <item.icon className={classes.linkIcon} stroke={1.5} />
+        <span>{item.label}</span>
+      </UnstyledButton>
+    ) : (
+      <NavbarLink key={item.label} item={item} />
+    )
+  );
 
   return (
     <Navbar
-      width={{ sm: 300 }}
+      width={{ sm: opened ? 300 : 80 }}
       p="md"
       className={classes.navbar}
       hidden={!opened}
       hiddenBreakpoint="sm"
     >
-      {user?.role === 'ADMIN' && (
+      {opened && user?.role === 'ADMIN' && (
         <Navbar.Section>
           <SegmentedControl
             value={section}
@@ -177,34 +223,73 @@ export function NavbarSimpleColored({ opened }: any) {
         {user && (
           <>
             <Collapse in={visible}>
-              <UnstyledButton href="/profile" component={NextLink} className={classes.link}>
-                <IconUser className={classes.linkIcon} stroke={1.5} />
-                <span>Профиль</span>
-              </UnstyledButton>
-              <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>
-                <IconLogout className={classes.linkIcon} stroke={1.5} />
-                <span>Выйти</span>
-              </UnstyledButton>
+              {opened ? (
+                <UnstyledButton href="/profile" component={NextLink} className={classes.link}>
+                  <IconUser className={classes.linkIcon} stroke={1.5} />
+                  <span>Профиль</span>
+                </UnstyledButton>
+              ) : (
+                <NavbarLink
+                  item={{
+                    link: '/profile',
+                    label: 'Профиль',
+                    icon: IconUser,
+                  }}
+                />
+              )}
+              {opened ? (
+                <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>
+                  <IconLogout className={classes.linkIcon} stroke={1.5} />
+                  <span>Выйти</span>
+                </UnstyledButton>
+              ) : (
+                <NavbarLink
+                  item={{
+                    onClick: handleLogout,
+                    label: 'Выйти',
+                    icon: IconLogout,
+                    classes: [classes.logout],
+                  }}
+                />
+              )}
             </Collapse>
-            <UserButton
-              image=""
-              name={user.username as string}
-              email={user.email}
-              onClick={() => toggle()}
-            />
+            {opened ? (
+              <UserButton
+                image=""
+                name={user.username as string}
+                email={user.email}
+                onClick={() => toggle()}
+              />
+            ) : (
+              <Tooltip label="Пользователь" position="right" transitionDuration={0}>
+                <UnstyledButton className={classes.user} onClick={() => toggle()} py={4}>
+                  <Avatar radius="xl" />
+                </UnstyledButton>
+              </Tooltip>
+            )}
           </>
         )}
-        {!user && (
-          <UnstyledButton
-            className={classes.link}
-            sx={{ marginBottom: 0 }}
-            component={NextLink}
-            href="/auth/signin"
-          >
-            <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <span>Вход</span>
-          </UnstyledButton>
-        )}
+        {!user &&
+          (opened ? (
+            <UnstyledButton
+              className={classes.link}
+              sx={{ marginBottom: 0 }}
+              component={NextLink}
+              href="/auth/signin"
+            >
+              <IconLogout className={classes.linkIcon} stroke={1.5} />
+              <span>Вход</span>
+            </UnstyledButton>
+          ) : (
+            <NavbarLink
+              style={{ marginBottom: 0 }}
+              item={{
+                link: '/auth/signin',
+                icon: IconLogout,
+                label: 'Вход',
+              }}
+            />
+          ))}
       </Navbar.Section>
     </Navbar>
   );
