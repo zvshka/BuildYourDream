@@ -20,18 +20,20 @@ import {
   ComponentFormProvider,
   useComponentForm,
 } from '../../components/Components/TemplateContext';
-import { IField } from '../../lib/Field';
-import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/Template';
+import { IField } from '../../types/Field';
+import { BOOL, DEPENDS_ON, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/FieldTypes';
+import { useTemplatesList } from '../../components/hooks/templates';
+import { ITemplate } from '../../types/Template';
 
 export default function CreatePart() {
   const router = useRouter();
-  const [forms, setForms] = useState([]);
-  const [selectedForm, setSelectedForm] = useState<any>({});
+  const [templateId, setTemplateId] = useState<string>();
+  const [selectedTemplate, setSelectedTemplate] = useState<ITemplate | null>();
   const form = useComponentForm({
     initialValues: {
       pros: [],
       cons: [],
-      tier: 0,
+      tier: 'low',
       image: {
         base64: '',
         file: null,
@@ -42,6 +44,14 @@ export default function CreatePart() {
 
   const [active, setActive] = useState(0);
   const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
+
+  const nextStep = () =>
+    setActive((current) => {
+      if (form.validate().hasErrors) {
+        return current;
+      }
+      return current < 3 ? current + 1 : current;
+    });
 
   const uploadImage = (file: File) => {
     const formData = new FormData();
@@ -59,11 +69,10 @@ export default function CreatePart() {
         ...data,
         image,
       },
-      templateId: selectedForm?.id,
+      templateId,
     });
 
   const handleSubmit = (data: typeof form.values) => {
-    if (active < 2) return setActive((current) => (current < 3 ? current + 1 : current));
     toggleLoading();
     if (data.image?.file) {
       uploadImage(data.image.file)
@@ -89,15 +98,15 @@ export default function CreatePart() {
     return true;
   };
 
-  useEffect(() => {
-    axios.get('/api/templates').then((res) => {
-      setForms(res.data.map((formData: any) => ({ label: formData.name, value: formData })));
-    });
-  }, []);
+  const { data: templates, isFetched, isSuccess } = useTemplatesList();
 
-  const handleSelectForm = (value: any) => {
-    setSelectedForm(value);
-    value.fields.forEach((field: IField) => {
+  const handleSelectTemplate = (value: string) => {
+    setTemplateId(value);
+    if (!isSuccess) return;
+    const template = templates.find((t) => t.id === value);
+    if (!template) return;
+    setSelectedTemplate(template);
+    template.fields.forEach((field: IField) => {
       switch (field.type) {
         case TEXT:
         case LARGE_TEXT:
@@ -115,24 +124,34 @@ export default function CreatePart() {
         case SELECT:
           form.setFieldValue(field.name, form.values[field.name] || '');
           break;
+        case DEPENDS_ON:
+          form.setFieldValue(
+            field.name,
+            form.values[field.name] || {
+              template: '',
+              field: '',
+            }
+          );
+          break;
       }
     });
   };
 
   useEffect(() => {
     if (
-      forms &&
-      forms.length > 0 &&
+      isFetched &&
+      isSuccess &&
+      templates.length > 0 &&
       router.query &&
       router.query.templateId &&
-      forms.map((f: any) => f.value.id).includes(router.query.templateId as string)
+      templates.map((t: any) => t.id).includes(router.query.templateId as string)
     ) {
-      const possibleForm: any = forms.find((f: any) => f.value.id === router.query.templateId);
-      if (possibleForm) {
-        handleSelectForm(possibleForm.value);
+      const possibleTemplate = templates.find((t: ITemplate) => t.id === router.query.templateId);
+      if (possibleTemplate) {
+        handleSelectTemplate(possibleTemplate.id as string);
       }
     }
-  }, [forms]);
+  }, [isFetched, templates]);
 
   return (
     <ComponentFormProvider form={form}>
@@ -146,12 +165,16 @@ export default function CreatePart() {
                   <Text>Шаг 1. Выбери форму того компонента, который хочешь добавить</Text>
                 </Center>
                 <Select
-                  data={forms}
+                  data={
+                    isFetched && isSuccess
+                      ? templates.map((t) => ({ label: t.name, value: t.id as string }))
+                      : []
+                  }
                   label="Тип"
                   searchable
                   required
-                  value={selectedForm}
-                  onChange={handleSelectForm}
+                  value={templateId}
+                  onChange={handleSelectTemplate}
                 />
               </Stepper.Step>
               <Stepper.Step label="Второй шаг" description="Информация">
@@ -159,19 +182,24 @@ export default function CreatePart() {
                   <Text>Шаг 2. Заполни форму настолько, насколько возможно</Text>
                 </Center>
                 <Center mb="md">
-                  <Title order={2}>Добавление компонента: {selectedForm?.name}</Title>
+                  <Title order={2}>Добавление компонента: {selectedTemplate?.name}</Title>
                 </Center>
-                <ComponentForm fields={selectedForm.fields} />
+                <ComponentForm fields={selectedTemplate?.fields || []} />
               </Stepper.Step>
               <Stepper.Completed>
-                <Text>Отлично! Можно сохранять</Text>
+                <Center py="xl">
+                  <Title order={3}>Отлично! Можно сохранять</Title>
+                </Center>
               </Stepper.Completed>
             </Stepper>
             <Group position="center" mt="xl">
-              <Button variant="default" onClick={prevStep}>
-                Назад
-              </Button>
-              <Button type="submit">{active === 2 ? 'Сохранить' : 'Далее'}</Button>
+              {active !== 0 && (
+                <Button variant="default" onClick={prevStep}>
+                  Назад
+                </Button>
+              )}
+              {active !== 2 && <Button onClick={nextStep}>Далее</Button>}
+              {active === 2 && <Button type="submit">Сохранить</Button>}
             </Group>
           </form>
         </Block>

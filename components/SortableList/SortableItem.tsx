@@ -2,9 +2,8 @@ import React, { createContext, CSSProperties, PropsWithChildren, useContext, use
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DraggableSyntheticListeners, UniqueIdentifier } from '@dnd-kit/core';
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, Box } from '@mantine/core';
 import { IconDotsVertical } from '@tabler/icons';
-import { Block } from '../Layout';
 
 interface Context {
   attributes: Record<string, any>;
@@ -59,9 +58,9 @@ export function SortableItem({ children, id }: PropsWithChildren<ItemProps>) {
 
   return (
     <SortableItemContext.Provider value={context}>
-      <Block ref={setNodeRef} style={style}>
+      <Box ref={setNodeRef} style={style}>
         {children}
-      </Block>
+      </Box>
     </SortableItemContext.Provider>
   );
 }

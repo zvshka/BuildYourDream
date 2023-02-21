@@ -13,7 +13,17 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import { IField } from '../../../lib/Field';
+import { IField } from '../../../types/Field';
+import { useTemplatesList } from '../../hooks/templates';
+import {
+  BOOL,
+  DEPENDS_ON,
+  LARGE_TEXT,
+  NUMBER,
+  RANGE,
+  SELECT,
+  TEXT,
+} from '../../../types/FieldTypes';
 
 const boolValues = [
   { value: 'all', label: 'Все' },
@@ -54,6 +64,27 @@ const useStyles = createStyles((theme) => ({
 export const Filters = ({ fields }: { fields: IField[] }) => {
   const router = useRouter();
   const { classes } = useStyles();
+  const { data: templates, isFetched, isSuccess } = useTemplatesList();
+  // const [values, setValues] = useState([]);
+  //
+  // useEffect(() => {
+  //   if (isFetched && isSuccess) {
+  //     // const data = templates
+  //     //   .find((t) => t.id === field.depends_on?.template)
+  //     //   ?.fields.find((f) => f.id === field.depends_on?.field).options;
+  //     const template = templates.find(t => t.id === )
+  //     setValues(data);
+  //   }
+  // }, [isFetched, isSuccess]);
+
+  const getValues = (field: IField) => {
+    if (!isFetched || !isSuccess) return [];
+    const template = templates.find((t) => t.id === field.depends_on?.template);
+    if (!template) return [];
+    const templateField = template.fields.find((f) => f.id === field.depends_on?.field);
+    if (!templateField) return [];
+    return templateField.options || [];
+  };
 
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
@@ -88,12 +119,12 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
           </Accordion.Item>
           {fields &&
             fields
-              .filter((field: any) => !['TEXT', 'LARGE_TEXT'].includes(field.type))
+              .filter((field: any) => ![TEXT, LARGE_TEXT].includes(field.type))
               .map((field: any) => (
                 <Accordion.Item value={field.name} key={field.name}>
                   <Accordion.Control>{field.name}</Accordion.Control>
                   <Accordion.Panel>
-                    {field.type === 'SELECT' && (
+                    {field.type === SELECT && (
                       <Checkbox.Group orientation="vertical">
                         {field.options.map((option: string, key: number) => (
                           <Checkbox
@@ -104,13 +135,24 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
                         ))}
                       </Checkbox.Group>
                     )}
-                    {(field.type === 'RANGE' || field.type === 'NUMBER') && (
+                    {(field.type === RANGE || field.type === NUMBER) && (
                       <Group grow>
                         <NumberInput placeholder="От" />
                         <NumberInput placeholder="До" />
                       </Group>
                     )}
-                    {field.type === 'BOOL' && <Select data={boolValues} defaultValue="all" />}
+                    {field.type === BOOL && <Select data={boolValues} defaultValue="all" />}
+                    {field.type === DEPENDS_ON && (
+                      <Checkbox.Group orientation="vertical">
+                        {getValues(field).map((option: string, key: number) => (
+                          <Checkbox
+                            label={option}
+                            value={option}
+                            key={`${field.name}_option_${key}`}
+                          />
+                        ))}
+                      </Checkbox.Group>
+                    )}
                   </Accordion.Panel>
                 </Accordion.Item>
               ))}

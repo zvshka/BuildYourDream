@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Stack } from '@mantine/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { DragHandle, SortableItem } from './SortableItem';
 import { SortableOverlay } from './SortableOverlay';
 
@@ -38,6 +39,7 @@ export function SortableList<T extends BaseItem>({ items, onChange, renderItem }
   return (
     <DndContext
       sensors={sensors}
+      modifiers={[restrictToVerticalAxis]}
       onDragStart={({ active: currentItem }) => {
         setActive(currentItem);
       }}

@@ -43,6 +43,8 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
         <Group>
           <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
             <Burger
+              ml="xs"
+              mr="sm"
               opened={opened}
               onClick={() => setOpened((o: any) => !o)}
               size="sm"

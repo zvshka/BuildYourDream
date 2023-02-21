@@ -1,20 +1,4 @@
-import { IField } from '../lib/Field';
-
-export const TEXT = 'TEXT';
-export const NUMBER = 'NUMBER';
-export const BOOL = 'BOOL';
-export const LARGE_TEXT = 'LARGE_TEXT';
-export const RANGE = 'RANGE';
-export const SELECT = 'SELECT';
-
-export const fieldTypes = [
-  { value: TEXT, label: 'Текстовое' },
-  { value: NUMBER, label: 'Числовое' },
-  { value: BOOL, label: 'Булевое' },
-  { value: LARGE_TEXT, label: 'Много текста' },
-  { value: RANGE, label: 'Промежуток' },
-  { value: SELECT, label: 'Выбор' },
-];
+import { IField } from './Field';
 
 export interface IComponentImage {
   base64: string;
@@ -22,18 +6,18 @@ export interface IComponentImage {
   url?: string;
 }
 
-export interface IConstraint {}
-
 export interface ITemplate {
-  id?: string;
+  id: string;
   name: string;
   required: boolean;
+  position: number;
+  showInConfigurator: boolean;
   fields: IField[];
 }
 
 export interface IComponent {
   image?: IComponentImage;
-  tier: number;
+  tier: 'low' | 'medium' | 'high';
   pros: string[];
   cons: string[];
 

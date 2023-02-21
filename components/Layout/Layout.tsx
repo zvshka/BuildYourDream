@@ -15,10 +15,11 @@ export default function Layout({
       styles={{
         main: {
           background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[2],
+          paddingLeft: '16px',
         },
       }}
       navbarOffsetBreakpoint="sm"
-      navbar={<NavbarSimpleColored opened={opened} />}
+      navbar={<NavbarSimpleColored opened={opened} setOpened={setOpened} />}
       header={<HeaderWithLogo opened={opened} setOpened={setOpened} />}
     >
       {children}

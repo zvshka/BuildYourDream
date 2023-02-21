@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { ITemplate } from '../../types/Template';
 
 export function useTemplatesList() {
-  return useQuery({
+  return useQuery<ITemplate[]>({
     queryKey: ['templates', 'list'],
     queryFn: async () => {
       const { data } = await axios.get('/api/templates');

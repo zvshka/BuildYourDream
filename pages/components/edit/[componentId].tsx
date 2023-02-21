@@ -9,18 +9,10 @@ import {
 } from '../../../components/Components/TemplateContext';
 import { ComponentForm } from '../../../components/Components/ComponentForm';
 import { Block, PageHeader } from '../../../components/Layout';
-import { IField } from '../../../lib/Field';
-import {
-  BOOL,
-  IComponent,
-  ITemplate,
-  LARGE_TEXT,
-  NUMBER,
-  RANGE,
-  SELECT,
-  TEXT,
-} from '../../../types/Template';
+import { IField } from '../../../types/Field';
+import { IComponent, ITemplate } from '../../../types/Template';
 import { showNotification } from '@mantine/notifications';
+import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../../types/FieldTypes';
 
 export default function editComponentPage() {
   const router = useRouter();
@@ -30,7 +22,7 @@ export default function editComponentPage() {
   const [loading, toggleLoading] = useToggle();
   const form = useComponentForm({
     initialValues: {
-      tier: 0,
+      tier: 'low',
       pros: [],
       cons: [],
       image: {

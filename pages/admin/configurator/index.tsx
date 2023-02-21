@@ -6,21 +6,16 @@ import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { storage } from '../../../lib/utils';
 import { useTemplatesList } from '../../../components/hooks/templates';
-import { PageHeader } from '../../../components/Layout';
+import { Block, PageHeader } from '../../../components/Layout';
 import { queryClient } from '../../../components/Providers/QueryProvider/QueryProvider';
 import { SortableList } from '../../../components/SortableList/SortableList';
+import { ITemplate } from '../../../types/Template';
 
 export default function AdminConfigurator() {
-  const { data: templates, isFetched } = useTemplatesList();
+  const { data: templates, isFetched, isSuccess } = useTemplatesList();
 
   const form = useForm<{
-    templates: {
-      required: boolean;
-      id: string;
-      name: string;
-      position: number;
-      showInConfigurator: boolean;
-    }[];
+    templates: ITemplate[];
   }>({
     initialValues: {
       templates: [],
@@ -28,8 +23,8 @@ export default function AdminConfigurator() {
   });
 
   useEffect(() => {
-    isFetched && form.setFieldValue('templates', templates);
-  }, [isFetched]);
+    isSuccess && form.setFieldValue('templates', templates);
+  }, [isSuccess, isFetched]);
 
   const templatesUpdate = useMutation(
     (templatesData: any) =>
@@ -57,9 +52,11 @@ export default function AdminConfigurator() {
     }
   );
   const handleSubmit = (values: typeof form.values) => {
+    if (!isSuccess) return;
     const toSend = values.templates
       .map((v, index) => {
         const original = templates.find((template) => template.id === v.id);
+        if (!original) return {};
         const isPositionChanged = original.position !== index + 1;
         return {
           id: v.id,
@@ -70,6 +67,7 @@ export default function AdminConfigurator() {
       })
       .filter((v, index) => {
         const original = templates.find((template) => template.id === v.id);
+        if (!original) return false;
         if (
           original.position !== v.position ||
           v.showInConfigurator !== original.showInConfigurator ||
@@ -90,31 +88,33 @@ export default function AdminConfigurator() {
           title="Настройка конфигуратора"
           rightSection={<Button type="submit">Сохранить</Button>}
         />
-        <SortableList
+        <SortableList<ITemplate>
           items={form.values.templates}
           onChange={(values) => form.setFieldValue('templates', values)}
           renderItem={(item, index) => (
             <SortableList.Item id={item.id} key={item.id}>
-              <Group position="apart">
-                <Stack>
-                  <Text>{item.name}</Text>
-                  <Group>
-                    <Switch
-                      label="Показывать в конфигураторе"
-                      {...form.getInputProps(`templates.${index}.showInConfigurator`, {
-                        type: 'checkbox',
-                      })}
-                    />
-                    <Switch
-                      label="Обязательный компонент"
-                      {...form.getInputProps(`templates.${index}.required`, {
-                        type: 'checkbox',
-                      })}
-                    />
-                  </Group>
-                </Stack>
-                <SortableList.DragHandle />
-              </Group>
+              <Block>
+                <Group position="apart">
+                  <Stack>
+                    <Text>{item.name}</Text>
+                    <Group>
+                      <Switch
+                        label="Показывать в конфигураторе"
+                        {...form.getInputProps(`templates.${index}.showInConfigurator`, {
+                          type: 'checkbox',
+                        })}
+                      />
+                      <Switch
+                        label="Обязательный компонент"
+                        {...form.getInputProps(`templates.${index}.required`, {
+                          type: 'checkbox',
+                        })}
+                      />
+                    </Group>
+                  </Stack>
+                  <SortableList.DragHandle />
+                </Group>
+              </Block>
             </SortableList.Item>
           )}
         />

@@ -2,9 +2,9 @@ import { Box, Input, Popover, Text } from '@mantine/core';
 import React, { useRef, useState } from 'react';
 import { useEventListener, useMergedRef } from '@mantine/hooks';
 
-export const PopupEdit = ({ children }) => {
+export const PopupEdit = ({ children }: { children?: any }) => {
   const [currentValue, setCurrentValue] = useState<string>('Hello');
-  const [unsaved, setUnsaved] = useState<string>(value);
+  const [unsaved, setUnsaved] = useState<string>();
   const [opened, setOpened] = useState(false);
   const onChangeRef = useEventListener('change', (value) => console.log(value));
   const baseRef = useRef<HTMLInputElement>(null);

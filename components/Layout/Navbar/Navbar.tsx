@@ -5,9 +5,12 @@ import {
   createStyles,
   Group,
   Navbar,
+  Overlay,
+  Portal,
   SegmentedControl,
   Text,
   Tooltip,
+  Transition,
   UnstyledButton,
 } from '@mantine/core';
 import { Icon3dCubeSphere, IconCpu, IconDeviceDesktop, IconLogout, IconUser } from '@tabler/icons';
@@ -25,7 +28,6 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
   return {
     user: {
-      // padding: theme.spacing.xs / 2,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -39,6 +41,10 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
     navbar: {
       backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+      transition: 'all ease-in-out',
+      padding: theme.spacing.md,
+      position: 'absolute',
+      zIndex: 10,
     },
 
     title: {
@@ -53,7 +59,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
       textDecoration: 'none',
       fontSize: theme.fontSizes.sm,
       color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[7],
-      padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+      padding: theme.spacing.sm,
       borderRadius: theme.radius.sm,
       fontWeight: 500,
       width: '100%',
@@ -148,7 +154,7 @@ const tabs = {
   ],
 };
 
-export function NavbarSimpleColored({ opened }: any) {
+export function NavbarSimpleColored({ opened, setOpened }: any) {
   const { classes, cx } = useStyles();
   const router = useRouter();
   const [visible, toggle] = useToggle();
@@ -173,124 +179,110 @@ export function NavbarSimpleColored({ opened }: any) {
     });
   };
 
-  const links = tabs[section].map((item) =>
-    opened ? (
-      <UnstyledButton
-        href={item.link}
-        key={item.label}
-        component={NextLink}
-        className={cx(classes.link, {
-          [classes.linkActive]:
-            item.link !== '/' ? router.asPath.startsWith(item.link) : item.link === router.asPath,
-        })}
-      >
-        <item.icon className={classes.linkIcon} stroke={1.5} />
-        <span>{item.label}</span>
-      </UnstyledButton>
-    ) : (
-      <NavbarLink key={item.label} item={item} />
-    )
-  );
+  const links = tabs[section].map((item) => (
+    <UnstyledButton
+      href={item.link}
+      key={item.label}
+      component={NextLink}
+      onClick={() => setOpened(false)}
+      className={cx(classes.link, {
+        [classes.linkActive]:
+          item.link !== '/' ? router.asPath.startsWith(item.link) : item.link === router.asPath,
+      })}
+    >
+      <item.icon className={classes.linkIcon} stroke={1.5} />
+      <span>{item.label}</span>
+    </UnstyledButton>
+  ));
 
   return (
-    <Navbar
-      width={{ sm: opened ? 300 : 80 }}
-      p="md"
-      className={classes.navbar}
-      hidden={!opened}
-      hiddenBreakpoint="sm"
-    >
-      {opened && user?.role === 'ADMIN' && (
-        <Navbar.Section>
-          <SegmentedControl
-            value={section}
-            onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
-            transitionTimingFunction="ease"
-            fullWidth
-            data={[
-              { label: 'User', value: 'userPages' },
-              { label: 'Admin', value: 'adminPages' },
-            ]}
-          />
-        </Navbar.Section>
-      )}
-
-      <Navbar.Section grow mt={user?.role === 'ADMIN' ? 'xl' : 0}>
-        {links}
-      </Navbar.Section>
-
-      <Navbar.Section className={classes.footer}>
-        {user && (
-          <>
-            <Collapse in={visible}>
-              {opened ? (
-                <UnstyledButton href="/profile" component={NextLink} className={classes.link}>
-                  <IconUser className={classes.linkIcon} stroke={1.5} />
-                  <span>Профиль</span>
-                </UnstyledButton>
-              ) : (
-                <NavbarLink
-                  item={{
-                    link: '/profile',
-                    label: 'Профиль',
-                    icon: IconUser,
-                  }}
-                />
-              )}
-              {opened ? (
-                <UnstyledButton className={cx(classes.link, classes.logout)} onClick={handleLogout}>
-                  <IconLogout className={classes.linkIcon} stroke={1.5} />
-                  <span>Выйти</span>
-                </UnstyledButton>
-              ) : (
-                <NavbarLink
-                  item={{
-                    onClick: handleLogout,
-                    label: 'Выйти',
-                    icon: IconLogout,
-                    classes: [classes.logout],
-                  }}
-                />
-              )}
-            </Collapse>
-            {opened ? (
-              <UserButton
-                image=""
-                name={user.username as string}
-                email={user.email}
-                onClick={() => toggle()}
-              />
-            ) : (
-              <Tooltip label="Пользователь" position="right" transitionDuration={0}>
-                <UnstyledButton className={classes.user} onClick={() => toggle()} py={4}>
-                  <Avatar radius="xl" />
-                </UnstyledButton>
-              </Tooltip>
-            )}
-          </>
-        )}
-        {!user &&
-          (opened ? (
-            <UnstyledButton
-              className={classes.link}
-              sx={{ marginBottom: 0 }}
-              component={NextLink}
-              href="/auth/signin"
-            >
-              <IconLogout className={classes.linkIcon} stroke={1.5} />
-              <span>Вход</span>
-            </UnstyledButton>
-          ) : (
-            <NavbarLink
-              style={{ marginBottom: 0 }}
-              item={{
-                link: '/auth/signin',
-                icon: IconLogout,
-                label: 'Вход',
-              }}
+    <Transition transition="slide-right" mounted={opened}>
+      {(s) => (
+        <Box sx={{ position: 'fixed', zIndex: 5 }}>
+          <Portal>
+            <Overlay
+              opacity={0.6}
+              color="#000"
+              zIndex={1}
+              onClick={() => setOpened(false)}
+              sx={{ position: 'fixed' }}
             />
-          ))}
-      </Navbar.Section>
-    </Navbar>
+          </Portal>
+          <Navbar
+            width={{ base: 300 }}
+            className={classes.navbar}
+            hidden={!opened}
+            hiddenBreakpoint="sm"
+            style={s}
+          >
+            {user?.role === 'ADMIN' && (
+              <Navbar.Section>
+                <SegmentedControl
+                  value={section}
+                  onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
+                  transitionTimingFunction="ease"
+                  fullWidth
+                  data={[
+                    { label: 'User', value: 'userPages' },
+                    { label: 'Admin', value: 'adminPages' },
+                  ]}
+                />
+              </Navbar.Section>
+            )}
+
+            <Navbar.Section grow mt={user?.role === 'ADMIN' ? 'xl' : 0}>
+              {links}
+            </Navbar.Section>
+
+            <Navbar.Section className={classes.footer}>
+              {user && (
+                <Box>
+                  <Collapse in={visible}>
+                    {opened ? (
+                      <UnstyledButton href="/profile" component={NextLink} className={classes.link}>
+                        <IconUser className={classes.linkIcon} stroke={1.5} />
+                        <span>Профиль</span>
+                      </UnstyledButton>
+                    ) : (
+                      <NavbarLink
+                        item={{
+                          link: '/profile',
+                          label: 'Профиль',
+                          icon: IconUser,
+                        }}
+                      />
+                    )}
+                    <UnstyledButton
+                      className={cx(classes.link, classes.logout)}
+                      onClick={handleLogout}
+                    >
+                      <IconLogout className={classes.linkIcon} stroke={1.5} />
+                      <span>Выйти</span>
+                    </UnstyledButton>
+                  </Collapse>
+                  <UserButton
+                    image=""
+                    name={user.username as string}
+                    email={user.email}
+                    onClick={() => toggle()}
+                  />
+                </Box>
+              )}
+              {!user && (
+                <UnstyledButton
+                  className={classes.link}
+                  sx={{ marginBottom: 0 }}
+                  component={NextLink}
+                  href="/auth/signin"
+                >
+                  <IconLogout className={classes.linkIcon} stroke={1.5} />
+                  <span>Вход</span>
+                </UnstyledButton>
+              )}
+            </Navbar.Section>
+          </Navbar>
+        </Box>
+      )}
+    </Transition>
   );
 }

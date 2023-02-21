@@ -1,19 +1,30 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import axios from 'axios';
-import { Box, Button, Container, Group, LoadingOverlay, Stack, TextInput } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Group,
+  LoadingOverlay,
+  Stack,
+  TextInput,
+} from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
+import { QueryBuilder } from 'react-querybuilder';
 import { TemplateField } from '../../../components/Components/TemplateField';
-import { Block } from '../../../components/Layout/Block/Block';
-import { CreateField, IField } from '../../../lib/Field';
-import { ITemplate, TEXT } from '../../../types/Template';
+import { CreateField, IField } from '../../../types/Field';
+import { ITemplate } from '../../../types/Template';
 import { TemplateFormProvider } from '../../../components/Components/TemplateContext';
-import { PageHeader } from '../../../components/Layout';
+import { Block, PageHeader } from '../../../components/Layout';
 import { useTemplateData } from '../../../components/hooks/templates';
 import { SortableList } from '../../../components/SortableList/SortableList';
 import { DragHandle } from '../../../components/SortableList/SortableItem';
+import { QButton, QInput, QSelect } from '../../../components/QueryBuilderComponents';
+import { TEXT } from '../../../types/FieldTypes';
 
 export default function EditForm() {
   const [loading, toggleLoading] = useToggle();
@@ -47,6 +58,7 @@ export default function EditForm() {
     );
   };
 
+  //TODO: Make mutation
   const handleSubmit = async (values: typeof form.values) => {
     toggleLoading();
     axios
@@ -58,7 +70,7 @@ export default function EditForm() {
       .then(() => {
         showNotification({
           title: 'Успех',
-          message: 'Шаблон успешно создан',
+          message: 'Шаблон успешно обновлен',
           color: 'green',
         });
         toggleLoading();
@@ -96,14 +108,41 @@ export default function EditForm() {
                   />
                 </Stack>
               </Block>
+              {/*<Block mb="md">*/}
+              {/*  <QueryBuilder*/}
+              {/*    controlElements={{*/}
+              {/*      addRuleAction: QButton,*/}
+              {/*      combinatorSelector: QSelect,*/}
+              {/*      fieldSelector: QSelect,*/}
+              {/*      operatorSelector: QSelect,*/}
+              {/*      valueSourceSelector: QSelect,*/}
+              {/*      addGroupAction: QButton,*/}
+              {/*      removeRuleAction: QButton,*/}
+              {/*      removeGroupAction: QButton,*/}
+              {/*      valueEditor: QInput,*/}
+              {/*    }}*/}
+              {/*  />*/}
+              {/*</Block>*/}
               <SortableList<IField>
                 items={form.values.fields}
                 onChange={(values) => form.setFieldValue('fields', values)}
                 renderItem={(item, index) =>
                   item.editable ? (
                     <SortableList.Item id={item.id} key={item.id}>
-                      <DragHandle />
-                      <TemplateField index={index} item={item} />
+                      <Grid columns={32}>
+                        <Grid.Col span={2}>
+                          <Block>
+                            <Group position="center">
+                              <DragHandle />
+                            </Group>
+                          </Block>
+                        </Grid.Col>
+                        <Grid.Col span="auto">
+                          <Block>
+                            <TemplateField index={index} item={item} />
+                          </Block>
+                        </Grid.Col>
+                      </Grid>
                     </SortableList.Item>
                   ) : (
                     <Block key={item.id}>

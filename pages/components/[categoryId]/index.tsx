@@ -63,8 +63,11 @@ export default function Category() {
   const {
     data: components,
     isFetched: isComponentsFetched,
+    isSuccess: isComponentsSuccess,
     refetch,
   } = useComponentsList(router.query.categoryId as string, filters);
+
+  console.log(components);
 
   useEffect(() => {
     const { categoryId, ...f } = router.query;
@@ -76,73 +79,76 @@ export default function Category() {
   }, [filters]);
 
   return (
-    <Stack>
-      <PageHeader
-        title={templateData?.name ?? ''}
-        rightSection={
-          <Group>
-            {user && user.role === 'ADMIN' && (
-              <Button href={`/templates/edit/${router.query.categoryId}`} component={NextLink}>
-                Изменить
+    <Container size="xl">
+      <Stack>
+        <PageHeader
+          title={templateData?.name ?? ''}
+          rightSection={
+            <Group>
+              {user && user.role === 'ADMIN' && (
+                <Button href={`/templates/edit/${router.query.categoryId}`} component={NextLink}>
+                  Изменить
+                </Button>
+              )}
+              {user && user.role === 'ADMIN' && (
+                <Button
+                  href={`/components/create?templateId=${router.query.categoryId}`}
+                  component={NextLink}
+                >
+                  Добавить
+                </Button>
+              )}
+              <Button href="/components" component={NextLink}>
+                Назад
               </Button>
-            )}
-            {user && user.role === 'ADMIN' && (
-              <Button
-                href={`/components/create?templateId=${router.query.categoryId}`}
-                component={NextLink}
-              >
-                Добавить
-              </Button>
-            )}
-            <Button href="/components" component={NextLink}>
-              Назад
-            </Button>
-          </Group>
-        }
-      />
-      <Box>
-        <Container size={1600} p={0}>
-          <Grid>
-            <Grid.Col lg={3}>
-              <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
-                <Box>
-                  <Filters fields={templateData?.fields} />
-                </Box>
-              </MediaQuery>
-              <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
-                <Paper className={classes.container} shadow="xl">
-                  <Button onClick={() => toggleFilters()} className={classes.drawerButton}>
-                    Показать фильтры
-                  </Button>
-                </Paper>
-              </MediaQuery>
-            </Grid.Col>
-            <Grid.Col lg={9}>
-              <Stack>
-                {isComponentsFetched &&
-                  components.map((component: IComponent) => (
-                    <Block
-                      href={`/components/${router.query.categoryId}/${component.id}`}
-                      key={component.id}
-                      component={NextLink}
-                    >
-                      <ComponentRow component={component} />
-                    </Block>
-                  ))}
-              </Stack>
-            </Grid.Col>
-          </Grid>
-        </Container>
-      </Box>
-      <Drawer
-        opened={showFilters}
-        onClose={() => toggleFilters()}
-        title="Фильтры и поиск"
-        padding="xl"
-        size="xl"
-      >
-        <Filters fields={templateData?.fields} />
-      </Drawer>
-    </Stack>
+            </Group>
+          }
+        />
+        <Box>
+          <Container size={1600} p={0}>
+            <Grid>
+              <Grid.Col lg={3}>
+                <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
+                  <Box>
+                    <Filters fields={templateData?.fields} />
+                  </Box>
+                </MediaQuery>
+                <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
+                  <Paper className={classes.container} shadow="xl">
+                    <Button onClick={() => toggleFilters()} className={classes.drawerButton}>
+                      Показать фильтры
+                    </Button>
+                  </Paper>
+                </MediaQuery>
+              </Grid.Col>
+              <Grid.Col lg={9}>
+                <Stack>
+                  {isComponentsFetched &&
+                    isComponentsSuccess &&
+                    components.map((component) => (
+                      <Block
+                        href={`/components/${router.query.categoryId}/${component.id}`}
+                        key={component.id}
+                        component={NextLink}
+                      >
+                        <ComponentRow component={component} />
+                      </Block>
+                    ))}
+                </Stack>
+              </Grid.Col>
+            </Grid>
+          </Container>
+        </Box>
+        <Drawer
+          opened={showFilters}
+          onClose={() => toggleFilters()}
+          title="Фильтры и поиск"
+          padding="xl"
+          size="xl"
+        >
+          <Filters fields={templateData?.fields} />
+        </Drawer>
+      </Stack>
+    </Container>
   );
 }

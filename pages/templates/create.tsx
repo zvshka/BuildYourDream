@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Container,
+  Grid,
   Group,
   LoadingOverlay,
   Stack,
@@ -16,16 +17,20 @@ import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { TemplateField } from '../../components/Components/TemplateField';
 import { Block, PageHeader } from '../../components/Layout';
-import { CreateField, IField } from '../../lib/Field';
-import { ITemplate, LARGE_TEXT, RANGE, TEXT } from '../../types/Template';
+import { CreateField, IField } from '../../types/Field';
+import { ITemplate } from '../../types/Template';
 import { TemplateFormProvider } from '../../components/Components/TemplateContext';
 import { SortableList } from '../../components/SortableList/SortableList';
 import { DragHandle } from '../../components/SortableList/SortableItem';
+import { LARGE_TEXT, RANGE, TEXT } from '../../types/FieldTypes';
 
 export default function createTemplatePage() {
   const [loading, toggleLoading] = useToggle();
   const template = useForm<ITemplate>({
     initialValues: {
+      id: '',
+      position: -1,
+      showInConfigurator: true,
       name: '',
       required: false,
       fields: [
@@ -34,18 +39,21 @@ export default function createTemplatePage() {
           type: TEXT,
           deletable: false,
           editable: false,
+          required: true,
         }),
         CreateField({
           name: 'Цена',
           type: RANGE,
           deletable: false,
           editable: false,
+          required: true,
         }),
         CreateField({
           name: 'Описание детали',
           type: LARGE_TEXT,
           deletable: false,
           editable: false,
+          required: true,
         }),
       ],
     },
@@ -99,7 +107,7 @@ export default function createTemplatePage() {
           <PageHeader
             title="Создание группы"
             rightSection={
-              <Button href="/parts" component={NextLink}>
+              <Button href="/components" component={NextLink}>
                 Назад
               </Button>
             }
@@ -136,8 +144,20 @@ export default function createTemplatePage() {
                 renderItem={(item, index) =>
                   item.editable ? (
                     <SortableList.Item id={item.id} key={item.id}>
-                      <DragHandle />
-                      <TemplateField index={index} item={item} />
+                      <Grid columns={32}>
+                        <Grid.Col span={2}>
+                          <Block>
+                            <Group position="center">
+                              <DragHandle />
+                            </Group>
+                          </Block>
+                        </Grid.Col>
+                        <Grid.Col span="auto">
+                          <Block>
+                            <TemplateField index={index} item={item} />
+                          </Block>
+                        </Grid.Col>
+                      </Grid>
                     </SortableList.Item>
                   ) : (
                     <Block key={item.id}>

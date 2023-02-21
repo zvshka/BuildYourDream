@@ -11,13 +11,16 @@ import duration from 'dayjs/plugin/duration';
 import calendar from 'dayjs/plugin/calendar';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
+import { useRouter } from 'next/router';
 import { RouterTransition } from '../components/Layout/RouterTransition/RouterTransition';
 import { ColorProvider } from '../components/Layout/ColorControl/ColorContext';
 import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Providers/Auth/AuthWrapper';
 import Layout from '../components/Layout/Layout';
-import { useRouter } from 'next/router';
+
+import 'reactflow/dist/style.css';
+import 'react-querybuilder/dist/query-builder.css';
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);

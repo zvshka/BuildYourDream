@@ -18,6 +18,15 @@ import { Fragment } from 'react';
 import { Block } from '../../../components/Layout/Block/Block';
 import { useComponentData } from '../../../components/hooks/components';
 import { useTemplateData } from '../../../components/hooks/templates';
+import {
+  BOOL,
+  DEPENDS_ON,
+  LARGE_TEXT,
+  NUMBER,
+  RANGE,
+  SELECT,
+  TEXT,
+} from '../../../types/FieldTypes';
 
 const Field = ({ data }) => (
   <Fragment key={data.name}>
@@ -38,11 +47,11 @@ const Field = ({ data }) => (
           alignItems: 'center',
         }}
       >
-        {['NUMBER', 'TEXT', 'SELECT', 'LARGE_TEXT'].includes(data.type) && (
+        {[NUMBER, TEXT, SELECT, LARGE_TEXT, DEPENDS_ON].includes(data.type) && (
           <Text>{data.value}</Text>
         )}
-        {data.type === 'BOOL' && <Text>{data.value ? 'Да' : 'Нет'}</Text>}
-        {data.type === 'RANGE' && (
+        {data.type === BOOL && <Text>{data.value ? 'Да' : 'Нет'}</Text>}
+        {data.type === RANGE && (
           <Text>
             {data.value[0]} - {data.value[1]}
           </Text>

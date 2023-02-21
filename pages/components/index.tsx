@@ -1,4 +1,14 @@
-import { Box, Button, createStyles, Group, Paper, SimpleGrid, Stack, Text } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Container,
+  createStyles,
+  Group,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Text,
+} from '@mantine/core';
 import React from 'react';
 import { NextLink } from '@mantine/next';
 import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
@@ -51,31 +61,33 @@ export default function Parts() {
   const { data: templates, isLoading, isError } = useTemplatesList();
 
   return (
-    <Stack>
-      <PageHeader
-        title="Комплектующие"
-        rightSection={
-          <Group>
-            {user && user.role === 'ADMIN' && (
-              <Button component={NextLink} href="/components/create">
-                Добавить деталь
-              </Button>
-            )}
-            {user && user.role === 'ADMIN' && (
-              <Button component={NextLink} href="/templates/create">
-                Добавить группу/форму
-              </Button>
-            )}
-          </Group>
-        }
-      />
-      <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
-        {!isLoading &&
-          !isError &&
-          templates.map((template: ITemplate & { id: string }) => (
-            <Category key={template.id} data={template} />
-          ))}
-      </SimpleGrid>
-    </Stack>
+    <Container size="xl">
+      <Stack>
+        <PageHeader
+          title="Комплектующие"
+          rightSection={
+            <Group>
+              {user && user.role === 'ADMIN' && (
+                <Button component={NextLink} href="/components/create">
+                  Добавить деталь
+                </Button>
+              )}
+              {user && user.role === 'ADMIN' && (
+                <Button component={NextLink} href="/templates/create">
+                  Добавить группу/форму
+                </Button>
+              )}
+            </Group>
+          }
+        />
+        <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
+          {!isLoading &&
+            !isError &&
+            templates.map((template: ITemplate & { id: string }) => (
+              <Category key={template.id} data={template} />
+            ))}
+        </SimpleGrid>
+      </Stack>
+    </Container>
   );
 }

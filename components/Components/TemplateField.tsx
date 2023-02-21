@@ -11,14 +11,18 @@ import {
   TextInput,
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
-import { useEffect } from 'react';
-import { fieldTypes } from '../../types/Template';
-import { CreateField } from '../../lib/Field';
+import { useEffect, useState } from 'react';
+import { ITemplate } from '../../types/Template';
+import { CreateField } from '../../types/Field';
 import { useTemplateFormContext } from './TemplateContext';
+import { useTemplatesList } from '../hooks/templates';
+import { DEPENDS_ON, fieldTypes, SELECT } from '../../types/FieldTypes';
 
 export const TemplateField = (props) => {
   const { item, index } = props;
   const template = useTemplateFormContext();
+
+  const { data: templates, isFetched, isSuccess } = useTemplatesList();
 
   useEffect(() => {
     const field = CreateField(item);
@@ -75,11 +79,11 @@ export const TemplateField = (props) => {
             )}
           </Stack>
         </Input.Wrapper>
-        {template.values.fields[index]?.type === 'SELECT' && (
+        {template.values.fields[index]?.type === SELECT && (
           <MultiSelect
             creatable
             searchable
-            mt="xs"
+            label="Элементы для выбора"
             data={
               template
                 .getInputProps(`fields.${index}.options`)
@@ -90,6 +94,35 @@ export const TemplateField = (props) => {
             onChange={template.getInputProps(`fields.${index}.options`).onChange}
             onCreate={(query) => ({ value: query, label: query })}
           />
+        )}
+        {template.values.fields[index]?.type === DEPENDS_ON && (
+          <Stack spacing={0}>
+            <Select
+              data={
+                isFetched && isSuccess
+                  ? templates.map((t: ITemplate) => ({ label: t.name, value: t.id }))
+                  : []
+              }
+              label="Шаблон от корого зависят значения"
+              {...template.getInputProps(`fields.${index}.depends_on.template`)}
+            />
+            <Select
+              disabled={!template.values.fields[index]?.depends_on?.template}
+              data={
+                template.values.fields[index]?.depends_on?.template
+                  ? (templates
+                      ?.find((t) => t.id === template.values.fields[index]?.depends_on?.template)
+                      ?.fields.filter((f) => f.type === SELECT)
+                      .map((f) => ({ label: f.name, value: f.id })) as Array<{
+                      value: string;
+                      label: string;
+                    }>)
+                  : []
+              }
+              label="Поле от корого зависят значения"
+              {...template.getInputProps(`fields.${index}.depends_on.field`)}
+            />
+          </Stack>
         )}
       </Stack>
     </Box>

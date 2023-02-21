@@ -7,6 +7,7 @@ import {
   Image,
   Input,
   NumberInput,
+  Radio,
   Select,
   Slider,
   Stack,
@@ -17,9 +18,10 @@ import {
 import { IconTrashX } from '@tabler/icons';
 import { useEffect, useRef } from 'react';
 import { RangeInput } from '../Layout';
-import { useComponentFormContext, useTemplateFormContext } from './TemplateContext';
-import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/Template';
-import { IField } from '../../lib/Field';
+import { useComponentFormContext } from './TemplateContext';
+import { IField } from '../../types/Field';
+import { BOOL, DEPENDS_ON, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/FieldTypes';
+import { useTemplatesList } from '../hooks/templates';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -27,6 +29,7 @@ const getColSpan = (type: string): number => {
     case TEXT:
     case RANGE:
     case SELECT:
+    case DEPENDS_ON:
       toReturn = 3;
       break;
     case LARGE_TEXT:
@@ -43,6 +46,7 @@ const getColSpan = (type: string): number => {
 export const ComponentForm = ({ fields }: { fields: IField[] }) => {
   const template = useComponentFormContext();
   const resetRef = useRef<() => void>(null);
+  const { data: templates, isFetched, isSuccess } = useTemplatesList();
 
   const clearFile = () => {
     resetRef.current?.();
@@ -89,21 +93,21 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
         </Grid.Col>
         {fields.map((field, index) => (
           <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
-            {field.type === 'TEXT' && (
+            {field.type === TEXT && (
               <TextInput
                 label={field.name}
                 required={field.required}
                 {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
-            {field.type === 'NUMBER' && (
+            {field.type === NUMBER && (
               <NumberInput
                 label={field.name}
                 required={field.required}
                 {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
-            {field.type === 'BOOL' && (
+            {field.type === BOOL && (
               <Input.Wrapper label={field.name} required={field.required}>
                 <Switch
                   required={field.required}
@@ -111,24 +115,43 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
                 />
               </Input.Wrapper>
             )}
-            {field.type === 'RANGE' && (
+            {field.type === RANGE && (
               <RangeInput
                 label={field.name}
                 required={field.required}
                 {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
-            {field.type === 'LARGE_TEXT' && (
+            {field.type === LARGE_TEXT && (
               <Textarea
                 label={field.name}
                 required={field.required}
                 autosize
+                minRows={4}
                 {...(template ? template.getInputProps(field.name) : {})}
               />
             )}
-            {field.type === 'SELECT' && (
+            {field.type === SELECT && (
               <Select
                 data={field.options!.map((data: string) => ({ value: data, label: data }))}
+                label={field.name}
+                required={field.required}
+                {...(template ? template.getInputProps(field.name) : {})}
+              />
+            )}
+            {field.type === DEPENDS_ON && (
+              <Select
+                data={
+                  isFetched && isSuccess
+                    ? (templates
+                        .find((t) => t.id === field.depends_on?.template)
+                        ?.fields.find((f) => f.id === field.depends_on?.field)
+                        ?.options?.map((data) => ({ value: data, label: data })) as Array<{
+                        value: string;
+                        label: string;
+                      }>)
+                    : []
+                }
                 label={field.name}
                 required={field.required}
                 {...(template ? template.getInputProps(field.name) : {})}
@@ -137,18 +160,15 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
           </Grid.Col>
         ))}
         <Grid.Col span={6} mb="md">
-          <Input.Wrapper label="Тир компонента">
-            <Slider
-              step={50}
-              label={null}
-              marks={[
-                { value: 0, label: 'Low' },
-                { value: 50, label: 'Medium' },
-                { value: 100, label: 'High' },
-              ]}
-              {...(template ? template.getInputProps('tier') : {})}
-            />
-          </Input.Wrapper>
+          <Radio.Group
+            label="Тир компонента"
+            required
+            {...(template ? template.getInputProps('tier') : {})}
+          >
+            <Radio value="low" label="Low" />
+            <Radio value="medium" label="Medium" />
+            <Radio value="high" label="High" />
+          </Radio.Group>
         </Grid.Col>
         <Grid.Col span={6} mb="md">
           <Input.Wrapper label="Плюсы и минусы">

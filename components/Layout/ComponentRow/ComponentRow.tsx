@@ -1,7 +1,8 @@
 import { Box, Group, Image, Text, Title } from '@mantine/core';
 import React from 'react';
+import { IComponent } from '../../../types/Template';
 
-export const ComponentRow = ({ component }) => (
+export const ComponentRow = ({ component }: { component: { data: IComponent } }) => (
   <Group align="normal">
     <Image
       withPlaceholder
@@ -15,10 +16,7 @@ export const ComponentRow = ({ component }) => (
       <Text>
         Примерная цена: {component.data['Цена'][0]} - {component.data['Цена'][1]} Руб.
       </Text>
-      <Text>
-        Tier компонента:{' '}
-        {component.data.tier === 0 ? 'Low' : component.data.tier === 50 ? 'Medium' : 'High'}
-      </Text>
+      <Text>Tier компонента: {component.data.tier.toUpperCase()}</Text>
     </Box>
   </Group>
 );
