@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Button, Container, Group, LoadingOverlay, Stack } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
+import { showNotification } from '@mantine/notifications';
 import {
   ComponentFormProvider,
   useComponentForm,
@@ -11,7 +12,6 @@ import { ComponentForm } from '../../../components/Components/ComponentForm';
 import { Block, PageHeader } from '../../../components/Layout';
 import { IField } from '../../../types/Field';
 import { IComponent, ITemplate } from '../../../types/Template';
-import { showNotification } from '@mantine/notifications';
 import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../../types/FieldTypes';
 
 export default function editComponentPage() {

@@ -12,10 +12,10 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
-import { Block } from '../../../components/Layout/Block/Block';
+import Link from 'next/link';
+import { Block } from '../../../components/Layout';
 import { useComponentData } from '../../../components/hooks/components';
 import { useTemplateData } from '../../../components/hooks/templates';
 import {
@@ -64,25 +64,25 @@ const Field = ({ data }) => (
 export default function partPage() {
   const router = useRouter();
 
-  const { data: componentData, isFetched: isComponentDataFetched } = useComponentData(
+  const { data: componentData, isSuccess: isComponentDataFetched } = useComponentData(
     router.query.componentId as string
   );
 
-  const { data: templateData, isFetched: isTemplateDataFetched } = useTemplateData(
+  const { data: templateData, isSuccess: isTemplateDataFetched } = useTemplateData(
     router.query.categoryId as string
   );
 
   return (
-    <Container size="xl" p={0}>
+    <Container size="xl">
       <Stack>
         <Block>
           <Group position="apart">
             <Title order={2}>{isComponentDataFetched && componentData.data['Название']}</Title>
             <Group>
-              <Button href={`/components/edit/${router.query.componentId}`} component={NextLink}>
+              <Button href={`/components/edit/${router.query.componentId}`} component={Link}>
                 Изменить
               </Button>
-              <Button href={`/components/${router.query.categoryId}`} component={NextLink}>
+              <Button href={`/components/${router.query.categoryId}`} component={Link}>
                 Назад
               </Button>
             </Group>
@@ -146,7 +146,7 @@ export default function partPage() {
                       maxHeight={200}
                       hideLabel={<Button>Спрятать</Button>}
                       showLabel={<Button>Показать все</Button>}
-                      styles={(theme) => ({
+                      styles={() => ({
                         control: {
                           marginTop: '1rem',
                         },

@@ -12,7 +12,17 @@ export interface ITemplate {
   required: boolean;
   position: number;
   showInConfigurator: boolean;
+
   fields: IField[];
+  slots: ISlot[];
+}
+
+export interface ISlot {
+  id: string;
+  componentId: string;
+  innerField: string;
+  outerField: string;
+  compatibilityCondition: string;
 }
 
 export interface IComponent {

@@ -9,7 +9,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import isToday from 'dayjs/plugin/isToday';
 import duration from 'dayjs/plugin/duration';
 import calendar from 'dayjs/plugin/calendar';
-import { NotificationsProvider } from '@mantine/notifications';
+import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
 import { useRouter } from 'next/router';
 import { RouterTransition } from '../components/Layout/RouterTransition/RouterTransition';
@@ -21,6 +21,7 @@ import Layout from '../components/Layout/Layout';
 
 import 'reactflow/dist/style.css';
 import 'react-querybuilder/dist/query-builder.css';
+import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);
@@ -99,9 +100,10 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
             <ModalsProvider>
-              <NotificationsProvider>
-                <ReactQueryProvider>
-                  <AuthProvider>
+              <ReactQueryProvider>
+                <AuthProvider>
+                  <NavigationProvider>
+                    <Notifications />
                     <RouterTransition />
                     {/*@ts-ignore*/}
                     {Component.noShell ? (
@@ -111,9 +113,9 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
                         <Component {...pageProps} />
                       </Layout>
                     )}
-                  </AuthProvider>
-                </ReactQueryProvider>
-              </NotificationsProvider>
+                  </NavigationProvider>
+                </AuthProvider>
+              </ReactQueryProvider>
             </ModalsProvider>
           </MantineProvider>
         </ColorSchemeProvider>

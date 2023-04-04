@@ -21,7 +21,7 @@ apiRoute.get(async (req: NextApiRequest & { query: { width: string; quality: str
     try {
       const imageBuffer = fs.readFileSync(result.filepath);
       const sharped = await sharp(imageBuffer).resize({
-        width: widthNumber > 0 ? widthNumber : null,
+        width: widthNumber > 0 ? widthNumber : undefined,
       });
       if (result.mimetype === MIME_TYPES.jpeg) {
         sharped.jpeg({
@@ -35,7 +35,7 @@ apiRoute.get(async (req: NextApiRequest & { query: { width: string; quality: str
       res.setHeader('Content-Type', result.mimetype);
       res.send(sharped);
     } catch (e) {
-      console.log(e)
+      console.log(e);
       res.status(500).json({ error: 'Что-то пошло не так, попробуй еще раз или измени запрос' });
     }
   } else {

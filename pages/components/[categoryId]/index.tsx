@@ -11,14 +11,13 @@ import {
   Stack,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { NextLink } from '@mantine/next';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
+import Link from 'next/link';
 import { useAuth } from '../../../components/Providers/Auth/AuthWrapper';
 import { Block, PageHeader } from '../../../components/Layout';
 import { useTemplateData } from '../../../components/hooks/templates';
 import { useComponentsList } from '../../../components/hooks/components';
-import { IComponent } from '../../../types/Template';
 import { Filters } from '../../../components/Layout/Filters/Filters';
 import { ComponentRow } from '../../../components/Layout/ComponentRow/ComponentRow';
 
@@ -59,15 +58,13 @@ export default function Category() {
 
   const { user } = useAuth();
 
-  const { data: templateData } = useTemplateData(router.query.categoryId as string);
+  const { data: templateData, isSuccess } = useTemplateData(router.query.categoryId as string);
   const {
     data: components,
     isFetched: isComponentsFetched,
     isSuccess: isComponentsSuccess,
     refetch,
   } = useComponentsList(router.query.categoryId as string, filters);
-
-  console.log(components);
 
   useEffect(() => {
     const { categoryId, ...f } = router.query;
@@ -86,19 +83,19 @@ export default function Category() {
           rightSection={
             <Group>
               {user && user.role === 'ADMIN' && (
-                <Button href={`/templates/edit/${router.query.categoryId}`} component={NextLink}>
+                <Button href={`/templates/edit/${router.query.categoryId}`} component={Link}>
                   Изменить
                 </Button>
               )}
               {user && user.role === 'ADMIN' && (
                 <Button
                   href={`/components/create?templateId=${router.query.categoryId}`}
-                  component={NextLink}
+                  component={Link}
                 >
                   Добавить
                 </Button>
               )}
-              <Button href="/components" component={NextLink}>
+              <Button href="/components" component={Link}>
                 Назад
               </Button>
             </Group>
@@ -110,7 +107,7 @@ export default function Category() {
               <Grid.Col lg={3}>
                 <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
                   <Box>
-                    <Filters fields={templateData?.fields} />
+                    <Filters fields={isSuccess ? templateData?.fields : []} />
                   </Box>
                 </MediaQuery>
                 <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
@@ -126,13 +123,15 @@ export default function Category() {
                   {isComponentsFetched &&
                     isComponentsSuccess &&
                     components.map((component) => (
-                      <Block
+                      <Box
                         href={`/components/${router.query.categoryId}/${component.id}`}
                         key={component.id}
-                        component={NextLink}
+                        component={Link}
                       >
-                        <ComponentRow component={component} />
-                      </Block>
+                        <Block>
+                          <ComponentRow component={component} />
+                        </Block>
+                      </Box>
                     ))}
                 </Stack>
               </Grid.Col>
@@ -146,7 +145,7 @@ export default function Category() {
           padding="xl"
           size="xl"
         >
-          <Filters fields={templateData?.fields} />
+          <Filters fields={isSuccess ? templateData?.fields : []} />
         </Drawer>
       </Stack>
     </Container>

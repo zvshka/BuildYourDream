@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DraggableSyntheticListeners, UniqueIdentifier } from '@dnd-kit/core';
 import { ActionIcon, Box } from '@mantine/core';
-import { IconDotsVertical } from '@tabler/icons';
+import { IconDotsVertical } from '@tabler/icons-react';
 
 interface Context {
   attributes: Record<string, any>;

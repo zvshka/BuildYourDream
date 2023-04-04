@@ -1,5 +1,5 @@
 import { ActionIcon, Group, useMantineColorScheme, useMantineTheme } from '@mantine/core';
-import { IconMoonStars, IconSun } from '@tabler/icons';
+import { IconMoonStars, IconSun } from '@tabler/icons-react';
 import { useContext } from 'react';
 import { ColorControl } from '../ColorControl/ColorControl';
 import { ColorContext } from '../ColorControl/ColorContext';

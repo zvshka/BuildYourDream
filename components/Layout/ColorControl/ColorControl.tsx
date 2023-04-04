@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IconColorPicker } from '@tabler/icons';
+import { IconColorPicker } from '@tabler/icons-react';
 import { CheckIcon, ColorSwatch, Group, Popover, useMantineTheme } from '@mantine/core';
 
 interface ColorControlProps {
@@ -34,7 +34,9 @@ export function ColorControl({ onChange, value }: ColorControlProps) {
     <Popover
       opened={opened}
       onClose={() => setOpened(false)}
-      transitionDuration={0}
+      transitionProps={{
+        duration: 0,
+      }}
       width={152}
       position="bottom-end"
       withArrow

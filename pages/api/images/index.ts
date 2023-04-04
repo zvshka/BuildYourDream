@@ -4,9 +4,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import sharp from 'sharp';
 import { MIME_TYPES } from '@mantine/dropzone';
 import fs from 'fs';
+import path from 'path';
 import { handler } from '../../../lib/handler';
 import ImagesService from '../../../services/Images.service';
-import path from 'path';
 
 sharp.cache(false);
 

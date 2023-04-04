@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ITemplate } from '../../types/Template';
 
 export function useTemplatesList() {
-  return useQuery<ITemplate[]>({
+  return useQuery<(ITemplate & { id: string })[]>({
     queryKey: ['templates', 'list'],
     queryFn: async () => {
       const { data } = await axios.get('/api/templates');
@@ -13,7 +13,7 @@ export function useTemplatesList() {
 }
 
 export function useTemplateData(templateId?: string) {
-  return useQuery({
+  return useQuery<ITemplate & { id: string }>({
     queryKey: ['templates', templateId],
     queryFn: async () => {
       const { data } = await axios.get(`/api/templates/${templateId}`);

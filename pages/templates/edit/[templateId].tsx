@@ -37,16 +37,19 @@ export default function EditForm() {
       name: '',
       required: false,
       fields: [],
+      slots: [],
+      showInConfigurator: false,
+      position: -1,
     },
   });
 
-  const { data: templateData, isFetched } = useTemplateData(router.query.templateId as string);
+  const { data: templateData, isSuccess } = useTemplateData(router.query.templateId as string);
 
   useEffect(() => {
-    if (isFetched) {
+    if (isSuccess) {
       form.setValues(templateData);
     }
-  }, [isFetched]);
+  }, [isSuccess]);
 
   const handleAddField = () => {
     form.insertListItem(
@@ -89,7 +92,7 @@ export default function EditForm() {
     <TemplateFormProvider form={form}>
       <Container size="md">
         <Stack>
-          <PageHeader title={`Изменение формы: ${isFetched && templateData.name}`} />
+          <PageHeader title={`Изменение формы: ${isSuccess && templateData.name}`} />
           <Box style={{ position: 'relative' }}>
             <LoadingOverlay visible={loading} overlayBlur={2} />
             <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -108,21 +111,6 @@ export default function EditForm() {
                   />
                 </Stack>
               </Block>
-              {/*<Block mb="md">*/}
-              {/*  <QueryBuilder*/}
-              {/*    controlElements={{*/}
-              {/*      addRuleAction: QButton,*/}
-              {/*      combinatorSelector: QSelect,*/}
-              {/*      fieldSelector: QSelect,*/}
-              {/*      operatorSelector: QSelect,*/}
-              {/*      valueSourceSelector: QSelect,*/}
-              {/*      addGroupAction: QButton,*/}
-              {/*      removeRuleAction: QButton,*/}
-              {/*      removeGroupAction: QButton,*/}
-              {/*      valueEditor: QInput,*/}
-              {/*    }}*/}
-              {/*  />*/}
-              {/*</Block>*/}
               <SortableList<IField>
                 items={form.values.fields}
                 onChange={(values) => form.setFieldValue('fields', values)}

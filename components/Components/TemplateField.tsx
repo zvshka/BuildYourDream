@@ -10,7 +10,7 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core';
-import { IconTrash } from '@tabler/icons';
+import { IconTrash } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { ITemplate } from '../../types/Template';
 import { CreateField } from '../../types/Field';
@@ -21,7 +21,6 @@ import { DEPENDS_ON, fieldTypes, SELECT } from '../../types/FieldTypes';
 export const TemplateField = (props) => {
   const { item, index } = props;
   const template = useTemplateFormContext();
-
   const { data: templates, isFetched, isSuccess } = useTemplatesList();
 
   useEffect(() => {

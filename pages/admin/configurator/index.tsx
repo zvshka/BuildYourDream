@@ -1,4 +1,4 @@
-import { Button, Group, Stack, Switch, Text } from '@mantine/core';
+import { Button, Container, Group, Stack, Switch, Text } from '@mantine/core';
 import React, { useEffect } from 'react';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
@@ -82,43 +82,45 @@ export default function AdminConfigurator() {
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack>
-        <PageHeader
-          title="Настройка конфигуратора"
-          rightSection={<Button type="submit">Сохранить</Button>}
-        />
-        <SortableList<ITemplate>
-          items={form.values.templates}
-          onChange={(values) => form.setFieldValue('templates', values)}
-          renderItem={(item, index) => (
-            <SortableList.Item id={item.id} key={item.id}>
-              <Block>
-                <Group position="apart">
-                  <Stack>
-                    <Text>{item.name}</Text>
-                    <Group>
-                      <Switch
-                        label="Показывать в конфигураторе"
-                        {...form.getInputProps(`templates.${index}.showInConfigurator`, {
-                          type: 'checkbox',
-                        })}
-                      />
-                      <Switch
-                        label="Обязательный компонент"
-                        {...form.getInputProps(`templates.${index}.required`, {
-                          type: 'checkbox',
-                        })}
-                      />
-                    </Group>
-                  </Stack>
-                  <SortableList.DragHandle />
-                </Group>
-              </Block>
-            </SortableList.Item>
-          )}
-        />
-      </Stack>
-    </form>
+    <Container size="xl">
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Stack>
+          <PageHeader
+            title="Настройка конфигуратора"
+            rightSection={<Button type="submit">Сохранить</Button>}
+          />
+          <SortableList<ITemplate>
+            items={form.values.templates}
+            onChange={(values) => form.setFieldValue('templates', values)}
+            renderItem={(item, index) => (
+              <SortableList.Item id={item.id} key={item.id}>
+                <Block>
+                  <Group position="apart">
+                    <Stack>
+                      <Text>{item.name}</Text>
+                      <Group>
+                        <Switch
+                          label="Показывать в конфигураторе"
+                          {...form.getInputProps(`templates.${index}.showInConfigurator`, {
+                            type: 'checkbox',
+                          })}
+                        />
+                        <Switch
+                          label="Обязательный компонент"
+                          {...form.getInputProps(`templates.${index}.required`, {
+                            type: 'checkbox',
+                          })}
+                        />
+                      </Group>
+                    </Stack>
+                    <SortableList.DragHandle />
+                  </Group>
+                </Block>
+              </SortableList.Item>
+            )}
+          />
+        </Stack>
+      </form>
+    </Container>
   );
 }

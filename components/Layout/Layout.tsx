@@ -2,6 +2,8 @@ import React, { ReactElement, useState } from 'react';
 import { AppShell, useMantineTheme } from '@mantine/core';
 import { NavbarSimpleColored } from './Navbar/Navbar';
 import { HeaderWithLogo } from './Header/HeaderWithLogo';
+import { useHotkeys } from '@mantine/hooks';
+import { useNavigationContext } from '../Providers/NavigationContext/NavigationContext';
 
 export default function Layout({
   children,
@@ -9,7 +11,18 @@ export default function Layout({
   children: ReactElement | ReactElement[] | string | undefined;
 }) {
   const theme = useMantineTheme();
-  const [opened, setOpened] = useState(false);
+  const navigationContext = useNavigationContext();
+
+  useHotkeys([
+    [
+      'Escape',
+      (event) => {
+        if (navigationContext.opened) navigationContext.setClosed();
+        else navigationContext.setOpened();
+      },
+    ],
+  ]);
+
   return (
     <AppShell
       styles={{
@@ -19,8 +32,8 @@ export default function Layout({
         },
       }}
       navbarOffsetBreakpoint="sm"
-      navbar={<NavbarSimpleColored opened={opened} setOpened={setOpened} />}
-      header={<HeaderWithLogo opened={opened} setOpened={setOpened} />}
+      navbar={<NavbarSimpleColored />}
+      header={<HeaderWithLogo />}
     >
       {children}
     </AppShell>

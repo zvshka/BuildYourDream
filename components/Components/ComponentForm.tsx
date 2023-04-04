@@ -15,7 +15,7 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core';
-import { IconTrashX } from '@tabler/icons';
+import { IconTrashX } from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
 import { RangeInput } from '../Layout';
 import { useComponentFormContext } from './TemplateContext';

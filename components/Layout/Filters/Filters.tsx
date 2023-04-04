@@ -125,7 +125,7 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
                   <Accordion.Control>{field.name}</Accordion.Control>
                   <Accordion.Panel>
                     {field.type === SELECT && (
-                      <Checkbox.Group orientation="vertical">
+                      <Checkbox.Group>
                         {field.options.map((option: string, key: number) => (
                           <Checkbox
                             label={option}
@@ -143,7 +143,7 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
                     )}
                     {field.type === BOOL && <Select data={boolValues} defaultValue="all" />}
                     {field.type === DEPENDS_ON && (
-                      <Checkbox.Group orientation="vertical">
+                      <Checkbox.Group>
                         {getValues(field).map((option: string, key: number) => (
                           <Checkbox
                             label={option}
