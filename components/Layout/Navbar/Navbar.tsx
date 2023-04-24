@@ -1,25 +1,38 @@
 import {
   Box,
+  Collapse,
   createStyles,
+  getStylesRef,
+  MediaQuery,
   Modal,
+  Navbar,
+  Overlay,
+  Portal,
   SegmentedControl,
   SimpleGrid,
   Stack,
   Text,
   Title,
   Tooltip,
+  Transition,
   UnstyledButton,
-  getStylesRef,
 } from '@mantine/core';
-import { Icon3dCubeSphere, IconCpu, IconDeviceDesktop, IconUser } from '@tabler/icons-react';
+import {
+  Icon3dCubeSphere,
+  IconCpu,
+  IconDeviceDesktop,
+  IconLogout,
+  IconUser,
+} from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useState } from 'react';
-import Link from 'next/link';
 import { useAuth } from '../../Providers/Auth/AuthWrapper';
 import { useNavigationContext } from '../../Providers/NavigationContext/NavigationContext';
+import { NextLink } from '../NextLink/NextLink';
+import { UserButton } from '../UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   item: {
@@ -145,7 +158,7 @@ function NavbarLink({ item, style }: { item: any; style?: any }) {
           ? { onClick: item.onClick }
           : {
               href: item.link,
-              component: Link,
+              component: NextLink,
             })}
         style={style}
       >
@@ -199,8 +212,8 @@ export function NavbarSimpleColored({ opened, setOpened }: any) {
     <UnstyledButton
       href={item.link}
       key={item.label}
-      component={Link}
-      onClick={() => setOpened(false)}
+      component={NextLink}
+      onClick={() => navigationContext.setClosed()}
       className={cx(classes.link, {
         [classes.linkActive]:
           item.link !== '/' ? router.asPath.startsWith(item.link) : item.link === router.asPath,
@@ -213,167 +226,150 @@ export function NavbarSimpleColored({ opened, setOpened }: any) {
 
   return (
     <Box>
-      <Modal
-        title={<Title order={3}>Навигация</Title>}
-        opened={navigationContext.opened}
-        onClose={() => navigationContext.setClosed()}
-        closeOnEscape={false}
-        size="xl"
-        centered
-        transitionProps={{ transition: 'fade', duration: 100, timingFunction: 'linear' }}
-      >
-        <Stack>
-          <SegmentedControl
-            value={section}
-            onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
-            transitionTimingFunction="ease"
-            fullWidth
-            data={[
-              { label: 'User', value: 'userPages' },
-              { label: 'Admin', value: 'adminPages' },
-            ]}
-            mb="lg"
-          />
-          <SimpleGrid cols={4}>
-            {tabs[section].map((item) => (
-              <Box component={Link} href={item.link} key={item.label}>
-                <UnstyledButton
-                  className={classes.item}
-                  onClick={() => navigationContext.setClosed()}
+      <MediaQuery styles={{ display: 'none' }} smallerThan="md">
+        <Modal
+          title={<Title order={3}>Навигация</Title>}
+          opened={navigationContext.opened}
+          onClose={() => navigationContext.setClosed()}
+          closeOnEscape={false}
+          size="xl"
+          centered
+          transitionProps={{ transition: 'fade', duration: 100, timingFunction: 'linear' }}
+        >
+          <Stack>
+            <SegmentedControl
+              value={section}
+              onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
+              transitionTimingFunction="ease"
+              fullWidth
+              data={[
+                { label: 'User', value: 'userPages' },
+                { label: 'Admin', value: 'adminPages' },
+              ]}
+              mb="lg"
+            />
+            <SimpleGrid cols={4}>
+              {tabs[section].map((item) => (
+                <Box
+                  style={{ textDecoration: 'none' }}
+                  component={NextLink}
+                  href={item.link}
+                  key={item.label}
                 >
-                  <Stack align="center" spacing="xs">
-                    <item.Icon size={36} />
-                    <Text align="center" weight={400}>
-                      {item.label}
-                    </Text>
-                  </Stack>
-                </UnstyledButton>
+                  <UnstyledButton
+                    className={classes.item}
+                    onClick={() => navigationContext.setClosed()}
+                  >
+                    <Stack align="center" spacing="xs">
+                      <item.Icon size={36} />
+                      <Text align="center" weight={500} size={18}>
+                        {item.label}
+                      </Text>
+                    </Stack>
+                  </UnstyledButton>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Stack>
+        </Modal>
+      </MediaQuery>
+      <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+        <Box>
+          <Transition transition="slide-right" mounted={navigationContext.opened}>
+            {(s) => (
+              <Box sx={{ position: 'fixed', zIndex: 5 }}>
+                <Portal>
+                  <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+                    <Overlay
+                      opacity={0.6}
+                      color="#000"
+                      zIndex={1}
+                      onClick={() => navigationContext.setClosed()}
+                      sx={{ position: 'fixed' }}
+                    />
+                  </MediaQuery>
+                </Portal>
+                <Navbar
+                  width={{ base: 300 }}
+                  className={classes.navbar}
+                  hiddenBreakpoint="sm"
+                  style={s}
+                >
+                  {user?.role === 'ADMIN' && (
+                    <Navbar.Section>
+                      <SegmentedControl
+                        value={section}
+                        onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
+                        transitionTimingFunction="ease"
+                        fullWidth
+                        data={[
+                          { label: 'User', value: 'userPages' },
+                          { label: 'Admin', value: 'adminPages' },
+                        ]}
+                      />
+                    </Navbar.Section>
+                  )}
+
+                  <Navbar.Section grow mt={user?.role === 'ADMIN' ? 'xl' : 0}>
+                    {links}
+                  </Navbar.Section>
+
+                  <Navbar.Section className={classes.footer}>
+                    {user && (
+                      <Box>
+                        <Collapse in={visible}>
+                          {opened ? (
+                            <UnstyledButton
+                              href="/profile"
+                              component={NextLink}
+                              className={classes.link}
+                            >
+                              <IconUser className={classes.linkIcon} stroke={1.5} />
+                              <Text>Профиль</Text>
+                            </UnstyledButton>
+                          ) : (
+                            <NavbarLink
+                              item={{
+                                link: '/profile',
+                                label: 'Профиль',
+                                Icon: IconUser,
+                              }}
+                            />
+                          )}
+                          <UnstyledButton
+                            className={cx(classes.link, classes.logout)}
+                            onClick={handleLogout}
+                          >
+                            <IconLogout className={classes.linkIcon} stroke={1.5} />
+                            <Text>Выйти</Text>
+                          </UnstyledButton>
+                        </Collapse>
+                        <UserButton
+                          image=""
+                          name={user.username as string}
+                          email={user.email}
+                          onClick={() => toggle()}
+                        />
+                      </Box>
+                    )}
+                    {!user && (
+                      <UnstyledButton
+                        className={classes.link}
+                        sx={{ marginBottom: 0 }}
+                        component={NextLink}
+                        href="/auth/signin"
+                      >
+                        <IconLogout className={classes.linkIcon} stroke={1.5} />
+                        <span>Вход</span>
+                      </UnstyledButton>
+                    )}
+                  </Navbar.Section>
+                </Navbar>
               </Box>
-            ))}
-          </SimpleGrid>
-        </Stack>
-      </Modal>
+            )}
+          </Transition>
+        </Box>
+      </MediaQuery>
     </Box>
-    // <Box>
-    //   <MediaQuery styles={{ display: 'none' }} smallerThan="md">
-    //     <Modal title="Навигация" opened={opened} onClose={() => setOpened(false)} centered>
-    //       <Stack spacing={0}>
-    //         {user?.role === 'ADMIN' && (
-    //           <Navbar.Section>
-    //             <SegmentedControl
-    //               value={section}
-    //               onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
-    //               transitionTimingFunction="ease"
-    //               fullWidth
-    //               data={[
-    //                 { label: 'User', value: 'userPages' },
-    //                 { label: 'Admin', value: 'adminPages' },
-    //               ]}
-    //               mb="lg"
-    //             />
-    //           </Navbar.Section>
-    //         )}
-    //         {links}
-    //       </Stack>
-    //     </Modal>
-    //   </MediaQuery>
-    //   <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-    //     <Box>
-    //       <Transition transition="slide-right" mounted={opened}>
-    //         {(s) => (
-    //           <Box sx={{ position: 'fixed', zIndex: 5 }}>
-    //             <Portal>
-    //               <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-    //                 <Overlay
-    //                   opacity={0.6}
-    //                   color="#000"
-    //                   zIndex={1}
-    //                   onClick={() => setOpened(false)}
-    //                   sx={{ position: 'fixed' }}
-    //                 />
-    //               </MediaQuery>
-    //             </Portal>
-    //             <Navbar
-    //               width={{ base: 300 }}
-    //               className={classes.navbar}
-    //               hiddenBreakpoint="sm"
-    //               style={s}
-    //             >
-    //               {user?.role === 'ADMIN' && (
-    //                 <Navbar.Section>
-    //                   <SegmentedControl
-    //                     value={section}
-    //                     onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
-    //                     transitionTimingFunction="ease"
-    //                     fullWidth
-    //                     data={[
-    //                       { label: 'User', value: 'userPages' },
-    //                       { label: 'Admin', value: 'adminPages' },
-    //                     ]}
-    //                   />
-    //                 </Navbar.Section>
-    //               )}
-    //
-    //               <Navbar.Section grow mt={user?.role === 'ADMIN' ? 'xl' : 0}>
-    //                 {links}
-    //               </Navbar.Section>
-    //
-    //               <Navbar.Section className={classes.footer}>
-    //                 {user && (
-    //                   <Box>
-    //                     <Collapse in={visible}>
-    //                       {opened ? (
-    //                         <UnstyledButton
-    //                           href="/profile"
-    //                           component={NextLink}
-    //                           className={classes.link}
-    //                         >
-    //                           <IconUser className={classes.linkIcon} stroke={1.5} />
-    //                           <span>Профиль</span>
-    //                         </UnstyledButton>
-    //                       ) : (
-    //                         <NavbarLink
-    //                           item={{
-    //                             link: '/profile',
-    //                             label: 'Профиль',
-    //                             Icon: IconUser,
-    //                           }}
-    //                         />
-    //                       )}
-    //                       <UnstyledButton
-    //                         className={cx(classes.link, classes.logout)}
-    //                         onClick={handleLogout}
-    //                       >
-    //                         <IconLogout className={classes.linkIcon} stroke={1.5} />
-    //                         <span>Выйти</span>
-    //                       </UnstyledButton>
-    //                     </Collapse>
-    //                     <UserButton
-    //                       image=""
-    //                       name={user.username as string}
-    //                       email={user.email}
-    //                       onClick={() => toggle()}
-    //                     />
-    //                   </Box>
-    //                 )}
-    //                 {!user && (
-    //                   <UnstyledButton
-    //                     className={classes.link}
-    //                     sx={{ marginBottom: 0 }}
-    //                     component={NextLink}
-    //                     href="/auth/signin"
-    //                   >
-    //                     <IconLogout className={classes.linkIcon} stroke={1.5} />
-    //                     <span>Вход</span>
-    //                   </UnstyledButton>
-    //                 )}
-    //               </Navbar.Section>
-    //             </Navbar>
-    //           </Box>
-    //         )}
-    //       </Transition>
-    //     </Box>
-    //   </MediaQuery>
-    // </Box>
   );
 }

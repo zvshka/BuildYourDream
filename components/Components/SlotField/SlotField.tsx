@@ -1,5 +1,5 @@
 import { Group, Select, Stack } from '@mantine/core';
-import { Block } from '../../Layout/Block/Block';
+import { Block } from '../../Layout';
 import { useTemplateData, useTemplatesList } from '../../hooks/templates';
 import { useTemplateFormContext } from '../TemplateContext';
 import { ISlot } from '../../../types/Template';

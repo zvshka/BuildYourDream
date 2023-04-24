@@ -23,6 +23,7 @@ import { useToggle } from '@mantine/hooks';
 import Link from 'next/link';
 import { validateEmail } from '../../lib/validateEmail';
 import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
+import { NextLink } from '../../components/Layout/NextLink/NextLink';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -199,10 +200,10 @@ export default function SignUp() {
           <Button type="submit" className={classes.input}>
             Регистрация
           </Button>
-          <Anchor component={Link} href="/auth/signin">
+          <Anchor component={NextLink} href="/auth/signin">
             Есть аккаунт?
           </Anchor>
-          <Anchor component={Link} href="/">
+          <Anchor component={NextLink} href="/">
             На главную
           </Anchor>
         </Stack>

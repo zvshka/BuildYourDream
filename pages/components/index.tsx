@@ -15,6 +15,7 @@ import { PageHeader } from '../../components/Layout';
 import { ITemplate } from '../../types/Template';
 import { useTemplatesList } from '../../components/hooks/templates';
 import Link from 'next/link';
+import { NextLink } from '../../components/Layout/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
   box: {
@@ -46,7 +47,7 @@ const useStyles = createStyles((theme) => ({
 const Category = React.memo(({ data }: { data: any }) => {
   const { classes } = useStyles();
   return (
-    <Paper className={classes.box} shadow="xl" component={Link} href={`/components/${data.id}`}>
+    <Paper className={classes.box} shadow="xl" component={NextLink} href={`/components/${data.id}`}>
       <Box className={classes.boxContent}>
         <Text weight={700} size={24}>
           {data.name}
@@ -68,12 +69,12 @@ export default function Parts() {
           rightSection={
             <Group>
               {user && user.role === 'ADMIN' && (
-                <Button component={Link} href="/components/create">
+                <Button component={NextLink} href="/components/create">
                   Добавить деталь
                 </Button>
               )}
               {user && user.role === 'ADMIN' && (
-                <Button component={Link} href="/templates/create">
+                <Button component={NextLink} href="/templates/create">
                   Добавить группу/форму
                 </Button>
               )}

@@ -1,12 +1,12 @@
-import { Stack } from '@mantine/core';
+import { Container, Stack } from '@mantine/core';
 import React from 'react';
 import { PageHeader } from '../../components/Layout';
 
 export default function Configs() {
   return (
-    <Stack>
+    <Container size="xl">
       <PageHeader title="Пользовательские сборки" />
       <Stack />
-    </Stack>
+    </Container>
   );
 }

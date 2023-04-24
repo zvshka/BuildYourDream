@@ -29,7 +29,7 @@ import { SortableList } from '../../components/SortableList/SortableList';
 import { DragHandle } from '../../components/SortableList/SortableItem';
 import { LARGE_TEXT, RANGE, TEXT } from '../../types/FieldTypes';
 import { SlotField } from '../../components/Components/SlotField/SlotField';
-import Link from 'next/link';
+import { NextLink } from '../../components/Layout/NextLink/NextLink';
 
 export default function createTemplatePage() {
   const [loading, toggleLoading] = useToggle();
@@ -131,7 +131,7 @@ export default function createTemplatePage() {
             <PageHeader
               title="Создание группы"
               rightSection={
-                <Button href="/components" component={Link}>
+                <Button href="/components" component={NextLink}>
                   Назад
                 </Button>
               }

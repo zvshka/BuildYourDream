@@ -13,13 +13,13 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
-import Link from 'next/link';
 import { useAuth } from '../../../components/Providers/Auth/AuthWrapper';
 import { Block, PageHeader } from '../../../components/Layout';
 import { useTemplateData } from '../../../components/hooks/templates';
 import { useComponentsList } from '../../../components/hooks/components';
 import { Filters } from '../../../components/Layout/Filters/Filters';
 import { ComponentRow } from '../../../components/Layout/ComponentRow/ComponentRow';
+import { NextLink } from '../../../components/Layout/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -83,19 +83,19 @@ export default function Category() {
           rightSection={
             <Group>
               {user && user.role === 'ADMIN' && (
-                <Button href={`/templates/edit/${router.query.categoryId}`} component={Link}>
+                <Button href={`/templates/edit/${router.query.categoryId}`} component={NextLink}>
                   Изменить
                 </Button>
               )}
               {user && user.role === 'ADMIN' && (
                 <Button
                   href={`/components/create?templateId=${router.query.categoryId}`}
-                  component={Link}
+                  component={NextLink}
                 >
                   Добавить
                 </Button>
               )}
-              <Button href="/components" component={Link}>
+              <Button href="/components" component={NextLink}>
                 Назад
               </Button>
             </Group>
@@ -126,7 +126,7 @@ export default function Category() {
                       <Box
                         href={`/components/${router.query.categoryId}/${component.id}`}
                         key={component.id}
-                        component={Link}
+                        component={NextLink}
                       >
                         <Block>
                           <ComponentRow component={component} />

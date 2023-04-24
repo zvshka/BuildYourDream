@@ -13,8 +13,9 @@ import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
 import Link from 'next/link';
+import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
+import { NextLink } from '../../components/Layout/NextLink/NextLink';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -83,10 +84,10 @@ export default function SignIn() {
           <Button type="submit" className={classes.input}>
             Вход
           </Button>
-          <Anchor component={Link} href="/auth/signup">
+          <Anchor component={NextLink} href="/auth/signup">
             Нет аккаунта?
           </Anchor>
-          <Anchor component={Link} href="/">
+          <Anchor component={NextLink} href="/">
             На главную
           </Anchor>
         </Stack>
