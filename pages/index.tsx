@@ -25,9 +25,9 @@ import ReactFlow, {
 import { Block, PageHeader } from '../components/Layout';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/Auth/AuthWrapper';
-import { ComponentNode } from '../components/Layout/ComponentNode/ComponentNode';
+import { ComponentNode } from '../components/Configurator/ComponentNode/ComponentNode';
 import { useComponentsList } from '../components/hooks/components';
-import simpleFloatingEdge from '../components/Layout/SimpleFloatingEdge/SimpleFloatingEdge';
+import simpleFloatingEdge from '../components/Configurator/SimpleFloatingEdge/SimpleFloatingEdge';
 
 const nodeTypes = {
   component: ComponentNode,
@@ -125,7 +125,10 @@ export default function HomePage() {
                 {isTemplatesFetched &&
                   isSuccess &&
                   templates.map((template) => (
-                    <Box sx={{ flex: '0 0 auto', width: 'auto', maxWidth: '100%' }} key={template.id}>
+                    <Box
+                      sx={{ flex: '0 0 auto', width: 'auto', maxWidth: '100%' }}
+                      key={template.id}
+                    >
                       <Text color={template.required ? 'red' : 'dimmed'}>{template.name}</Text>
                     </Box>
                   ))}

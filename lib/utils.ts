@@ -16,11 +16,35 @@ function getNodeCenter(node) {
   };
 }
 
-function getHandleCoordsByPosition(node, handlePosition, handleId) {
+function getHandle(handle, handlePosition: string, sourceHandleId: string, targetHandleId: string) {
+  const sourceIsSlot = sourceHandleId.startsWith('slot');
+  const targetIsSlot = targetHandleId.startsWith('slot');
+  let result = true;
+
+  if (targetIsSlot) {
+    const isLeft = handlePosition === 'left' && handle.id.endsWith('l');
+    const isRight = handlePosition === 'right' && handle.id.endsWith('r');
+    const isTop = handlePosition === 'top' && handle.id.endsWith('t');
+    const isBottom = handlePosition === 'bottom' && handle.id.endsWith('b');
+
+    result = isLeft || isRight || isTop || isBottom;
+  } else if (sourceIsSlot) {
+    const handleIncludesId = handle.id.includes(/slot-(.*)-[l|r]/gi.exec(sourceHandleId)?.[1]);
+    const isLeft = handlePosition === 'left' && handle.id.endsWith('l');
+    const isRight = handlePosition === 'right' && handle.id.endsWith('r');
+
+    result = handleIncludesId && (isLeft || isRight);
+  }
+
+  return result;
+}
+
+function getHandleCoordsByPosition(source, handlePosition, sourceHandleId, targetHandleId) {
   // all handles are from type source, that's why we use handleBounds.source here
-  console.log(handleId);
-  const handle = node[internalsSymbol].handleBounds.source.find((h) => h.id === handleId);
-  // || node[internalsSymbol].handleBounds.source[0];
+  const handle =
+    source[internalsSymbol].handleBounds.source.find((h) =>
+      getHandle(h, handlePosition, sourceHandleId, targetHandleId)
+    ) || source[internalsSymbol].handleBounds.source[0];
 
   let offsetX = handle.width / 2;
   let offsetY = handle.height / 2;
@@ -43,16 +67,16 @@ function getHandleCoordsByPosition(node, handlePosition, handleId) {
       break;
   }
 
-  const x = node.positionAbsolute.x + handle.x + offsetX;
-  const y = node.positionAbsolute.y + handle.y + offsetY;
+  const x = source.positionAbsolute.x + handle.x + offsetX;
+  const y = source.positionAbsolute.y + handle.y + offsetY;
 
   return [x, y];
 }
 
 // returns the position (top,right,bottom or right) passed node compared to
-function getParams(nodeA, nodeB, handleIdA, handleIdB) {
-  const centerA = getNodeCenter(nodeA);
-  const centerB = getNodeCenter(nodeB);
+function getParams(source, target, sourceHandle, targetHandle) {
+  const centerA = getNodeCenter(source);
+  const centerB = getNodeCenter(target);
 
   const horizontalDiff = Math.abs(centerA.x - centerB.x);
   const verticalDiff = Math.abs(centerA.y - centerB.y);
@@ -60,7 +84,7 @@ function getParams(nodeA, nodeB, handleIdA, handleIdB) {
   // const position = centerA.x > centerB.x ? Position.Left : Position.Right;
   let position;
 
-  if (nodeB[internalsSymbol].handleBounds.source.length < 4) {
+  if (!sourceHandle.includes('slot')) {
     if (horizontalDiff > verticalDiff) {
       position = centerA.x > centerB.x ? Position.Left : Position.Right;
     } else {
@@ -73,7 +97,7 @@ function getParams(nodeA, nodeB, handleIdA, handleIdB) {
 
   // when the horizontal difference between the nodes is bigger, we use Position.Left or Position.Right for the handle
 
-  const [x, y] = getHandleCoordsByPosition(nodeA, position, handleIdA || handleIdB);
+  const [x, y] = getHandleCoordsByPosition(source, position, sourceHandle, targetHandle);
   return [x, y, position];
 }
 

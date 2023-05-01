@@ -27,6 +27,7 @@ const useStyles = createStyles((theme) => ({
       display: 'block',
       paddingTop: '100%',
     },
+    cursor: 'pointer',
   },
   boxContent: {
     position: 'absolute',
