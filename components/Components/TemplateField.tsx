@@ -11,7 +11,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ITemplate } from '../../types/Template';
 import { CreateField } from '../../types/Field';
 import { useTemplateFormContext } from './TemplateContext';
@@ -21,7 +21,7 @@ import { DEPENDS_ON, fieldTypes, SELECT } from '../../types/FieldTypes';
 export const TemplateField = (props) => {
   const { item, index } = props;
   const template = useTemplateFormContext();
-  const { data: templates, isFetched, isSuccess } = useTemplatesList();
+  const { data: templates, isSuccess } = useTemplatesList();
 
   useEffect(() => {
     const field = CreateField(item);
@@ -98,9 +98,7 @@ export const TemplateField = (props) => {
           <Stack spacing={0}>
             <Select
               data={
-                isFetched && isSuccess
-                  ? templates.map((t: ITemplate) => ({ label: t.name, value: t.id }))
-                  : []
+                isSuccess ? templates.map((t: ITemplate) => ({ label: t.name, value: t.id })) : []
               }
               label="Шаблон от корого зависят значения"
               {...template.getInputProps(`fields.${index}.depends_on.template`)}
@@ -108,7 +106,7 @@ export const TemplateField = (props) => {
             <Select
               disabled={!template.values.fields[index]?.depends_on?.template}
               data={
-                template.values.fields[index]?.depends_on?.template
+                isSuccess && template.values.fields[index]?.depends_on?.template
                   ? (templates
                       ?.find((t) => t.id === template.values.fields[index]?.depends_on?.template)
                       ?.fields.filter((f) => f.type === SELECT)

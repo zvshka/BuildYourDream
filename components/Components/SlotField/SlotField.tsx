@@ -3,13 +3,21 @@ import { Block } from '../../Layout';
 import { useTemplateData, useTemplatesList } from '../../hooks/templates';
 import { useTemplateFormContext } from '../TemplateContext';
 import { ISlot } from '../../../types/Template';
+import { useEffect, useState } from 'react';
 
 export const SlotField = ({ index, item }: { index: number; item?: ISlot }) => {
   const { data: templates, isSuccess: isTemplatesLoaded } = useTemplatesList();
   const template = useTemplateFormContext();
-  const { data: templateData, isSuccess: isTemplateLoaded } = useTemplateData(
-    template.values.slots[index].componentId as string
-  );
+
+  const [componentId, setComponentId] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (template.values.slots[index]) {
+      setComponentId(template.values.slots[index].componentId);
+    }
+  }, []);
+
+  const { data: templateData, isSuccess: isTemplateLoaded } = useTemplateData(componentId);
 
   return (
     <Block>

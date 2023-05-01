@@ -1,4 +1,4 @@
-import { Position, internalsSymbol } from 'reactflow';
+import { internalsSymbol, Position } from 'reactflow';
 
 export const storage = {
   getToken: () =>
@@ -16,11 +16,10 @@ function getNodeCenter(node) {
   };
 }
 
-function getHandleCoordsByPosition(node, handlePosition) {
+function getHandleCoordsByPosition(node, handlePosition, handleId) {
   // all handles are from type source, that's why we use handleBounds.source here
-  const handle = node[internalsSymbol].handleBounds.source.find(
-    (h) => h.position === handlePosition
-  );
+  console.log(handleId);
+  const handle = node[internalsSymbol].handleBounds.source.find((h) => h.id === handleId);
   // || node[internalsSymbol].handleBounds.source[0];
 
   let offsetX = handle.width / 2;
@@ -51,7 +50,7 @@ function getHandleCoordsByPosition(node, handlePosition) {
 }
 
 // returns the position (top,right,bottom or right) passed node compared to
-function getParams(nodeA, nodeB) {
+function getParams(nodeA, nodeB, handleIdA, handleIdB) {
   const centerA = getNodeCenter(nodeA);
   const centerB = getNodeCenter(nodeB);
 
@@ -74,14 +73,14 @@ function getParams(nodeA, nodeB) {
 
   // when the horizontal difference between the nodes is bigger, we use Position.Left or Position.Right for the handle
 
-  const [x, y] = getHandleCoordsByPosition(nodeA, position);
+  const [x, y] = getHandleCoordsByPosition(nodeA, position, handleIdA || handleIdB);
   return [x, y, position];
 }
 
 // returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
-export function getEdgeParams(source, target) {
-  const [sx, sy, sourcePos] = getParams(source, target);
-  const [tx, ty, targetPos] = getParams(target, source);
+export function getEdgeParams(source, target, sourceHandleId, targetHandleId) {
+  const [sx, sy, sourcePos] = getParams(source, target, sourceHandleId, targetHandleId);
+  const [tx, ty, targetPos] = getParams(target, source, targetHandleId, sourceHandleId);
 
   return {
     sx,

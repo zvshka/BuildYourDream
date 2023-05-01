@@ -39,6 +39,7 @@ class TemplateService {
   }
 
   updateFormById({ id, data }: any) {
+    console.log(data);
     return prisma.template.update({
       where: {
         id,

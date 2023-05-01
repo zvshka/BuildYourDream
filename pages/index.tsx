@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  createStyles,
   Flex,
   Group,
   Modal,
@@ -11,19 +10,17 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDisclosure, useToggle } from '@mantine/hooks';
 import ReactFlow, {
   addEdge,
-  Connection,
-  Edge,
+  Background,
+  ConnectionLineType,
+  ConnectionMode,
+  MarkerType,
+  Panel,
   useEdgesState,
   useNodesState,
-  ConnectionLineType,
-  Background,
-  Panel,
-  MarkerType,
-  ConnectionMode,
 } from 'reactflow';
 import { Block, PageHeader } from '../components/Layout';
 import { useTemplatesList } from '../components/hooks/templates';
@@ -110,6 +107,10 @@ export default function HomePage() {
 
   const [opened, { open, close }] = useDisclosure(false);
 
+  useEffect(() => {
+    console.log(edges);
+  }, [edges]);
+
   return (
     <Container size="xl" sx={{ height: '100%' }}>
       <Modal title="Добавление компонента на стол" opened={opened} onClose={close}>
@@ -124,7 +125,7 @@ export default function HomePage() {
                 {isTemplatesFetched &&
                   isSuccess &&
                   templates.map((template) => (
-                    <Box sx={{ flex: '0 0 auto', width: 'auto', maxWidth: '100%' }}>
+                    <Box sx={{ flex: '0 0 auto', width: 'auto', maxWidth: '100%' }} key={template.id}>
                       <Text color={template.required ? 'red' : 'dimmed'}>{template.name}</Text>
                     </Box>
                   ))}

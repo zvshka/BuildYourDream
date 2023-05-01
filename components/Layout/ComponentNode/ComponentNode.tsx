@@ -9,8 +9,8 @@ const Slot = ({ slotData }) => {
   return (
     <Block style={{ position: 'relative' }}>
       <Text>{isSuccess && data.name} 0/1</Text>
-      <Handle type="source" position={Position.Right} id={`${slotData.id}-r`} />
-      <Handle type="source" position={Position.Left} id={`${slotData.id}-l`} />
+      <Handle type="source" position={Position.Right} id={`slot-${slotData.id}-r`} />
+      <Handle type="source" position={Position.Left} id={`slot-${slotData.id}-l`} />
     </Block>
   );
 };
@@ -33,7 +33,7 @@ const Component = ({ id, data }) => {
       {templateData.slots &&
         templateData.slots.map((slot) => <Slot slotData={slot} key={slot.id} />)}
 
-      {!templateData.slots && (
+      {(!templateData.slots || templateData.slots.length === 0) && (
         <Box>
           <Handle type="source" position={Position.Right} id={`${id}-r`} />
           <Handle type="source" position={Position.Left} id={`${id}-l`} />
