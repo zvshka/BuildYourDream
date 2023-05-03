@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from 'react';
 import { AppShell, useMantineTheme } from '@mantine/core';
-import { NavbarSimpleColored } from './Navbar/Navbar';
-import { HeaderWithLogo } from './Header/HeaderWithLogo';
+import { NavbarSimpleColored } from './general/Navbar/Navbar';
+import { HeaderWithLogo } from './general/Header/HeaderWithLogo';
 import { useHotkeys } from '@mantine/hooks';
 import { useNavigationContext } from '../Providers/NavigationContext/NavigationContext';
 

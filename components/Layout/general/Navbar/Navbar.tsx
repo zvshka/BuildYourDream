@@ -29,10 +29,10 @@ import { useToggle } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useState } from 'react';
-import { useAuth } from '../../Providers/Auth/AuthWrapper';
-import { useNavigationContext } from '../../Providers/NavigationContext/NavigationContext';
+import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
+import { useNavigationContext } from '../../../Providers/NavigationContext/NavigationContext';
 import { NextLink } from '../NextLink/NextLink';
-import { UserButton } from '../UserButton/UserButton';
+import { UserButton } from '../../inputs/UserButton/UserButton';
 
 const useStyles = createStyles((theme, _params, getRef) => ({
   item: {
@@ -182,7 +182,7 @@ const tabs = {
 };
 
 //TODO: Сделать навигацию плиткой
-export function NavbarSimpleColored({ opened, setOpened }: any) {
+export function NavbarSimpleColored() {
   const { classes, cx } = useStyles();
   const router = useRouter();
   const [visible, toggle] = useToggle();
@@ -318,7 +318,7 @@ export function NavbarSimpleColored({ opened, setOpened }: any) {
                     {user && (
                       <Box>
                         <Collapse in={visible}>
-                          {opened ? (
+                          {navigationContext.opened ? (
                             <UnstyledButton
                               href="/profile"
                               component={NextLink}

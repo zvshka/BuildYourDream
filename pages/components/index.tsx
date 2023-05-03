@@ -10,12 +10,12 @@ import {
   Text,
 } from '@mantine/core';
 import React from 'react';
-import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
+import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { PageHeader } from '../../components/Layout';
 import { ITemplate } from '../../types/Template';
 import { useTemplatesList } from '../../components/hooks/templates';
 import Link from 'next/link';
-import { NextLink } from '../../components/Layout/NextLink/NextLink';
+import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
   box: {

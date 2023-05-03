@@ -1,8 +1,8 @@
 import { Box, Image, Stack, Text, Title } from '@mantine/core';
 import { Handle, Position } from 'reactflow';
 import { memo } from 'react';
-import { Block } from '../../Layout/Block/Block';
-import { useTemplateData } from '../../hooks/templates';
+import { Block } from '../../general/Block/Block';
+import { useTemplateData } from '../../../hooks/templates';
 
 const Slot = ({ slotData }) => {
   const { data, isSuccess } = useTemplateData(slotData.componentId);

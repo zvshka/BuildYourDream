@@ -14,12 +14,12 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 import { useToggle } from '@mantine/hooks';
-import { ComponentForm } from '../../components/Components/ComponentForm';
+import { ComponentForm } from '../../components/Layout/forms/ComponentForm/ComponentForm';
 import { Block } from '../../components/Layout';
 import {
   ComponentFormProvider,
   useComponentForm,
-} from '../../components/Components/TemplateContext';
+} from '../../components/Layout/forms/TemplateForm/TemplateContext';
 import { IField } from '../../types/Field';
 import { BOOL, DEPENDS_ON, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/FieldTypes';
 import { useTemplatesList } from '../../components/hooks/templates';

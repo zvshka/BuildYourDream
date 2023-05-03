@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { getBezierPath, useStore } from 'reactflow';
-import { getEdgeParams } from '../../../lib/utils';
+import { getEdgeParams } from '../../../../lib/utils';
 
-function SimpleFloatingEdge({
+function FloatingEdge({
   id,
   source,
   sourceHandleId,
@@ -54,4 +54,4 @@ function SimpleFloatingEdge({
   );
 }
 
-export default SimpleFloatingEdge;
+export default FloatingEdge;

@@ -9,7 +9,6 @@ import {
   NumberInput,
   Radio,
   Select,
-  Slider,
   Stack,
   Switch,
   Textarea,
@@ -17,11 +16,19 @@ import {
 } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
-import { RangeInput } from '../Layout';
-import { useComponentFormContext } from './TemplateContext';
-import { IField } from '../../types/Field';
-import { BOOL, DEPENDS_ON, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/FieldTypes';
-import { useTemplatesList } from '../hooks/templates';
+import { RangeInput } from '../../index';
+import { useComponentFormContext } from '../TemplateForm/TemplateContext';
+import { IField } from '../../../../types/Field';
+import {
+  BOOL,
+  DEPENDS_ON,
+  LARGE_TEXT,
+  NUMBER,
+  RANGE,
+  SELECT,
+  TEXT,
+} from '../../../../types/FieldTypes';
+import { useTemplatesList } from '../../../hooks/templates';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;

@@ -1,4 +1,4 @@
-import { Group, Stack, Title } from '@mantine/core';
+import { Group, Title } from '@mantine/core';
 import { Block } from '../Block/Block';
 
 export const PageHeader = ({ rightSection, title }: { rightSection?: any; title: string }) => (

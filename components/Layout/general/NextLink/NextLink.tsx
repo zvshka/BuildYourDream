@@ -31,7 +31,7 @@ export const NextLink = forwardRef<HTMLAnchorElement, NextLinkProps>((props, ref
       locale={locale}
       legacyBehavior={legacyBehavior}
     >
-      <a {...otherProps} ref={ref}>
+      <a {...otherProps} ref={ref} style={{ ...otherProps.style, textDecoration: 'none' }}>
         {props.children}
       </a>
     </Link>

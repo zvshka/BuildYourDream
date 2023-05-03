@@ -1,17 +1,19 @@
-import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { CreateField } from '../../types/Field';
 import { ITemplate } from '../../types/Template';
-import { TemplateFormProvider } from '../../components/Components/TemplateContext';
+import {
+  TemplateFormProvider,
+  useTemplateForm,
+} from '../../components/Layout/forms/TemplateForm/TemplateContext';
 import { LARGE_TEXT, RANGE, TEXT } from '../../types/FieldTypes';
-import { TemplateForm } from '../../components/TemplateForm/TemplateForm';
+import { TemplateForm } from '../../components/Layout/forms/TemplateForm/TemplateForm';
 
 export default function createTemplatePage() {
   const [loading, toggleLoading] = useToggle();
-  const template = useForm<ITemplate>({
+  const template = useTemplateForm({
     initialValues: {
       id: '',
       position: -1,

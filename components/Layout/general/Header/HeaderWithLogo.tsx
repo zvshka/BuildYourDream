@@ -18,8 +18,8 @@ import {
 import { IconLogout, IconUser } from '@tabler/icons-react';
 import { showNotification } from '@mantine/notifications';
 import { useModals } from '@mantine/modals';
-import { useAuth } from '../../Providers/Auth/AuthWrapper';
-import { useNavigationContext } from '../../Providers/NavigationContext/NavigationContext';
+import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
+import { useNavigationContext } from '../../../Providers/NavigationContext/NavigationContext';
 import { NextLink } from '../NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({

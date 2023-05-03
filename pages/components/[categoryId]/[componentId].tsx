@@ -14,7 +14,6 @@ import {
 } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
-import Link from 'next/link';
 import { Block } from '../../../components/Layout';
 import { useComponentData } from '../../../components/hooks/components';
 import { useTemplateData } from '../../../components/hooks/templates';
@@ -27,6 +26,7 @@ import {
   SELECT,
   TEXT,
 } from '../../../types/FieldTypes';
+import { NextLink } from '../../../components/Layout/general/NextLink/NextLink';
 
 const Field = ({ data }) => (
   <Fragment key={data.name}>
@@ -79,10 +79,10 @@ export default function partPage() {
           <Group position="apart">
             <Title order={2}>{isComponentDataFetched && componentData.data['Название']}</Title>
             <Group>
-              <Button href={`/components/edit/${router.query.componentId}`} component={Link}>
+              <Button href={`/components/edit/${router.query.componentId}`} component={NextLink}>
                 Изменить
               </Button>
-              <Button href={`/components/${router.query.categoryId}`} component={Link}>
+              <Button href={`/components/${router.query.categoryId}`} component={NextLink}>
                 Назад
               </Button>
             </Group>

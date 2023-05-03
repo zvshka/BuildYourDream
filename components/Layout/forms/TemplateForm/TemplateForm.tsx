@@ -14,16 +14,16 @@ import {
 import { IconApps, IconDeviceFloppy, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
 import cuid from 'cuid';
-import { Block, PageHeader } from '../Layout';
-import { NextLink } from '../Layout/NextLink/NextLink';
-import { SortableList } from '../SortableList/SortableList';
-import { CreateField, IField } from '../../types/Field';
-import { DragHandle } from '../SortableList/SortableItem';
-import { TemplateField } from '../Components/TemplateField';
-import { ISlot } from '../../types/Template';
-import { SlotField } from '../Components/SlotField/SlotField';
-import { useTemplateFormContext } from '../Components/TemplateContext';
-import { TEXT } from '../../types/FieldTypes';
+import { Block, PageHeader } from '../../index';
+import { NextLink } from '../../general/NextLink/NextLink';
+import { SortableList } from '../../general/SortableList/SortableList';
+import { CreateField, IField } from '../../../../types/Field';
+import { DragHandle } from '../../general/SortableList/SortableItem';
+import { TemplateField } from './TemplateField';
+import { ISlot } from '../../../../types/Template';
+import { TemplateSlotField } from './TemplateSlotField';
+import { useTemplateFormContext } from './TemplateContext';
+import { TEXT } from '../../../../types/FieldTypes';
 
 export const TemplateForm = ({ handleSubmit, loading }) => {
   const template = useTemplateFormContext();
@@ -37,10 +37,6 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
       outerField: '',
       compatibilityCondition: 'EQUALS',
     });
-  };
-
-  const handleRemoveSlot = () => {
-    return false;
   };
 
   const handleAddField = () => {
@@ -155,7 +151,10 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
                             </Block>
                             <Block p={4}>
                               <Group position="center">
-                                <ActionIcon color="red" onClick={handleRemoveSlot}>
+                                <ActionIcon
+                                  color="red"
+                                  onClick={() => template.removeListItem('slots', index as number)}
+                                >
                                   <IconTrash size={18} />
                                 </ActionIcon>
                               </Group>
@@ -163,7 +162,7 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
                           </Stack>
                         </Grid.Col>
                         <Grid.Col span="auto">
-                          <SlotField index={index as number} item={item} />
+                          <TemplateSlotField index={index as number} />
                         </Grid.Col>
                       </Grid>
                     </SortableList.Item>

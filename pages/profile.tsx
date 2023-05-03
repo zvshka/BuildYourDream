@@ -19,7 +19,7 @@ import {
   IconPhoto,
   IconSettings,
 } from '@tabler/icons-react';
-import { useAuth } from '../components/Providers/Auth/AuthWrapper';
+import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
 import { PopupEdit } from '../components/Layout/PopupEdit/PopupEdit';
 

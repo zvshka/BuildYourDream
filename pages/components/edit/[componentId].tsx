@@ -7,8 +7,8 @@ import { showNotification } from '@mantine/notifications';
 import {
   ComponentFormProvider,
   useComponentForm,
-} from '../../../components/Components/TemplateContext';
-import { ComponentForm } from '../../../components/Components/ComponentForm';
+} from '../../../components/Layout/forms/TemplateForm/TemplateContext';
+import { ComponentForm } from '../../../components/Layout/forms/ComponentForm/ComponentForm';
 import { Block, PageHeader } from '../../../components/Layout';
 import { IField } from '../../../types/Field';
 import { IComponent, ITemplate } from '../../../types/Template';

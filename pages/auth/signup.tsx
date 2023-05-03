@@ -22,8 +22,8 @@ import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
 import Link from 'next/link';
 import { validateEmail } from '../../lib/validateEmail';
-import { useAuth } from '../../components/Providers/Auth/AuthWrapper';
-import { NextLink } from '../../components/Layout/NextLink/NextLink';
+import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
+import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 
 const useStyles = createStyles(() => ({
   container: {

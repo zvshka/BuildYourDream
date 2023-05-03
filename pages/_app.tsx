@@ -12,11 +12,11 @@ import calendar from 'dayjs/plugin/calendar';
 import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
 import { useRouter } from 'next/router';
-import { RouterTransition } from '../components/Layout/RouterTransition/RouterTransition';
-import { ColorProvider } from '../components/Layout/ColorControl/ColorContext';
+import { RouterTransition } from '../components/Layout/general/RouterTransition/RouterTransition';
+import { ColorProvider } from '../components/Layout/general/ColorControl/ColorContext';
 import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
-import { AuthProvider } from '../components/Providers/Auth/AuthWrapper';
+import { AuthProvider } from '../components/Providers/AuthContext/AuthWrapper';
 import Layout from '../components/Layout/Layout';
 
 import 'reactflow/dist/style.css';

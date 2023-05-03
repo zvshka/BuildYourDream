@@ -1,3 +1,3 @@
-export * from './Block/Block';
-export * from './RangeInput/RangeInput';
-export * from './PageHeader/PageHeader';
+export * from './general/Block/Block';
+export * from './inputs/RangeInput/RangeInput';
+export * from './general/PageHeader/PageHeader';

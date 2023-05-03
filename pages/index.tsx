@@ -24,10 +24,10 @@ import ReactFlow, {
 } from 'reactflow';
 import { Block, PageHeader } from '../components/Layout';
 import { useTemplatesList } from '../components/hooks/templates';
-import { useAuth } from '../components/Providers/Auth/AuthWrapper';
-import { ComponentNode } from '../components/Configurator/ComponentNode/ComponentNode';
+import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
+import { ComponentNode } from '../components/Layout/specific/ComponentNode/ComponentNode';
 import { useComponentsList } from '../components/hooks/components';
-import simpleFloatingEdge from '../components/Configurator/SimpleFloatingEdge/SimpleFloatingEdge';
+import simpleFloatingEdge from '../components/Layout/specific/FloatingEdge/FloatingEdge';
 
 const nodeTypes = {
   component: ComponentNode,
@@ -106,10 +106,6 @@ export default function HomePage() {
   );
 
   const [opened, { open, close }] = useDisclosure(false);
-
-  useEffect(() => {
-    console.log(edges);
-  }, [edges]);
 
   return (
     <Container size="xl" sx={{ height: '100%' }}>

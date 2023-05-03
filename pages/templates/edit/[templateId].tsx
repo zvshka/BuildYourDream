@@ -2,20 +2,22 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useToggle } from '@mantine/hooks';
-import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import { useMutation } from '@tanstack/react-query';
 import { ITemplate } from '../../../types/Template';
-import { TemplateFormProvider } from '../../../components/Components/TemplateContext';
+import {
+  TemplateFormProvider,
+  useTemplateForm,
+} from '../../../components/Layout/forms/TemplateForm/TemplateContext';
 import { useTemplateData } from '../../../components/hooks/templates';
-import { TemplateForm } from '../../../components/TemplateForm/TemplateForm';
+import { TemplateForm } from '../../../components/Layout/forms/TemplateForm/TemplateForm';
 
 export default function EditForm() {
   const [loading, toggleLoading] = useToggle();
 
   const router = useRouter();
 
-  const template = useForm<ITemplate & { id?: string }>({
+  const template = useTemplateForm({
     initialValues: {
       id: '',
       name: '',
@@ -63,10 +65,7 @@ export default function EditForm() {
       },
     }
   );
-
-  //TODO: Make mutation
   const handleSubmit = async (values: typeof template.values) => {
-    console.log(values);
     toggleLoading();
     updateTemplate.mutate(values);
   };

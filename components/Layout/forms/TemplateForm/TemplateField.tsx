@@ -12,11 +12,11 @@ import {
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { useEffect } from 'react';
-import { ITemplate } from '../../types/Template';
-import { CreateField } from '../../types/Field';
+import { ITemplate } from '../../../../types/Template';
+import { CreateField } from '../../../../types/Field';
 import { useTemplateFormContext } from './TemplateContext';
-import { useTemplatesList } from '../hooks/templates';
-import { DEPENDS_ON, fieldTypes, SELECT } from '../../types/FieldTypes';
+import { useTemplatesList } from '../../../hooks/templates';
+import { DEPENDS_ON, fieldTypes, SELECT } from '../../../../types/FieldTypes';
 
 export const TemplateField = (props) => {
   const { item, index } = props;

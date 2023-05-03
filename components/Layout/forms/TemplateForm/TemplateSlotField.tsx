@@ -1,11 +1,11 @@
 import { Group, Select, Stack } from '@mantine/core';
-import { Block } from '../../Layout';
-import { useTemplateData, useTemplatesList } from '../../hooks/templates';
-import { useTemplateFormContext } from '../TemplateContext';
-import { ISlot } from '../../../types/Template';
 import { useEffect, useState } from 'react';
+import { Block } from '../../index';
+import { useTemplateData, useTemplatesList } from '../../../hooks/templates';
+import { useTemplateFormContext } from './TemplateContext';
+import { ISlot } from '../../../../types/Template';
 
-export const SlotField = ({ index, item }: { index: number; item?: ISlot }) => {
+export const TemplateSlotField = ({ index }: { index: number }) => {
   const { data: templates, isSuccess: isTemplatesLoaded } = useTemplatesList();
   const template = useTemplateFormContext();
 
@@ -25,10 +25,12 @@ export const SlotField = ({ index, item }: { index: number; item?: ISlot }) => {
         <Select
           data={
             isTemplatesLoaded
-              ? templates.map((t) => ({
-                  label: t.name,
-                  value: t.id,
-                }))
+              ? templates
+                  .filter((t) => t.id !== template.values.id)
+                  .map((t) => ({
+                    label: t.name,
+                    value: t.id,
+                  }))
               : []
           }
           {...template.getInputProps(`slots.${index}.componentId`)}

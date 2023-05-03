@@ -1,11 +1,11 @@
-import { Avatar, Group, Stack, Table, Text } from '@mantine/core';
+import { Avatar, Container, Group, Stack, Table, Text } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { Block, PageHeader } from '../../../components/Layout';
-import { useAuth } from '../../../components/Providers/Auth/AuthWrapper';
+import { useAuth } from '../../../components/Providers/AuthContext/AuthWrapper';
 
 function useUsersList(accessToken) {
   return useQuery({
@@ -58,24 +58,26 @@ export default function AdminUsers() {
     ));
 
   return (
-    <Stack>
-      <PageHeader title="Пользователи" />
-      <Block>
-        <Table sx={{ minWidth: 800 }} verticalSpacing="sm">
-          <thead>
-            <tr>
-              <th>Пользователь</th>
-              <th>Email</th>
-              <th>Роль</th>
-              <th>Сборок</th>
-              <th>Рейтинг</th>
-              <th>Жалоб</th>
-              <th>Создан</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
-      </Block>
-    </Stack>
+    <Container size="xl">
+      <Stack>
+        <PageHeader title="Пользователи" />
+        <Block>
+          <Table sx={{ minWidth: 800 }} verticalSpacing="sm">
+            <thead>
+              <tr>
+                <th>Пользователь</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Сборок</th>
+                <th>Рейтинг</th>
+                <th>Жалоб</th>
+                <th>Создан</th>
+              </tr>
+            </thead>
+            <tbody>{rows}</tbody>
+          </Table>
+        </Block>
+      </Stack>
+    </Container>
   );
 }

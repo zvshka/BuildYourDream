@@ -1,6 +1,6 @@
 import { Box, Group, Image, Text, Title } from '@mantine/core';
 import React from 'react';
-import { IComponent } from '../../../types/Template';
+import { IComponent } from '../../../../types/Template';
 
 export const ComponentRow = ({ component }: { component: { data: IComponent } }) => (
   <Group align="normal">

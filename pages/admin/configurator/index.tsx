@@ -8,7 +8,7 @@ import { storage } from '../../../lib/utils';
 import { useTemplatesList } from '../../../components/hooks/templates';
 import { Block, PageHeader } from '../../../components/Layout';
 import { queryClient } from '../../../components/Providers/QueryProvider/QueryProvider';
-import { SortableList } from '../../../components/SortableList/SortableList';
+import { SortableList } from '../../../components/Layout/general/SortableList/SortableList';
 import { ITemplate } from '../../../types/Template';
 
 export default function AdminConfigurator() {

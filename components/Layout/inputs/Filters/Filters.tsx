@@ -13,8 +13,8 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/router';
-import { IField } from '../../../types/Field';
-import { useTemplatesList } from '../../hooks/templates';
+import { IField } from '../../../../types/Field';
+import { useTemplatesList } from '../../../hooks/templates';
 import {
   BOOL,
   DEPENDS_ON,
@@ -23,7 +23,7 @@ import {
   RANGE,
   SELECT,
   TEXT,
-} from '../../../types/FieldTypes';
+} from '../../../../types/FieldTypes';
 
 const boolValues = [
   { value: 'all', label: 'Все' },
@@ -65,17 +65,6 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
   const router = useRouter();
   const { classes } = useStyles();
   const { data: templates, isFetched, isSuccess } = useTemplatesList();
-  // const [values, setValues] = useState([]);
-  //
-  // useEffect(() => {
-  //   if (isFetched && isSuccess) {
-  //     // const data = templates
-  //     //   .find((t) => t.id === field.depends_on?.template)
-  //     //   ?.fields.find((f) => f.id === field.depends_on?.field).options;
-  //     const template = templates.find(t => t.id === )
-  //     setValues(data);
-  //   }
-  // }, [isFetched, isSuccess]);
 
   const getValues = (field: IField) => {
     if (!isFetched || !isSuccess) return [];
@@ -105,16 +94,11 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
           <Accordion.Item value="tier">
             <Accordion.Control>Тир компонента</Accordion.Control>
             <Accordion.Panel>
-              <Slider
-                step={50}
-                label={null}
-                marks={[
-                  { value: 0, label: 'Low' },
-                  { value: 50, label: 'Medium' },
-                  { value: 100, label: 'High' },
-                ]}
-                mb="sm"
-              />
+              <Checkbox.Group>
+                <Checkbox label="Low Tier" />
+                <Checkbox label="Medium Tier" />
+                <Checkbox label="High Tier" />
+              </Checkbox.Group>
             </Accordion.Panel>
           </Accordion.Item>
           {fields &&
