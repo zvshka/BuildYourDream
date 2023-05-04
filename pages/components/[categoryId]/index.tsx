@@ -20,6 +20,7 @@ import { useComponentsList } from '../../../components/hooks/components';
 import { Filters } from '../../../components/Layout/inputs/Filters/Filters';
 import { ComponentRow } from '../../../components/Layout/general/ComponentRow/ComponentRow';
 import { NextLink } from '../../../components/Layout/general/NextLink/NextLink';
+import { ComponentsList } from '../../../components/Layout/specific/ComponentsList/ComponentsList';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -61,7 +62,6 @@ export default function Category() {
   const { data: templateData, isSuccess } = useTemplateData(router.query.categoryId as string);
   const {
     data: components,
-    isFetched: isComponentsFetched,
     isSuccess: isComponentsSuccess,
     refetch,
   } = useComponentsList(router.query.categoryId as string, filters);
@@ -101,52 +101,7 @@ export default function Category() {
             </Group>
           }
         />
-        <Box>
-          <Container size={1600} p={0}>
-            <Grid>
-              <Grid.Col lg={3}>
-                <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
-                  <Box>
-                    <Filters fields={isSuccess ? templateData?.fields : []} />
-                  </Box>
-                </MediaQuery>
-                <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
-                  <Paper className={classes.container} shadow="xl">
-                    <Button onClick={() => toggleFilters()} className={classes.drawerButton}>
-                      Показать фильтры
-                    </Button>
-                  </Paper>
-                </MediaQuery>
-              </Grid.Col>
-              <Grid.Col lg={9}>
-                <Stack>
-                  {isComponentsFetched &&
-                    isComponentsSuccess &&
-                    components.map((component) => (
-                      <Box
-                        href={`/components/${router.query.categoryId}/${component.id}`}
-                        key={component.id}
-                        component={NextLink}
-                      >
-                        <Block>
-                          <ComponentRow component={component} />
-                        </Block>
-                      </Box>
-                    ))}
-                </Stack>
-              </Grid.Col>
-            </Grid>
-          </Container>
-        </Box>
-        <Drawer
-          opened={showFilters}
-          onClose={() => toggleFilters()}
-          title="Фильтры и поиск"
-          padding="xl"
-          size="xl"
-        >
-          <Filters fields={isSuccess ? templateData?.fields : []} />
-        </Drawer>
+        <ComponentsList categoryId={router.query.categoryId as string} />
       </Stack>
     </Container>
   );

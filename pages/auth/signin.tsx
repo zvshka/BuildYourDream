@@ -13,7 +13,6 @@ import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 

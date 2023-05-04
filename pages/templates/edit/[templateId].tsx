@@ -44,7 +44,6 @@ export default function EditForm() {
         fields: newTemplateData.fields,
         slots: newTemplateData.slots,
         required: newTemplateData.required,
-        //TODO: Ограничения?
       }),
     {
       onSuccess: () => {

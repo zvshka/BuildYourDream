@@ -162,7 +162,7 @@ function NavbarLink({ item, style }: { item: any; style?: any }) {
             })}
         style={style}
       >
-        <item.Icon stroke={1.5} className={classes.linkIcon} />
+        <item.Icon stroke={1.5} className={classes.linkIcon} color="gray" />
       </UnstyledButton>
     </Tooltip>
   );
@@ -183,7 +183,7 @@ const tabs = {
 
 //TODO: Сделать навигацию плиткой
 export function NavbarSimpleColored() {
-  const { classes, cx } = useStyles();
+  const { classes, cx, theme } = useStyles();
   const router = useRouter();
   const [visible, toggle] = useToggle();
   const modals = useModals();
@@ -261,7 +261,7 @@ export function NavbarSimpleColored() {
                     onClick={() => navigationContext.setClosed()}
                   >
                     <Stack align="center" spacing="xs">
-                      <item.Icon size={36} />
+                      <item.Icon size={36} color={theme.colors.blue[5]} />
                       <Text align="center" weight={500} size={18}>
                         {item.label}
                       </Text>
