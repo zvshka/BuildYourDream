@@ -22,6 +22,7 @@ import Layout from '../components/Layout/Layout';
 import 'reactflow/dist/style.css';
 import 'react-querybuilder/dist/query-builder.css';
 import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
+import { ContextMenuProvider } from 'mantine-contextmenu';
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);
@@ -99,24 +100,26 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
       <ColorProvider value={primaryColor} setValue={changePrimaryColor}>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
-            <ModalsProvider>
-              <ReactQueryProvider>
-                <AuthProvider>
-                  <NavigationProvider>
-                    <Notifications />
-                    <RouterTransition />
-                    {/*@ts-ignore*/}
-                    {Component.noShell ? (
-                      <Component {...pageProps} />
-                    ) : (
-                      <Layout>
+            <ContextMenuProvider>
+              <ModalsProvider>
+                <ReactQueryProvider>
+                  <AuthProvider>
+                    <NavigationProvider>
+                      <Notifications />
+                      <RouterTransition />
+                      {/*@ts-ignore*/}
+                      {Component.noShell ? (
                         <Component {...pageProps} />
-                      </Layout>
-                    )}
-                  </NavigationProvider>
-                </AuthProvider>
-              </ReactQueryProvider>
-            </ModalsProvider>
+                      ) : (
+                        <Layout>
+                          <Component {...pageProps} />
+                        </Layout>
+                      )}
+                    </NavigationProvider>
+                  </AuthProvider>
+                </ReactQueryProvider>
+              </ModalsProvider>
+            </ContextMenuProvider>
           </MantineProvider>
         </ColorSchemeProvider>
       </ColorProvider>

@@ -21,7 +21,6 @@ import {
 } from '@tabler/icons-react';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
-import { PopupEdit } from '../components/Layout/PopupEdit/PopupEdit';
 
 const useStyles = createStyles((theme) => ({
   avatar: {
@@ -43,8 +42,9 @@ export default function Profile() {
               <Box className={classes.avatar}>
                 <Image
                   radius="sm"
-                  src="https://cdn.discordapp.com/avatars/263349725099458566/18993e33fb027e11af9d826d74b37fab.png?size=512"
+                  src="https://cdn.discordapp.com/avatars/263349725099458566/5c3c5bc3d1652384bdb3ac4cceb85256.png?size=512"
                   alt="avatar"
+                  withPlaceholder
                 />
               </Box>
               <Text weight={600} size="lg">
@@ -87,12 +87,6 @@ export default function Profile() {
             <Tabs.Panel value="general" pt="xs">
               <Box sx={{ height: '100%' }}>
                 <Textarea autosize minRows={12} label="Опиши себя" sx={{ height: '100%' }} />
-              </Box>
-            </Tabs.Panel>
-
-            <Tabs.Panel value="messages" pt="xs">
-              <Box>
-                <PopupEdit />
               </Box>
             </Tabs.Panel>
 

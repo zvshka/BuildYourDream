@@ -38,8 +38,7 @@ class TemplateService {
     });
   }
 
-  updateFormById({ id, data }: any) {
-    console.log(data);
+  updateFormById({ id, data }: { id: string; data: any }) {
     return prisma.template.update({
       where: {
         id,

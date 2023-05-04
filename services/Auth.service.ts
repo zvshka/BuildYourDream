@@ -2,11 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserService from './User.service';
 import { ApiError } from '../lib/ApiError';
-
-interface tokenPayload {
-  id: string;
-  role: string;
-}
+import { tokenPayload } from '../types/tokenPayload';
 
 class AuthService {
   async signup({

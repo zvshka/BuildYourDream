@@ -47,7 +47,7 @@ function FloatingEdge({
       id={id}
       className="react-flow__edge-path"
       d={edgePath}
-      strokeWidth={5}
+      strokeWidth={6}
       markerEnd={markerEnd}
       style={style}
     />

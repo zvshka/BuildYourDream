@@ -10486,6 +10486,11 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
+mantine-contextmenu@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/mantine-contextmenu/-/mantine-contextmenu-1.2.4.tgz#7679158a5cb226c8cefd27adee1a7812604422e4"
+  integrity sha512-kovU8i2GzZIQz/jMj9lfRw4yO/Yo2KflGohJupBGwV/ZdEEsnt19lOT9oQ9bDINuVqC8nFs6VTJN8tBoVFs2Xw==
+
 map-age-cleaner@^0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/map-age-cleaner/-/map-age-cleaner-0.1.3.tgz#7d583a7306434c055fe474b0f45078e6e1b4b92a"

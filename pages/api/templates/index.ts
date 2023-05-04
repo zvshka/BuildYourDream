@@ -1,5 +1,6 @@
 import { handler } from '../../../lib/handler';
 import TemplateService from '../../../services/Template.service';
+import { authGuard, roleGuard } from '../../../lib/guards';
 
 const api = handler();
 
@@ -8,9 +9,9 @@ api.get(async (req, res) => {
   res.send(forms);
 });
 
-api.post(async (req, res) => {
-  const form = await TemplateService.create(req.body);
-  res.send(form);
+api.post(authGuard, roleGuard('ADMIN'), async (req, res) => {
+  const template = await TemplateService.create(req.body);
+  res.send(template);
 });
 
 api.patch(async (req, res) => {

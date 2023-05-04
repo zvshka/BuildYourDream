@@ -5,6 +5,8 @@ import {
   Code,
   Container,
   createStyles,
+  Flex,
+  Grid,
   Group,
   Header,
   MediaQuery,
@@ -45,7 +47,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function HeaderWithLogo({ opened, setOpened }: any) {
+export function HeaderWithLogo() {
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { user, logout } = useAuth();
@@ -71,65 +73,129 @@ export function HeaderWithLogo({ opened, setOpened }: any) {
   const navigationContext = useNavigationContext();
 
   return (
-    <Header height={70} p="md" className={classes.header}>
+    <Header height={80} p="md" className={classes.header}>
       <Container size="xl" sx={{ width: '100%' }}>
-        <Group position="apart" className={classes.container}>
-          <Group spacing={0}>
-            <MediaQuery styles={{ display: 'none' }}>
-              <Burger
-                mr="sm"
-                opened={navigationContext.opened}
-                onClick={() =>
-                  navigationContext.opened
-                    ? navigationContext.setClosed()
-                    : navigationContext.setOpened()
-                }
-                size="sm"
-                color={theme.colors.gray[6]}
-              />
-            </MediaQuery>
-            <Group position="apart">
-              <Title order={3} className={classes.logo}>
+        <Grid columns={3} sx={{ width: '100%' }}>
+          <Grid.Col span={1}>
+            <Flex sx={{ height: '100%' }} align="center">
+              <MediaQuery styles={{ display: 'none' }}>
+                <Burger
+                  opened={navigationContext.opened}
+                  onClick={() =>
+                    navigationContext.opened
+                      ? navigationContext.setClosed()
+                      : navigationContext.setOpened()
+                  }
+                  size="md"
+                  color={theme.colors.gray[6]}
+                />
+              </MediaQuery>
+            </Flex>
+          </Grid.Col>
+          <Grid.Col span={1}>
+            <Flex justify="center" sx={{ height: '100%' }} align="center">
+              <Title order={1} className={classes.logo}>
                 <Text
                   color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
                 >
                   Build Your Dream
                 </Text>
               </Title>
-            </Group>
-          </Group>
-          <MediaQuery styles={{ display: 'none' }} smallerThan="lg">
-            {user ? (
-              <Menu trigger="hover" openDelay={100} closeDelay={400}>
-                <Menu.Target>
-                  <UnstyledButton>
-                    <Group>
-                      <Avatar />
-                      <Stack spacing={0}>
-                        <Text size={18}>{user?.username}</Text>
-                        <Text size={10} color="dimmed">
-                          {user.role}
-                        </Text>
-                      </Stack>
-                    </Group>
-                  </UnstyledButton>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item component={NextLink} href="/profile" icon={<IconUser size={18} />}>
-                    Профиль
-                  </Menu.Item>
-                  <Menu.Item onClick={handleLogout} color="red" icon={<IconLogout size={18} />}>
-                    Выйти
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            ) : (
-              <Button component={NextLink} href="/auth/signin">
-                Войти
-              </Button>
-            )}
-          </MediaQuery>
-        </Group>
+            </Flex>
+          </Grid.Col>
+          <Grid.Col span={1}>
+            <MediaQuery styles={{ display: 'none' }} smallerThan="lg">
+              <Flex sx={{ height: '100%' }} align="center" justify="flex-end">
+                {user ? (
+                  <Menu trigger="hover" openDelay={100} closeDelay={400}>
+                    <Menu.Target>
+                      <UnstyledButton>
+                        <Group>
+                          <Avatar size="md" />
+                          <Stack spacing={0}>
+                            <Text size={18}>{user?.username}</Text>
+                            <Text size={12} color="dimmed">
+                              {user.role}
+                            </Text>
+                          </Stack>
+                        </Group>
+                      </UnstyledButton>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item component={NextLink} href="/profile" icon={<IconUser size={18} />}>
+                        Профиль
+                      </Menu.Item>
+                      <Menu.Item onClick={handleLogout} color="red" icon={<IconLogout size={18} />}>
+                        Выйти
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                ) : (
+                  <Button component={NextLink} href="/auth/signin">
+                    Войти
+                  </Button>
+                )}
+              </Flex>
+            </MediaQuery>
+          </Grid.Col>
+        </Grid>
+        {/*<Group position="apart" className={classes.container}>*/}
+        {/*  <Group spacing={0}>*/}
+        {/*    <MediaQuery styles={{ display: 'none' }}>*/}
+        {/*      <Burger*/}
+        {/*        mr="sm"*/}
+        {/*        opened={navigationContext.opened}*/}
+        {/*        onClick={() =>*/}
+        {/*          navigationContext.opened*/}
+        {/*            ? navigationContext.setClosed()*/}
+        {/*            : navigationContext.setOpened()*/}
+        {/*        }*/}
+        {/*        size="sm"*/}
+        {/*        color={theme.colors.gray[6]}*/}
+        {/*      />*/}
+        {/*    </MediaQuery>*/}
+        {/*    <Group position="apart">*/}
+        {/*      <Title order={3} className={classes.logo}>*/}
+        {/*        <Text*/}
+        {/*          color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}*/}
+        {/*        >*/}
+        {/*          Build Your Dream*/}
+        {/*        </Text>*/}
+        {/*      </Title>*/}
+        {/*    </Group>*/}
+        {/*  </Group>*/}
+        {/*  <MediaQuery styles={{ display: 'none' }} smallerThan="lg">*/}
+        {/*    {user ? (*/}
+        {/*      <Menu trigger="hover" openDelay={100} closeDelay={400}>*/}
+        {/*        <Menu.Target>*/}
+        {/*          <UnstyledButton>*/}
+        {/*            <Group>*/}
+        {/*              <Avatar />*/}
+        {/*              <Stack spacing={0}>*/}
+        {/*                <Text size={18}>{user?.username}</Text>*/}
+        {/*                <Text size={10} color="dimmed">*/}
+        {/*                  {user.role}*/}
+        {/*                </Text>*/}
+        {/*              </Stack>*/}
+        {/*            </Group>*/}
+        {/*          </UnstyledButton>*/}
+        {/*        </Menu.Target>*/}
+        {/*        <Menu.Dropdown>*/}
+        {/*          <Menu.Item component={NextLink} href="/profile" icon={<IconUser size={18} />}>*/}
+        {/*            Профиль*/}
+        {/*          </Menu.Item>*/}
+        {/*          <Menu.Item onClick={handleLogout} color="red" icon={<IconLogout size={18} />}>*/}
+        {/*            Выйти*/}
+        {/*          </Menu.Item>*/}
+        {/*        </Menu.Dropdown>*/}
+        {/*      </Menu>*/}
+        {/*    ) : (*/}
+        {/*      <Button component={NextLink} href="/auth/signin">*/}
+        {/*        Войти*/}
+        {/*      </Button>*/}
+        {/*    )}*/}
+        {/*  </MediaQuery>*/}
+        {/*</Group>*/}
       </Container>
     </Header>
   );

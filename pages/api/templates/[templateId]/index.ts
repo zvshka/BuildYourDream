@@ -1,20 +1,20 @@
 import { handler } from '../../../../lib/handler';
 import FormService from '../../../../services/Template.service';
+import { authGuard, roleGuard } from '../../../../lib/guards';
 
 const api = handler();
 
 api.get(async (req, res) => {
-  const formData = await FormService.getFormById(req.query.templateId as string);
-  res.send(formData);
+  const template = await FormService.getFormById(req.query.templateId as string);
+  res.send(template);
 });
 
-api.patch(async (req, res) => {
-  // TODO: Validation
-  const formData = await FormService.updateFormById({
+api.patch(authGuard, roleGuard('ADMIN'), async (req, res) => {
+  const template = await FormService.updateFormById({
     id: req.query.templateId as string,
     data: req.body,
   });
-  res.send(formData);
+  res.send(template);
 });
 
 export default api;
