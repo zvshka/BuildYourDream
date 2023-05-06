@@ -6,7 +6,6 @@ import {
   NumberInput,
   Paper,
   Select,
-  Slider,
   Stack,
   TextInput,
 } from '@mantine/core';
@@ -85,7 +84,7 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
   }, [debouncedSearch]);
 
   return (
-    <Stack>
+    <Stack sx={{ width: '100%' }}>
       <Paper className={classes.container} shadow="xl">
         <TextInput onChange={(event) => setSearch(event.currentTarget.value)} />
       </Paper>

@@ -1,58 +1,90 @@
 import {
   ActionIcon,
+  Box,
   Button,
+  Collapse,
   Container,
   Grid,
   Group,
-  Modal,
   Stack,
   Text,
   Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
-import { IconCurrencyRubel, IconPlus } from '@tabler/icons-react';
+import { IconCurrencyRubel, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
+import { useForm } from '@mantine/form';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
 import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
+import { IComponent } from '../types/Template';
 
+//TODO: Добавить помощник выбора в несколько шагов
+/**
+ * Пример работы:
+ * Пользователь нажимает на кнопку -> ему показывается помощник по сборкам
+ * Далее он заполняет форму в несколько этапов
+ * После ему подбираются комплектующие по указанным критериям
+ **/
 export default function HomePage() {
   const { data: templates, isSuccess } = useTemplatesList();
   const { user } = useAuth();
   const [categoryId, setCategoryId] = useState<string | null>();
   const [opened, handlers] = useDisclosure(false);
 
-  const chooseComponent = (c: string) => {
+  const toggleComponentSearch = (c: string) => {
+    !opened ? handlers.open() : c !== categoryId ? false : handlers.close();
     setCategoryId(c);
-    handlers.open();
+  };
+
+  const form = useForm({
+    initialValues: {},
+  });
+
+  const onChoose = (c: string, component: { id: string; templateId: string; data: IComponent }) => {
+    handlers.close();
+    form.setFieldValue(c, component);
   };
 
   return (
     <Container size="xl" sx={{ height: '100%' }}>
-      <Modal opened={opened} onClose={handlers.close} size="calc(80vw)">
-        <ComponentsList categoryId={categoryId as string} />
-      </Modal>
-
       <Grid>
         <Grid.Col span="auto">
           <Stack>
             {isSuccess &&
               templates.map((t) => (
-                <Block key={t.id}>
-                  <Group position="apart">
-                    <Text>{t.name}</Text>
-                    <ActionIcon color="blue" onClick={() => chooseComponent(t.id)}>
-                      <IconPlus />
-                    </ActionIcon>
-                  </Group>
-                </Block>
+                <Box key={t.id}>
+                  <Block mb="md">
+                    <Group position="apart">
+                      {t.id in form.values && !!form.values[t.id] ? (
+                        <Text>{form.values[t.id].data['Название']}</Text>
+                      ) : (
+                        <Text>
+                          {t.name} {t.required ? '*' : ''}
+                        </Text>
+                      )}
+                      {t.id in form.values && !!form.values[t.id] ? (
+                        <ActionIcon color="red" onClick={() => form.setFieldValue(t.id, null)}>
+                          <IconTrash />
+                        </ActionIcon>
+                      ) : (
+                        <ActionIcon color="blue" onClick={() => toggleComponentSearch(t.id)}>
+                          {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
+                        </ActionIcon>
+                      )}
+                    </Group>
+                  </Block>
+                  <Collapse in={categoryId === t.id && opened}>
+                    <ComponentsList categoryId={categoryId as string} onChoose={onChoose} />
+                  </Collapse>
+                </Box>
               ))}
           </Stack>
         </Grid.Col>
-        <Grid.Col span={4}>
+        <Grid.Col span={3}>
           <Block>
             <Stack spacing="xs">
               <Title order={3}>Информация</Title>
@@ -75,7 +107,7 @@ export default function HomePage() {
             <Stack>
               <TextInput label="Название сборки" />
               <Textarea label="Описание сборки" />
-              <Button>Сохранить</Button>
+              <Button disabled={!user}>Сохранить</Button>
             </Stack>
           </Block>
         </Grid.Col>

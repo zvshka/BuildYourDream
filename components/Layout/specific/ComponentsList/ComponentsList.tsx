@@ -9,13 +9,12 @@ import {
   Paper,
   Stack,
 } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useToggle } from '@mantine/hooks';
 import { useTemplateData } from '../../../hooks/templates';
 import { useComponentsList } from '../../../hooks/components';
 import { Filters } from '../../inputs/Filters/Filters';
 import { NextLink } from '../../general/NextLink/NextLink';
-import { Block } from '../../general/Block/Block';
 import { ComponentRow } from '../../general/ComponentRow/ComponentRow';
 
 const useStyles = createStyles((theme) => ({
@@ -47,7 +46,13 @@ const useStyles = createStyles((theme) => ({
     width: '100%',
   },
 }));
-export const ComponentsList = ({ categoryId }: { categoryId: string }) => {
+export const ComponentsList = ({
+  categoryId,
+  onChoose,
+}: {
+  categoryId: string;
+  onChoose?: any;
+}) => {
   const { classes } = useStyles();
   const [filters, setFilters] = useState({});
   const [showFilters, toggleFilters] = useToggle();
@@ -69,8 +74,8 @@ export const ComponentsList = ({ categoryId }: { categoryId: string }) => {
   // }, [filters]);
 
   return (
-    <Box>
-      <Container size="xl" p={0}>
+    <Box sx={{ width: '100%' }}>
+      <Container size="xl" p={0} sx={{ width: '100%' }}>
         <Grid>
           <Grid.Col lg={3.5}>
             <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
@@ -89,15 +94,25 @@ export const ComponentsList = ({ categoryId }: { categoryId: string }) => {
           <Grid.Col lg="auto">
             <Stack>
               {isComponentsSuccess &&
-                components.map((component) => (
-                  <Box
-                    href={`/components/${categoryId}/${component.id}`}
-                    key={component.id}
-                    component={NextLink}
-                  >
-                    <ComponentRow component={component} />
-                  </Box>
-                ))}
+                components.map((component) =>
+                  !onChoose ? (
+                    <Box
+                      href={`/components/${categoryId}/${component.id}`}
+                      key={component.id}
+                      component={NextLink}
+                    >
+                      <ComponentRow component={component} />
+                    </Box>
+                  ) : (
+                    <Box
+                      key={component.id}
+                      onClick={() => onChoose(categoryId, component)}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <ComponentRow component={component} />
+                    </Box>
+                  )
+                )}
             </Stack>
           </Grid.Col>
         </Grid>
