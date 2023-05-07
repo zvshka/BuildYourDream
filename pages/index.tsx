@@ -2,10 +2,12 @@ import {
   ActionIcon,
   Box,
   Button,
+  Card,
   Collapse,
   Container,
   Grid,
   Group,
+  Image,
   Stack,
   Text,
   Textarea,
@@ -14,7 +16,7 @@ import {
 } from '@mantine/core';
 import { IconCurrencyRubel, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
@@ -51,32 +53,62 @@ export default function HomePage() {
 
   return (
     <Container size="xl" sx={{ height: '100%' }}>
-      <Grid>
-        <Grid.Col span="auto">
+      <Grid columns={48}>
+        <Grid.Col span={34}>
           <Stack>
             {isSuccess &&
               templates.map((t) => (
                 <Box key={t.id}>
-                  <Block mb="md">
-                    <Group position="apart">
-                      {t.id in form.values && !!form.values[t.id] ? (
-                        <Text>{form.values[t.id].data['Название']}</Text>
-                      ) : (
+                  <Card mb="md" shadow="xl" p="md" withBorder>
+                    <Card.Section
+                      inheritPadding
+                      withBorder={t.id in form.values && !!form.values[t.id]}
+                      py="md"
+                    >
+                      <Group position="apart">
+                        {/*{t.id in form.values && !!form.values[t.id] ? (*/}
+                        {/*  <Text>{form.values[t.id].data['Название']}</Text>*/}
+                        {/*) : (*/}
+                        {/*  <Text>*/}
+                        {/*    {t.name} {t.required ? '*' : ''}*/}
+                        {/*  </Text>*/}
+                        {/*)}*/}
                         <Text>
                           {t.name} {t.required ? '*' : ''}
                         </Text>
-                      )}
-                      {t.id in form.values && !!form.values[t.id] ? (
-                        <ActionIcon color="red" onClick={() => form.setFieldValue(t.id, null)}>
-                          <IconTrash />
-                        </ActionIcon>
-                      ) : (
-                        <ActionIcon color="blue" onClick={() => toggleComponentSearch(t.id)}>
-                          {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
-                        </ActionIcon>
-                      )}
-                    </Group>
-                  </Block>
+                        {t.id in form.values && !!form.values[t.id] ? (
+                          <ActionIcon color="red" onClick={() => form.setFieldValue(t.id, null)}>
+                            <IconTrash />
+                          </ActionIcon>
+                        ) : (
+                          <ActionIcon color="blue" onClick={() => toggleComponentSearch(t.id)}>
+                            {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
+                          </ActionIcon>
+                        )}
+                      </Group>
+                    </Card.Section>
+                    {t.id in form.values && !!form.values[t.id] && (
+                      <Group align="normal" pt="md">
+                        <Image
+                          withPlaceholder
+                          radius="sm"
+                          width={256 / 1.5}
+                          height={256 / 1.5}
+                          {...(form.values[t.id].data.image
+                            ? { src: `${form.values[t.id].data.image.url}?quality=60` }
+                            : {})}
+                        />
+                        <Box>
+                          <Title order={3}>{form.values[t.id].data['Название']}</Title>
+                          <Text>
+                            Примерная цена: {form.values[t.id].data['Цена'][0]} -{' '}
+                            {form.values[t.id].data['Цена'][1]} Руб.
+                          </Text>
+                          <Text>Tier компонента: {form.values[t.id].data.tier.toUpperCase()}</Text>
+                        </Box>
+                      </Group>
+                    )}
+                  </Card>
                   <Collapse in={categoryId === t.id && opened}>
                     <ComponentsList categoryId={categoryId as string} onChoose={onChoose} />
                   </Collapse>
@@ -84,7 +116,7 @@ export default function HomePage() {
               ))}
           </Stack>
         </Grid.Col>
-        <Grid.Col span={3}>
+        <Grid.Col span={14}>
           <Block>
             <Stack spacing="xs">
               <Title order={3}>Информация</Title>
