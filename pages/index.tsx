@@ -66,13 +66,6 @@ export default function HomePage() {
                       py="md"
                     >
                       <Group position="apart">
-                        {/*{t.id in form.values && !!form.values[t.id] ? (*/}
-                        {/*  <Text>{form.values[t.id].data['Название']}</Text>*/}
-                        {/*) : (*/}
-                        {/*  <Text>*/}
-                        {/*    {t.name} {t.required ? '*' : ''}*/}
-                        {/*  </Text>*/}
-                        {/*)}*/}
                         <Text>
                           {t.name} {t.required ? '*' : ''}
                         </Text>
