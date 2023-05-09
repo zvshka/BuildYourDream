@@ -8,6 +8,8 @@ import {
   Grid,
   Group,
   Image,
+  Paper,
+  ScrollArea,
   Stack,
   Text,
   Textarea,
@@ -53,13 +55,16 @@ export default function HomePage() {
 
   return (
     <Container size="xl" sx={{ height: '100%' }}>
+      <Block mb="md">
+        <Text>Ошибки и совместимость</Text>
+      </Block>
       <Grid columns={48}>
         <Grid.Col span={34}>
           <Stack>
             {isSuccess &&
               templates.map((t) => (
                 <Box key={t.id}>
-                  <Card mb="md" shadow="xl" p="md" withBorder>
+                  <Card shadow="xl" p="md" withBorder>
                     <Card.Section
                       inheritPadding
                       withBorder={t.id in form.values && !!form.values[t.id]}
@@ -103,7 +108,11 @@ export default function HomePage() {
                     )}
                   </Card>
                   <Collapse in={categoryId === t.id && opened}>
-                    <ComponentsList categoryId={categoryId as string} onChoose={onChoose} />
+                    <Paper sx={(theme) => ({ backgroundColor: theme.colors.gray[4] })}>
+                      <ScrollArea.Autosize sx={{ maxHeight: 700 }}>
+                        <ComponentsList categoryId={categoryId as string} onChoose={onChoose} />
+                      </ScrollArea.Autosize>
+                    </Paper>
                   </Collapse>
                 </Box>
               ))}

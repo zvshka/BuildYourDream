@@ -5,9 +5,12 @@ import {
   createStyles,
   Drawer,
   Grid,
+  Group,
   MediaQuery,
+  Pagination,
   Paper,
   Stack,
+  Text,
 } from '@mantine/core';
 import React, { useState } from 'react';
 import { useToggle } from '@mantine/hooks';
@@ -16,6 +19,7 @@ import { useComponentsList } from '../../../hooks/components';
 import { Filters } from '../../inputs/Filters/Filters';
 import { NextLink } from '../../general/NextLink/NextLink';
 import { ComponentRow } from '../../general/ComponentRow/ComponentRow';
+import { Block } from '../../general/Block/Block';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -64,56 +68,63 @@ export const ComponentsList = ({
     refetch,
   } = useComponentsList(categoryId, filters);
 
-  // useEffect(() => {
-  //   const { categoryId, ...f } = router.query;
-  //   setFilters(f);
-  // }, [router.query]);
-
-  // useEffect(() => {
-  //   refetch();
-  // }, [filters]);
-
   return (
-    <Box sx={{ width: '100%' }}>
-      <Container size="xl" p={0} sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%' }} py="xs">
+      <Container size="xl" px={!onChoose ? 0 : 'sm'} sx={{ width: '100%' }}>
         <Grid>
-          <Grid.Col lg={3.5}>
-            <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
-              <Box>
-                <Filters fields={isSuccess ? templateData?.fields : []} />
-              </Box>
-            </MediaQuery>
-            <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
-              <Paper className={classes.container} shadow="xl">
-                <Button onClick={() => toggleFilters()} className={classes.drawerButton}>
-                  Показать фильтры
-                </Button>
-              </Paper>
-            </MediaQuery>
-          </Grid.Col>
+          {!onChoose && (
+            <Grid.Col lg={3.5}>
+              <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
+                <Box>
+                  <Filters fields={isSuccess ? templateData?.fields : []} />
+                </Box>
+              </MediaQuery>
+              <MediaQuery largerThan="lg" styles={{ display: 'none' }}>
+                <Paper className={classes.container} shadow="xl">
+                  <Button onClick={() => toggleFilters()} className={classes.drawerButton}>
+                    Показать фильтры
+                  </Button>
+                </Paper>
+              </MediaQuery>
+            </Grid.Col>
+          )}
           <Grid.Col lg="auto">
+            <Block mb="md">
+              <Group position="apart">
+                <Text>Фильтры</Text>
+                <Group>
+                  <Button disabled>Сбросить</Button>
+                  <Button>Открыть меню</Button>
+                </Group>
+              </Group>
+            </Block>
             <Stack>
               {isComponentsSuccess &&
-                components.map((component) =>
-                  !onChoose ? (
-                    <Box
-                      href={`/components/${categoryId}/${component.id}`}
-                      key={component.id}
-                      component={NextLink}
-                    >
-                      <ComponentRow component={component} />
-                    </Box>
-                  ) : (
-                    <Box
-                      key={component.id}
-                      onClick={() => onChoose(categoryId, component)}
-                      sx={{ cursor: 'pointer' }}
-                    >
-                      <ComponentRow component={component} />
-                    </Box>
-                  )
-                )}
+                components
+                  // .flatMap(c => [c, c, c, c, c, c, c, c, c])
+                  .map((component) =>
+                    !onChoose ? (
+                      <Box
+                        href={`/components/${categoryId}/${component.id}`}
+                        key={component.id}
+                        component={NextLink}
+                      >
+                        <ComponentRow component={component} />
+                      </Box>
+                    ) : (
+                      <Box
+                        key={component.id}
+                        onClick={() => onChoose(categoryId, component)}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <ComponentRow component={component} />
+                      </Box>
+                    )
+                  )}
             </Stack>
+            <Block mt="md" shadow={0}>
+              <Pagination total={30} />
+            </Block>
           </Grid.Col>
         </Grid>
       </Container>

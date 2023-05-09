@@ -3,6 +3,7 @@ import React from 'react';
 import { Block, PageHeader } from '../../components/Layout';
 
 export default function Configs() {
+
   return (
     <Container size="xl" sx={{ height: '100%' }}>
       <PageHeader title="Пользовательские сборки" />

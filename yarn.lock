@@ -2816,6 +2816,39 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
+"@react-buddy/ide-toolbox-next@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@react-buddy/ide-toolbox-next/-/ide-toolbox-next-2.4.0.tgz#e4dc4850137f86ace0b066715e3db4e61ac02645"
+  integrity sha512-3EGm40qx3SXM4grLK/qBh/RYOVwn3YWBBKUV/HKrEYiyyBcnhBxFhw/DGbobqUZVec8fS+KDKoutg4WKhFf4Mw==
+  dependencies:
+    "@react-buddy/ide-toolbox" "^2.3.1"
+
+"@react-buddy/ide-toolbox@^2.3.1", "@react-buddy/ide-toolbox@^2.3.1-dev.0":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@react-buddy/ide-toolbox/-/ide-toolbox-2.3.1.tgz#4e3815eab3198dddcb360b9874640dbd468cb870"
+  integrity sha512-xH4rVPvG8nADggIFJk3mlAQtZg05HwhPcsdnPhHw9JMuxSQi8qXG+0ImQSS58QjIFY9BGtAv2geAbIPBuh9q0w==
+
+"@react-buddy/palette-mantine-core@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@react-buddy/palette-mantine-core/-/palette-mantine-core-6.0.0.tgz#34a9a2103fadec3e487a7e09f4406944e1bfa2f1"
+  integrity sha512-Wrb7680kYp45jlO+usSH8adt08paUiza2d31Wum5TZ0yQTVDIATOY9L0yiEkoeqr+kCKXu+k1WS1kgAhBdinGg==
+  dependencies:
+    "@react-buddy/ide-toolbox" "^2.3.1-dev.0"
+
+"@react-buddy/palette-mantine-dates@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@react-buddy/palette-mantine-dates/-/palette-mantine-dates-6.0.0.tgz#41462269cbb113c41a11fb8ccbd0e87ad79ff868"
+  integrity sha512-WfUgGNOV/mDlUSSwosQ7bEsETLt938J3Ds3nzKjHdgRyIMItH/EJXH0Kpf3C7glVl+CD0z/AomvY5SGxp/4f8A==
+  dependencies:
+    "@react-buddy/ide-toolbox" "^2.3.1"
+
+"@react-buddy/palette-mantine-form@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@react-buddy/palette-mantine-form/-/palette-mantine-form-6.0.0.tgz#cc68738cb3f9148e5ed52340f10d03a7f6f2189e"
+  integrity sha512-giWP/R07pvhfSAgZbWaBtHRc9WQY8ytdXcx1oiWdHkP4PMnj3QvPSXoqk4SwO8bLk99Pju23JmR8l1pgg9ZTSA==
+  dependencies:
+    "@react-buddy/ide-toolbox" "^2.3.1"
+
 "@reactflow/background@11.2.0":
   version "11.2.0"
   resolved "https://registry.yarnpkg.com/@reactflow/background/-/background-11.2.0.tgz#2a6f89d4f4837d488629d32a2bd5f01708018115"
