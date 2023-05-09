@@ -11,6 +11,7 @@ import {
 } from '../../../components/Layout/forms/TemplateForm/TemplateContext';
 import { useTemplateData } from '../../../components/hooks/templates';
 import { TemplateForm } from '../../../components/Layout/forms/TemplateForm/TemplateForm';
+import { storage } from '../../../lib/utils';
 
 export default function EditForm() {
   const [loading, toggleLoading] = useToggle();
@@ -39,12 +40,20 @@ export default function EditForm() {
 
   const updateTemplate = useMutation(
     (newTemplateData: ITemplate) =>
-      axios.patch(`/api/templates/${router.query.templateId as string}`, {
-        name: newTemplateData.name,
-        fields: newTemplateData.fields,
-        slots: newTemplateData.slots,
-        required: newTemplateData.required,
-      }),
+      axios.patch(
+        `/api/templates/${router.query.templateId as string}`,
+        {
+          name: newTemplateData.name,
+          fields: newTemplateData.fields,
+          slots: newTemplateData.slots,
+          required: newTemplateData.required,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${storage.getToken()}`,
+          },
+        }
+      ),
     {
       onSuccess: () => {
         showNotification({

@@ -22,6 +22,7 @@ export const authGuard = (
 
 export const roleGuard = (role) => async (req, res, next) => {
   const tokenData = jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+  console.log(tokenData);
   if (!tokenData.id) throw ApiError.UnauthorizedError();
   if (tokenData.role !== role) throw ApiError.Forbidden();
   next();

@@ -83,7 +83,6 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
             <Tabs.List>
               <Block style={{ display: 'flex', width: '100%' }} mb="md">
                 <Tabs.Tab value="info">Информация</Tabs.Tab>
-                <Tabs.Tab value="slots">Слоты</Tabs.Tab>
                 <Tabs.Tab value="constraints">Ограничения</Tabs.Tab>
               </Block>
             </Tabs.List>
