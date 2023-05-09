@@ -1,4 +1,3 @@
-import '../scripts/wdyr';
 import { GetServerSidePropsContext } from 'next';
 import { useCallback, useEffect, useState } from 'react';
 import { AppProps } from 'next/app';
@@ -10,15 +9,20 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import isToday from 'dayjs/plugin/isToday';
 import duration from 'dayjs/plugin/duration';
 import calendar from 'dayjs/plugin/calendar';
-import { NotificationsProvider } from '@mantine/notifications';
+import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
-import { RouterTransition } from '../components/RouterTransition/RouterTransition';
-import { ColorProvider } from '../components/ColorControl/ColorContext';
-import 'dayjs/locale/ru';
-import { ReactQueryProvider } from '../components/QueryProvider/QueryProvider';
-import { AuthProvider } from '../components/Auth/AuthProvider';
-import Shell from '../components/Shell/Shell';
 import { useRouter } from 'next/router';
+import { RouterTransition } from '../components/Layout/general/RouterTransition/RouterTransition';
+import { ColorProvider } from '../components/Layout/general/ColorControl/ColorContext';
+import 'dayjs/locale/ru';
+import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
+import { AuthProvider } from '../components/Providers/AuthContext/AuthWrapper';
+import Layout from '../components/Layout/Layout';
+
+import 'reactflow/dist/style.css';
+import 'react-querybuilder/dist/query-builder.css';
+import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
+import { ContextMenuProvider } from 'mantine-contextmenu';
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);
@@ -31,7 +35,6 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
   const [primaryColor, setPrimaryColor] = useState(props.primaryColor);
-  //
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
     setColorScheme(nextColorScheme);
@@ -97,23 +100,26 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
       <ColorProvider value={primaryColor} setValue={changePrimaryColor}>
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
-            <ModalsProvider>
-              <NotificationsProvider>
+            <ContextMenuProvider>
+              <ModalsProvider>
                 <ReactQueryProvider>
                   <AuthProvider>
-                    <RouterTransition />
-                    {/*@ts-ignore*/}
-                    {Component.noShell ? (
-                      <Component {...pageProps} />
-                    ) : (
-                      <Shell>
+                    <NavigationProvider>
+                      <Notifications />
+                      <RouterTransition />
+                      {/*@ts-ignore*/}
+                      {Component.noShell ? (
                         <Component {...pageProps} />
-                      </Shell>
-                    )}
+                      ) : (
+                        <Layout>
+                          <Component {...pageProps} />
+                        </Layout>
+                      )}
+                    </NavigationProvider>
                   </AuthProvider>
                 </ReactQueryProvider>
-              </NotificationsProvider>
-            </ModalsProvider>
+              </ModalsProvider>
+            </ContextMenuProvider>
           </MantineProvider>
         </ColorSchemeProvider>
       </ColorProvider>
@@ -125,5 +131,3 @@ App.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
   colorScheme: getCookie('mantine-color-scheme', ctx) || 'light',
   primaryColor: getCookie('mantine-primary-color', ctx) || 'blue',
 });
-
-// App.whyDidYouRender = true;

@@ -9,12 +9,12 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import { useForm } from '@mantine/form';
 import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../components/Auth/AuthProvider';
+import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
+import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 
 const useStyles = createStyles(() => ({
   container: {

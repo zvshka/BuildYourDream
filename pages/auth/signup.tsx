@@ -14,15 +14,16 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { NextLink } from '@mantine/next';
 import { useForm } from '@mantine/form';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { forwardRef, useState } from 'react';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
+import Link from 'next/link';
 import { validateEmail } from '../../lib/validateEmail';
-import { useAuth } from '../../components/Auth/AuthProvider';
+import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
+import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -77,7 +78,14 @@ const InputWithChecks = forwardRef(({ ...props }: any, ref) => {
   const color = strength === 100 ? 'teal' : strength > 50 ? 'yellow' : 'red';
 
   return (
-    <Popover opened={popoverOpened} position="bottom" width="target" transition="pop">
+    <Popover
+      opened={popoverOpened}
+      position="bottom"
+      width="target"
+      transitionProps={{
+        transition: 'pop',
+      }}
+    >
       <Popover.Target>
         <div
           onFocusCapture={() => setPopoverOpened(true)}
@@ -155,6 +163,7 @@ export default function SignUp() {
           message: e.response.data.message,
           color: 'red',
         });
+        toggle();
       });
   };
 

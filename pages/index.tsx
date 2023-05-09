@@ -1,119 +1,142 @@
-// import { Welcome } from '../components/Welcome/Welcome';
-// import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
-
 import {
-  Container,
-  createStyles,
-  Paper,
-  Select,
-  Stack,
-  Title,
-  Text,
-  Group,
-  Avatar,
-  Image,
+  ActionIcon,
   Box,
   Button,
-  Popover,
+  Card,
+  Collapse,
+  Container,
+  Grid,
+  Group,
+  Image,
+  Stack,
+  Text,
+  Textarea,
+  TextInput,
+  Title,
 } from '@mantine/core';
-import React, { forwardRef } from 'react';
+import { IconCurrencyRubel, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
+import { useDisclosure } from '@mantine/hooks';
+import React, { useState } from 'react';
+import { useForm } from '@mantine/form';
+import { useTemplatesList } from '../components/hooks/templates';
+import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
+import { Block } from '../components/Layout';
+import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
+import { IComponent } from '../types/Template';
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    padding: theme.spacing.sm,
-  },
-  box: {
-    position: 'relative',
-    width: '100%',
-    borderRadius: theme.radius.md,
-    '&:before': {
-      content: "''",
-      display: 'block',
-      paddingTop: '100%',
-    },
-  },
-  boxContent: {
-    position: 'absolute',
-    padding: theme.spacing.sm,
-    top: 0,
-    bottom: 0,
-    right: 0,
-    left: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  },
-  drawerButton: {
-    width: '100%',
-  },
-}));
-
-interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
-  image: string;
-  label: string;
-  description: string;
-}
-
-const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-  ({ image, label, description, ...others }: ItemProps, ref) => (
-    <div ref={ref} {...others}>
-      <Box sx={{ display: 'flex', gap: '8px' }}>
-        <Image width={128} height={128} src={image} />
-        <div>
-          <Text>{label}</Text>
-          <Text size="xs" color="dimmed" sx={{ whiteSpace: 'pre-wrap' }}>
-            {description}
-          </Text>
-        </div>
-        <Popover width={200} position="bottom" withArrow shadow="md">
-          <Popover.Target>
-            <Button>Toggle popover</Button>
-          </Popover.Target>
-          <Popover.Dropdown>
-            <Text size="sm">This is uncontrolled popover, it is opened when button is clicked</Text>
-          </Popover.Dropdown>
-        </Popover>
-      </Box>
-    </div>
-  )
-);
-
-const cpus = [
-  {
-    label: 'Intel Core i9-9900K OEM',
-    value: 'someid',
-    image:
-      'https://c.dns-shop.ru/thumb/st4/fit/wm/0/0/880ac5af81da96bb78f5689e86dc19d4/391eaa5903e74f53f6bf1bd71b49e9403c1afb8d514c843232d7f1fb2f20c4da.jpg.webp',
-    description:
-      'Базовая частота процессора: 3.6 ГГц\n' +
-      'Максимальная частота в турбо режиме: 5 ГГц\n' +
-      'Базовая частота энергоэффективных ядер: нет\n' +
-      'Частота в турбо режиме энергоэффективных ядер: нет\n' +
-      'Свободный множитель: есть',
-  },
-];
-
+//TODO: Добавить помощник выбора в несколько шагов
+/**
+ * Пример работы:
+ * Пользователь нажимает на кнопку -> ему показывается помощник по сборкам
+ * Далее он заполняет форму в несколько этапов
+ * После ему подбираются комплектующие по указанным критериям
+ **/
 export default function HomePage() {
-  const { classes } = useStyles();
+  const { data: templates, isSuccess } = useTemplatesList();
+  const { user } = useAuth();
+  const [categoryId, setCategoryId] = useState<string | null>();
+  const [opened, handlers] = useDisclosure(false);
+
+  const toggleComponentSearch = (c: string) => {
+    !opened ? handlers.open() : c !== categoryId ? false : handlers.close();
+    setCategoryId(c);
+  };
+
+  const form = useForm({
+    initialValues: {},
+  });
+
+  const onChoose = (c: string, component: { id: string; templateId: string; data: IComponent }) => {
+    handlers.close();
+    form.setFieldValue(c, component);
+  };
 
   return (
-    <Stack>
-      <Paper className={classes.container} shadow="xl">
-        <Title order={4}>Соберу свою мечту :3</Title>
-      </Paper>
-      <Paper className={classes.container} shadow="xl">
-        <Container size="xs">
+    <Container size="xl" sx={{ height: '100%' }}>
+      <Grid columns={48}>
+        <Grid.Col span={34}>
           <Stack>
-            <Select data={cpus} label="Процессор" itemComponent={SelectItem} />
-            <Select data={[]} label="Кулер" />
-            <Select data={[]} label="Материнская плата" />
-            <Select data={[]} label="Видеокарта" />
-            <Select data={[]} label="Блок питания" />
+            {isSuccess &&
+              templates.map((t) => (
+                <Box key={t.id}>
+                  <Card mb="md" shadow="xl" p="md" withBorder>
+                    <Card.Section
+                      inheritPadding
+                      withBorder={t.id in form.values && !!form.values[t.id]}
+                      py="md"
+                    >
+                      <Group position="apart">
+                        <Text>
+                          {t.name} {t.required ? '*' : ''}
+                        </Text>
+                        {t.id in form.values && !!form.values[t.id] ? (
+                          <ActionIcon color="red" onClick={() => form.setFieldValue(t.id, null)}>
+                            <IconTrash />
+                          </ActionIcon>
+                        ) : (
+                          <ActionIcon color="blue" onClick={() => toggleComponentSearch(t.id)}>
+                            {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
+                          </ActionIcon>
+                        )}
+                      </Group>
+                    </Card.Section>
+                    {t.id in form.values && !!form.values[t.id] && (
+                      <Group align="normal" pt="md">
+                        <Image
+                          withPlaceholder
+                          radius="sm"
+                          width={256 / 1.5}
+                          height={256 / 1.5}
+                          {...(form.values[t.id].data.image
+                            ? { src: `${form.values[t.id].data.image.url}?quality=60` }
+                            : {})}
+                        />
+                        <Box>
+                          <Title order={3}>{form.values[t.id].data['Название']}</Title>
+                          <Text>
+                            Примерная цена: {form.values[t.id].data['Цена'][0]} -{' '}
+                            {form.values[t.id].data['Цена'][1]} Руб.
+                          </Text>
+                          <Text>Tier компонента: {form.values[t.id].data.tier.toUpperCase()}</Text>
+                        </Box>
+                      </Group>
+                    )}
+                  </Card>
+                  <Collapse in={categoryId === t.id && opened}>
+                    <ComponentsList categoryId={categoryId as string} onChoose={onChoose} />
+                  </Collapse>
+                </Box>
+              ))}
           </Stack>
-        </Container>
-      </Paper>
-      {/*<Welcome />*/}
-      {/*<ColorSchemeToggle />*/}
-    </Stack>
+        </Grid.Col>
+        <Grid.Col span={14}>
+          <Block>
+            <Stack spacing="xs">
+              <Title order={3}>Информация</Title>
+              <Text>
+                Категория сборки: <Text weight={600}>High end (High tier)</Text>
+              </Text>
+              <Text>
+                Примерное потребление: <Text weight={600}>450w</Text>
+              </Text>
+              <Text>
+                <Text>Примерная цена:</Text>
+                <Group spacing={4}>
+                  <Text weight={600}>150000</Text>
+                  <IconCurrencyRubel size={15} />
+                </Group>
+              </Text>
+            </Stack>
+          </Block>
+          <Block mt="md">
+            <Stack>
+              <TextInput label="Название сборки" />
+              <Textarea label="Описание сборки" />
+              <Button disabled={!user}>Сохранить</Button>
+            </Stack>
+          </Block>
+        </Grid.Col>
+      </Grid>
+    </Container>
   );
 }

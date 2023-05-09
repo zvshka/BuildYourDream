@@ -4,11 +4,13 @@ import { ApiError } from './ApiError';
 
 export const handler = () =>
   nc<NextApiRequest, NextApiResponse>({
+    attachParams: true,
     onError: (err, req, res, next) => {
       console.log(err);
       if (err instanceof ApiError) {
         return res.status(err.status).json({ message: err.message });
       }
+      console.log(err);
       return res.status(500).json({ message: 'Непредвиденная ошибка' });
     },
     onNoMatch: (req, res) => {

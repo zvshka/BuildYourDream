@@ -8,6 +8,10 @@ export class ApiError extends Error {
     this.errors = errors;
   }
 
+  static Forbidden() {
+    return new ApiError(403, 'У вас нет доступа');
+  }
+
   static UnauthorizedError() {
     return new ApiError(401, 'Пользователь не авторизован');
   }
