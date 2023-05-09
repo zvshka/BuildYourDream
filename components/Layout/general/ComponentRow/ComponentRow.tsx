@@ -18,7 +18,9 @@ export const ComponentRow = ({ component }: { component: { data: IComponent } })
         radius="sm"
         width={256 / 1.5}
         height={256 / 1.5}
-        {...(component.data.image ? { src: `${component.data.image.url}?quality=60` } : {})}
+        {...(component.data.image && component.data.image.url
+          ? { src: `${component.data.image.url}?quality=60` }
+          : {})}
       />
       <Box>
         <Title order={3}>{component.data['Название']}</Title>

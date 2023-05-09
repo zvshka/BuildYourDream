@@ -24,6 +24,7 @@ import { IField } from '../../types/Field';
 import { BOOL, DEPENDS_ON, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/FieldTypes';
 import { useTemplatesList } from '../../components/hooks/templates';
 import { ITemplate } from '../../types/Template';
+import { storage } from '../../lib/utils';
 
 export default function CreatePart() {
   const router = useRouter();
@@ -64,14 +65,23 @@ export default function CreatePart() {
   };
 
   const saveData = (data: typeof form.values, image = null) =>
-    axios.post('/api/components', {
-      data: {
-        ...data,
-        image,
+    axios.post(
+      '/api/components',
+      {
+        data: {
+          ...data,
+          image,
+        },
+        templateId,
       },
-      templateId,
-    });
+      {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }
+    );
 
+  //TODO: Make mutation
   const handleSubmit = (data: typeof form.values) => {
     toggleLoading();
     if (data.image?.file) {

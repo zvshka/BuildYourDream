@@ -18,7 +18,7 @@ import {
 } from '@mantine/core';
 import { IconCurrencyRubel, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
@@ -38,7 +38,7 @@ export default function HomePage() {
   const { user } = useAuth();
   const [categoryId, setCategoryId] = useState<string | null>();
   const [opened, handlers] = useDisclosure(false);
-
+  const viewport = useRef<HTMLDivElement>(null);
   const toggleComponentSearch = (c: string) => {
     !opened ? handlers.open() : c !== categoryId ? false : handlers.close();
     setCategoryId(c);
@@ -109,8 +109,12 @@ export default function HomePage() {
                   </Card>
                   <Collapse in={categoryId === t.id && opened}>
                     <Paper sx={(theme) => ({ backgroundColor: theme.colors.gray[4] })}>
-                      <ScrollArea.Autosize sx={{ maxHeight: 700 }}>
-                        <ComponentsList categoryId={categoryId as string} onChoose={onChoose} />
+                      <ScrollArea.Autosize sx={{ maxHeight: 700 }} viewportRef={viewport}>
+                        <ComponentsList
+                          categoryId={categoryId as string}
+                          onChoose={onChoose}
+                          viewport={viewport}
+                        />
                       </ScrollArea.Autosize>
                     </Paper>
                   </Collapse>

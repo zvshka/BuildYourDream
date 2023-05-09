@@ -12,8 +12,8 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import React, { useState } from 'react';
-import { useToggle } from '@mantine/hooks';
+import React, { useEffect, useRef, useState } from 'react';
+import { useToggle, useWindowScroll } from '@mantine/hooks';
 import { useTemplateData } from '../../../hooks/templates';
 import { useComponentsList } from '../../../hooks/components';
 import { Filters } from '../../inputs/Filters/Filters';
@@ -53,20 +53,39 @@ const useStyles = createStyles((theme) => ({
 export const ComponentsList = ({
   categoryId,
   onChoose,
+  viewport,
 }: {
   categoryId: string;
   onChoose?: any;
+  viewport?: any;
 }) => {
+  const [activePage, setPage] = useState(1);
   const { classes } = useStyles();
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    page: activePage,
+  });
   const [showFilters, toggleFilters] = useToggle();
   const { data: templateData, isSuccess } = useTemplateData(categoryId);
   const {
-    data: components,
-    isFetched: isComponentsFetched,
+    data: componentsData,
     isSuccess: isComponentsSuccess,
     refetch,
   } = useComponentsList(categoryId, filters);
+
+  const [scroll, scrollTo] = useWindowScroll();
+
+  useEffect(() => {
+    if (viewport.current) {
+      viewport.current.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      scrollTo({ y: 0 });
+    }
+    setFilters((currentFilter) => ({ ...currentFilter, page: activePage }));
+  }, [activePage]);
+
+  useEffect(() => {
+    refetch();
+  }, [filters]);
 
   return (
     <Box sx={{ width: '100%' }} py="xs">
@@ -89,41 +108,52 @@ export const ComponentsList = ({
             </Grid.Col>
           )}
           <Grid.Col lg="auto">
-            <Block mb="md">
-              <Group position="apart">
-                <Text>Фильтры</Text>
-                <Group>
-                  <Button disabled>Сбросить</Button>
-                  <Button>Открыть меню</Button>
+            {onChoose && (
+              <Block mb="md">
+                <Group position="apart">
+                  <Text>Фильтры</Text>
+                  <Group>
+                    <Button disabled>Сбросить</Button>
+                    <Button>Открыть меню</Button>
+                  </Group>
                 </Group>
-              </Group>
+              </Block>
+            )}
+            <Block my="md" shadow={0}>
+              <Pagination
+                value={activePage}
+                total={isComponentsSuccess ? Math.ceil(componentsData.totalCount / 10) : 1}
+                onChange={setPage}
+              />
             </Block>
             <Stack>
               {isComponentsSuccess &&
-                components
-                  // .flatMap(c => [c, c, c, c, c, c, c, c, c])
-                  .map((component) =>
-                    !onChoose ? (
-                      <Box
-                        href={`/components/${categoryId}/${component.id}`}
-                        key={component.id}
-                        component={NextLink}
-                      >
-                        <ComponentRow component={component} />
-                      </Box>
-                    ) : (
-                      <Box
-                        key={component.id}
-                        onClick={() => onChoose(categoryId, component)}
-                        sx={{ cursor: 'pointer' }}
-                      >
-                        <ComponentRow component={component} />
-                      </Box>
-                    )
-                  )}
+                componentsData.result.map((component) =>
+                  !onChoose ? (
+                    <Box
+                      href={`/components/${categoryId}/${component.id}`}
+                      key={component.id}
+                      component={NextLink}
+                    >
+                      <ComponentRow component={component} />
+                    </Box>
+                  ) : (
+                    <Box
+                      key={component.id}
+                      onClick={() => onChoose(categoryId, component)}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <ComponentRow component={component} />
+                    </Box>
+                  )
+                )}
             </Stack>
             <Block mt="md" shadow={0}>
-              <Pagination total={30} />
+              <Pagination
+                value={activePage}
+                total={isComponentsSuccess ? Math.ceil(componentsData.totalCount / 10) : 1}
+                onChange={setPage}
+              />
             </Block>
           </Grid.Col>
         </Grid>
