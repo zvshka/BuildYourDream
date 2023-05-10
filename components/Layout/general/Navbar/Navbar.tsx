@@ -171,13 +171,13 @@ function NavbarLink({ item, style }: { item: any; style?: any }) {
 const tabs = {
   userPages: [
     { link: '/', label: 'Конфигуратор', Icon: IconCpu },
-    { link: '/configs', label: 'Пользовательские сборки', Icon: IconDeviceDesktop },
+    { link: '/configs', label: 'Конфигурации', Icon: IconDeviceDesktop },
     { link: '/components', label: 'Комплектующие', Icon: Icon3dCubeSphere },
   ],
   adminPages: [
     { link: '/admin/users', label: 'Пользователи', Icon: IconUser },
     { link: '/admin/configs', label: 'Сборки', Icon: Icon3dCubeSphere },
-    { link: '/admin/configurator', label: 'Настройка конфигуратора', Icon: Icon3dCubeSphere },
+    { link: '/admin/configurator', label: 'Конфигуратор', Icon: Icon3dCubeSphere },
   ],
 };
 

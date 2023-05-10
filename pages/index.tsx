@@ -15,8 +15,16 @@ import {
   Textarea,
   TextInput,
   Title,
+  useMantineTheme,
 } from '@mantine/core';
-import { IconCurrencyRubel, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
+import {
+  IconCircleX,
+  IconCurrencyRubel,
+  IconExclamationCircle,
+  IconPlus,
+  IconTrash,
+  IconX,
+} from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import React, { useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
@@ -34,12 +42,36 @@ import { IComponent } from '../types/Template';
  * Далее он заполняет форму в несколько этапов
  * После ему подбираются комплектующие по указанным критериям
  **/
+
+const Message = ({ title, description, isWarn = true }) => {
+  const theme = useMantineTheme();
+  return (
+    <Block
+      sx={{
+        border: `2px solid ${isWarn ? theme.colors.orange[3] : theme.colors.red[3]}`,
+        flex: '0 0 auto',
+      }}
+    >
+      <Group>
+        {isWarn && <IconExclamationCircle size={36} color={theme.colors.orange[3]} />}
+        {!isWarn && <IconCircleX size={36} color={theme.colors.red[3]} />}
+        <Stack spacing={0}>
+          <Text weight={600}>{title}</Text>
+          <Text>{description}</Text>
+        </Stack>
+      </Group>
+    </Block>
+  );
+};
+
 export default function HomePage() {
   const { data: templates, isSuccess } = useTemplatesList();
   const { user } = useAuth();
   const [categoryId, setCategoryId] = useState<string | null>();
   const [opened, handlers] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
+
+  const theme = useMantineTheme();
   const toggleComponentSearch = (c: string) => {
     !opened ? handlers.open() : c !== categoryId ? false : handlers.close();
     setCategoryId(c);
@@ -65,10 +97,19 @@ export default function HomePage() {
     const notAddedButRequired = templates
       ?.filter((t) => !entries.some((e) => e[0] === t.id && !!e[1]))
       .map((t) => t.name);
-    showNotification({
-      title: 'Ошибка',
-      color: 'red',
-      message: `Необходимо добавит еще: ${notAddedButRequired?.join(', ')}`,
+
+    if (notAddedButRequired && notAddedButRequired.length > 0) {
+      return showNotification({
+        title: 'Ошибка',
+        color: 'red',
+        message: `Необходимо добавит еще: ${notAddedButRequired?.join(', ')}`,
+      });
+    }
+
+    return showNotification({
+      title: 'Успех',
+      color: 'green',
+      message: 'Сборка успешно сохранена',
     });
   };
 
@@ -76,7 +117,47 @@ export default function HomePage() {
     <Container size="xl" sx={{ height: '100%' }}>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Block mb="md">
-          <Text>Ошибки и совместимость</Text>
+          {/*<Text>Ошибки и совместимость</Text>*/}
+          <Box>
+            <Group sx={{ overflowX: 'auto' }} noWrap>
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+              <Message
+                title="Слишком высокое потребление"
+                description="Комплектующие потребляют слишком много"
+              />
+            </Group>
+          </Box>
         </Block>
         <Grid columns={48}>
           <Grid.Col span={34}>
@@ -137,7 +218,7 @@ export default function HomePage() {
                       )}
                     </Card>
                     <Collapse in={categoryId === t.id && opened}>
-                      <Paper sx={(theme) => ({ backgroundColor: theme.colors.gray[4] })}>
+                      <Paper sx={{ backgroundColor: theme.colors.gray[4] }}>
                         <ScrollArea.Autosize sx={{ maxHeight: 700 }} viewportRef={viewport}>
                           <ComponentsList
                             categoryId={categoryId as string}
