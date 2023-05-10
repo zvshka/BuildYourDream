@@ -34,6 +34,8 @@ import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
 import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
 import { IComponent } from '../types/Template';
+import axios from 'axios';
+import { storage } from '../lib/utils';
 
 //TODO: Добавить помощник выбора в несколько шагов
 /**
@@ -106,11 +108,43 @@ export default function HomePage() {
       });
     }
 
-    return showNotification({
-      title: 'Успех',
-      color: 'green',
-      message: 'Сборка успешно сохранена',
-    });
+    if (!user) {
+      return showNotification({
+        title: 'Ошибка',
+        color: 'red',
+        message: 'Вы не авторизованы',
+      });
+    }
+
+    const components = Object.values(values.components);
+    axios
+      .post(
+        '/api/configs',
+        {
+          title: values.title,
+          description: values.description,
+          components,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${storage.getToken()}`,
+          },
+        }
+      )
+      .then((res) =>
+        showNotification({
+          title: 'Успех',
+          color: 'green',
+          message: 'Сборка успешно сохранена',
+        })
+      )
+      .catch((e) =>
+        showNotification({
+          title: 'Ошибка',
+          color: 'red',
+          message: 'Что-то пошло не так',
+        })
+      );
   };
 
   return (
