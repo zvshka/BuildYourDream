@@ -1,9 +1,10 @@
 import {
   Box,
   Button,
+  Center,
   Container,
   createStyles,
-  Drawer,
+  Drawer, Flex,
   Grid,
   Group,
   MediaQuery,
@@ -12,7 +13,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useToggle, useWindowScroll } from '@mantine/hooks';
 import { useTemplateData } from '../../../hooks/templates';
 import { useComponentsList } from '../../../hooks/components';
@@ -75,7 +76,7 @@ export const ComponentsList = ({
   const [scroll, scrollTo] = useWindowScroll();
 
   useEffect(() => {
-    if (viewport.current) {
+    if (viewport && viewport.current) {
       viewport.current.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       scrollTo({ y: 0 });
@@ -119,15 +120,20 @@ export const ComponentsList = ({
                 </Group>
               </Block>
             )}
-            <Block my="md" shadow={0}>
+            <Block mb="md" mt={onChoose ? 'md' : 0} shadow={0}>
               <Pagination
                 value={activePage}
-                total={isComponentsSuccess ? Math.ceil(componentsData.totalCount / 10) : 1}
+                total={
+                  isComponentsSuccess && componentsData.totalCount > 0
+                    ? Math.ceil(componentsData.totalCount / 10)
+                    : 1
+                }
                 onChange={setPage}
               />
             </Block>
             <Stack>
               {isComponentsSuccess &&
+                componentsData.totalCount > 0 &&
                 componentsData.result.map((component) =>
                   !onChoose ? (
                     <Box
@@ -147,11 +153,24 @@ export const ComponentsList = ({
                     </Box>
                   )
                 )}
+              {isComponentsSuccess && componentsData.totalCount === 0 && (
+                <Block h={150}>
+                  <Flex justify="center" h="100%">
+                    <Center>
+                      <Text>Упс... здесь ничего нет, попросите админа добавить или проверить</Text>
+                    </Center>
+                  </Flex>
+                </Block>
+              )}
             </Stack>
             <Block mt="md" shadow={0}>
               <Pagination
                 value={activePage}
-                total={isComponentsSuccess ? Math.ceil(componentsData.totalCount / 10) : 1}
+                total={
+                  isComponentsSuccess && componentsData.totalCount > 0
+                    ? Math.ceil(componentsData.totalCount / 10)
+                    : 1
+                }
                 onChange={setPage}
               />
             </Block>

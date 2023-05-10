@@ -10,6 +10,7 @@ import {
 } from '../../components/Layout/forms/TemplateForm/TemplateContext';
 import { LARGE_TEXT, RANGE, TEXT } from '../../types/FieldTypes';
 import { TemplateForm } from '../../components/Layout/forms/TemplateForm/TemplateForm';
+import { storage } from '../../lib/utils';
 
 export default function createTemplatePage() {
   const [loading, toggleLoading] = useToggle();
@@ -49,13 +50,21 @@ export default function createTemplatePage() {
 
   const createTemplate = useMutation(
     (templateData: ITemplate) =>
-      axios.post('/api/templates', {
-        name: templateData.name,
-        fields: templateData.fields,
-        slots: templateData.slots,
-        required: templateData.required,
-        //TODO: Ограничения?
-      }),
+      axios.post(
+        '/api/templates',
+        {
+          name: templateData.name,
+          fields: templateData.fields,
+          slots: templateData.slots,
+          required: templateData.required,
+          //TODO: Ограничения?
+        },
+        {
+          headers: {
+            authorization: `Bearer ${storage.getToken()}`,
+          },
+        }
+      ),
     {
       onSuccess: () => {
         showNotification({

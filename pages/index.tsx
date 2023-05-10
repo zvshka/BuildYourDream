@@ -20,6 +20,7 @@ import { IconCurrencyRubel, IconPlus, IconTrash, IconX } from '@tabler/icons-rea
 import { useDisclosure } from '@mantine/hooks';
 import React, { useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
+import { showNotification } from '@mantine/notifications';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
@@ -45,111 +46,148 @@ export default function HomePage() {
   };
 
   const form = useForm({
-    initialValues: {},
+    initialValues: {
+      title: '',
+      description: '',
+      components: {},
+    },
   });
 
   const onChoose = (c: string, component: { id: string; templateId: string; data: IComponent }) => {
     handlers.close();
-    form.setFieldValue(c, component);
+    form.setFieldValue(`components.${c}`, component);
+  };
+
+  //TODO: Mutation
+
+  const handleSubmit = (values: typeof form.values) => {
+    const entries = Object.entries(values.components);
+    const notAddedButRequired = templates
+      ?.filter((t) => !entries.some((e) => e[0] === t.id && !!e[1]))
+      .map((t) => t.name);
+    showNotification({
+      title: 'Ошибка',
+      color: 'red',
+      message: `Необходимо добавит еще: ${notAddedButRequired?.join(', ')}`,
+    });
   };
 
   return (
     <Container size="xl" sx={{ height: '100%' }}>
-      <Block mb="md">
-        <Text>Ошибки и совместимость</Text>
-      </Block>
-      <Grid columns={48}>
-        <Grid.Col span={34}>
-          <Stack>
-            {isSuccess &&
-              templates.map((t) => (
-                <Box key={t.id}>
-                  <Card shadow="xl" p="md" withBorder>
-                    <Card.Section
-                      inheritPadding
-                      withBorder={t.id in form.values && !!form.values[t.id]}
-                      py="md"
-                    >
-                      <Group position="apart">
-                        <Text>
-                          {t.name} {t.required ? '*' : ''}
-                        </Text>
-                        {t.id in form.values && !!form.values[t.id] ? (
-                          <ActionIcon color="red" onClick={() => form.setFieldValue(t.id, null)}>
-                            <IconTrash />
-                          </ActionIcon>
-                        ) : (
-                          <ActionIcon color="blue" onClick={() => toggleComponentSearch(t.id)}>
-                            {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
-                          </ActionIcon>
-                        )}
-                      </Group>
-                    </Card.Section>
-                    {t.id in form.values && !!form.values[t.id] && (
-                      <Group align="normal" pt="md">
-                        <Image
-                          withPlaceholder
-                          radius="sm"
-                          width={256 / 1.5}
-                          height={256 / 1.5}
-                          {...(form.values[t.id].data.image
-                            ? { src: `${form.values[t.id].data.image.url}?quality=60` }
-                            : {})}
-                        />
-                        <Box>
-                          <Title order={3}>{form.values[t.id].data['Название']}</Title>
-                          <Text>
-                            Примерная цена: {form.values[t.id].data['Цена'][0]} -{' '}
-                            {form.values[t.id].data['Цена'][1]} Руб.
-                          </Text>
-                          <Text>Tier компонента: {form.values[t.id].data.tier.toUpperCase()}</Text>
-                        </Box>
-                      </Group>
-                    )}
-                  </Card>
-                  <Collapse in={categoryId === t.id && opened}>
-                    <Paper sx={(theme) => ({ backgroundColor: theme.colors.gray[4] })}>
-                      <ScrollArea.Autosize sx={{ maxHeight: 700 }} viewportRef={viewport}>
-                        <ComponentsList
-                          categoryId={categoryId as string}
-                          onChoose={onChoose}
-                          viewport={viewport}
-                        />
-                      </ScrollArea.Autosize>
-                    </Paper>
-                  </Collapse>
-                </Box>
-              ))}
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={14}>
-          <Block>
-            <Stack spacing="xs">
-              <Title order={3}>Информация</Title>
-              <Text>
-                Категория сборки: <Text weight={600}>High end (High tier)</Text>
-              </Text>
-              <Text>
-                Примерное потребление: <Text weight={600}>450w</Text>
-              </Text>
-              <Text>
-                <Text>Примерная цена:</Text>
-                <Group spacing={4}>
-                  <Text weight={600}>150000</Text>
-                  <IconCurrencyRubel size={15} />
-                </Group>
-              </Text>
-            </Stack>
-          </Block>
-          <Block mt="md">
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Block mb="md">
+          <Text>Ошибки и совместимость</Text>
+        </Block>
+        <Grid columns={48}>
+          <Grid.Col span={34}>
             <Stack>
-              <TextInput label="Название сборки" />
-              <Textarea label="Описание сборки" />
-              <Button disabled={!user}>Сохранить</Button>
+              {isSuccess &&
+                templates.map((t) => (
+                  <Box key={t.id}>
+                    <Card shadow="xl" p="md" withBorder>
+                      <Card.Section
+                        inheritPadding
+                        withBorder={
+                          t.id in form.values.components && !!form.values.components[t.id]
+                        }
+                        py="md"
+                      >
+                        <Group position="apart">
+                          <Text>
+                            {t.name} {t.required ? '*' : ''}
+                          </Text>
+                          {t.id in form.values.components && !!form.values.components[t.id] ? (
+                            <ActionIcon
+                              color="red"
+                              onClick={() => form.setFieldValue(`components.${t.id}`, null)}
+                            >
+                              <IconTrash />
+                            </ActionIcon>
+                          ) : (
+                            <ActionIcon color="blue" onClick={() => toggleComponentSearch(t.id)}>
+                              {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
+                            </ActionIcon>
+                          )}
+                        </Group>
+                      </Card.Section>
+                      {t.id in form.values.components && !!form.values.components[t.id] && (
+                        <Group align="normal" pt="md">
+                          <Image
+                            withPlaceholder
+                            radius="sm"
+                            width={256 / 1.5}
+                            height={256 / 1.5}
+                            {...(form.values.components[t.id].data.image &&
+                            form.values.components[t.id].data.image.url
+                              ? { src: `${form.values.components[t.id].data.image.url}?quality=60` }
+                              : {})}
+                          />
+                          <Box>
+                            <Title order={3}>{form.values.components[t.id].data['Название']}</Title>
+                            <Text>
+                              Примерная цена: {form.values.components[t.id].data['Цена'][0]} -{' '}
+                              {form.values.components[t.id].data['Цена'][1]} Руб.
+                            </Text>
+                            <Text>
+                              Tier компонента:{' '}
+                              {form.values.components[t.id].data.tier.toUpperCase()}
+                            </Text>
+                          </Box>
+                        </Group>
+                      )}
+                    </Card>
+                    <Collapse in={categoryId === t.id && opened}>
+                      <Paper sx={(theme) => ({ backgroundColor: theme.colors.gray[4] })}>
+                        <ScrollArea.Autosize sx={{ maxHeight: 700 }} viewportRef={viewport}>
+                          <ComponentsList
+                            categoryId={categoryId as string}
+                            onChoose={onChoose}
+                            viewport={viewport}
+                          />
+                        </ScrollArea.Autosize>
+                      </Paper>
+                    </Collapse>
+                  </Box>
+                ))}
             </Stack>
-          </Block>
-        </Grid.Col>
-      </Grid>
+          </Grid.Col>
+          <Grid.Col span={14}>
+            <Stack>
+              <Block>
+                <Stack>
+                  <TextInput label="Название сборки" {...form.getInputProps('title')} required />
+                  <Textarea
+                    label="Описание сборки"
+                    {...form.getInputProps('description')}
+                    required
+                  />
+                  <Button disabled={!user} type="submit">
+                    Сохранить
+                  </Button>
+                </Stack>
+              </Block>
+              <Block>
+                <Stack spacing="xs">
+                  <Title order={3}>Информация</Title>
+                  <Text>
+                    Категория сборки: <Text weight={600}>High end (High tier)</Text>
+                  </Text>
+                  <Text>
+                    Примерное потребление: <Text weight={600}>450w</Text>
+                  </Text>
+                  <Text>
+                    <Text>Примерная цена:</Text>
+                    <Group spacing={4}>
+                      <Text weight={600}>150000</Text>
+                      <IconCurrencyRubel size={15} />
+                    </Group>
+                  </Text>
+                </Stack>
+              </Block>
+            </Stack>
+          </Grid.Col>
+        </Grid>
+      </form>
     </Container>
   );
 }
