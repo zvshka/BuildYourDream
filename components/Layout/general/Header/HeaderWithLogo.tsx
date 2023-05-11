@@ -11,6 +11,7 @@ import {
   Header,
   MediaQuery,
   Menu,
+  px,
   Stack,
   Text,
   Title,
@@ -35,6 +36,9 @@ const useStyles = createStyles((theme) => ({
   },
   logo: {
     [theme.fn.smallerThan('md')]: {
+      fontSize: `${px(theme.fontSizes.xl) * 1.1}px`,
+    },
+    [theme.fn.smallerThan('sm')]: {
       fontSize: theme.fontSizes.xl,
     },
   },
@@ -74,25 +78,23 @@ export function HeaderWithLogo() {
 
   return (
     <Header height={80} p="md" className={classes.header}>
-      <Container size="xl" sx={{ width: '100%' }}>
+      <Container size="xl" sx={{ width: '100%' }} px={0}>
         <Grid sx={{ width: '100%' }}>
           <Grid.Col span="auto">
             <Flex sx={{ height: '100%' }} align="center">
-              <MediaQuery styles={{ display: 'none' }}>
-                <Burger
-                  opened={navigationContext.opened}
-                  onClick={() =>
-                    navigationContext.opened
-                      ? navigationContext.setClosed()
-                      : navigationContext.setOpened()
-                  }
-                  size="md"
-                  color={theme.colors.gray[6]}
-                />
-              </MediaQuery>
+              <Burger
+                opened={navigationContext.opened}
+                onClick={() =>
+                  navigationContext.opened
+                    ? navigationContext.setClosed()
+                    : navigationContext.setOpened()
+                }
+                size="md"
+                color={theme.colors.gray[6]}
+              />
             </Flex>
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col span="content">
             <Flex justify="center" sx={{ height: '100%' }} align="center">
               <Title order={1} className={classes.logo}>
                 <Text
@@ -104,7 +106,7 @@ export function HeaderWithLogo() {
             </Flex>
           </Grid.Col>
           <Grid.Col span="auto">
-            <MediaQuery styles={{ display: 'none' }} smallerThan="lg">
+            <MediaQuery styles={{ display: 'none' }} smallerThan="md">
               <Flex sx={{ height: '100%' }} align="center" justify="flex-end">
                 {user ? (
                   <Menu trigger="hover" openDelay={100} closeDelay={400}>

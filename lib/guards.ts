@@ -3,9 +3,11 @@ import { NextHandler } from 'next-connect';
 import jwt from 'jsonwebtoken';
 import { ApiError } from './ApiError';
 import { tokenPayload } from '../types/tokenPayload';
+import { User } from '../types/User';
+import AuthService from '../services/Auth.service';
 
-export const authGuard = (
-  req: NextApiRequest & { token: string },
+export const authGuard = async (
+  req: NextApiRequest & { token: string; user: User },
   res: NextApiResponse,
   next: NextHandler
 ) => {
@@ -17,13 +19,16 @@ export const authGuard = (
   const tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
   if (!tokenData.id) throw ApiError.UnauthorizedError();
   req.token = token;
-  next();
+  const data = await AuthService.exchange(token);
+  if (!(data instanceof ApiError)) {
+    req.user = data.user;
+  }
+  await next();
 };
 
 export const roleGuard = (role) => async (req, res, next) => {
   const tokenData = jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
-  console.log(tokenData);
   if (!tokenData.id) throw ApiError.UnauthorizedError();
   if (tokenData.role !== role) throw ApiError.Forbidden();
-  next();
+  await next();
 };

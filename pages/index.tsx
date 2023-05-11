@@ -8,9 +8,11 @@ import {
   Grid,
   Group,
   Image,
+  MediaQuery,
   Paper,
   ScrollArea,
   Stack,
+  Tabs,
   Text,
   Textarea,
   TextInput,
@@ -18,9 +20,9 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import {
-  IconCircleX,
   IconCurrencyRubel,
-  IconExclamationCircle,
+  IconDownload,
+  IconListCheck,
   IconPlus,
   IconTrash,
   IconX,
@@ -29,13 +31,18 @@ import { useDisclosure } from '@mantine/hooks';
 import React, { useRef, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
+import axios from 'axios';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
 import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
 import { IComponent } from '../types/Template';
-import axios from 'axios';
 import { storage } from '../lib/utils';
+import {
+  ErrorMessage,
+  SuccessMessage,
+  WarnMessage,
+} from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
 
 //TODO: Добавить помощник выбора в несколько шагов
 /**
@@ -44,28 +51,6 @@ import { storage } from '../lib/utils';
  * Далее он заполняет форму в несколько этапов
  * После ему подбираются комплектующие по указанным критериям
  **/
-
-const Message = ({ title, description, isWarn = true }) => {
-  const theme = useMantineTheme();
-  return (
-    <Block
-      sx={{
-        border: `2px solid ${isWarn ? theme.colors.orange[3] : theme.colors.red[3]}`,
-        flex: '0 0 auto',
-      }}
-    >
-      <Group>
-        {isWarn && <IconExclamationCircle size={36} color={theme.colors.orange[3]} />}
-        {!isWarn && <IconCircleX size={36} color={theme.colors.red[3]} />}
-        <Stack spacing={0}>
-          <Text weight={600}>{title}</Text>
-          <Text>{description}</Text>
-        </Stack>
-      </Group>
-    </Block>
-  );
-};
-
 export default function HomePage() {
   const { data: templates, isSuccess } = useTemplatesList();
   const { user } = useAuth();
@@ -79,7 +64,11 @@ export default function HomePage() {
     setCategoryId(c);
   };
 
-  const form = useForm({
+  const form = useForm<{
+    title: string;
+    description: string;
+    components: Record<string, IComponent>;
+  }>({
     initialValues: {
       title: '',
       description: '',
@@ -116,8 +105,8 @@ export default function HomePage() {
       });
     }
 
-    const components = Object.values(values.components);
-    axios
+    const components = Object.values(values.components).map((c) => c.id);
+    return axios
       .post(
         '/api/configs',
         {
@@ -148,53 +137,70 @@ export default function HomePage() {
   };
 
   return (
-    <Container size="xl" sx={{ height: '100%' }}>
+    <Container size="xl" sx={{ height: '100%' }} px={0}>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Block mb="md">
           {/*<Text>Ошибки и совместимость</Text>*/}
-          <Box>
-            <Group sx={{ overflowX: 'auto' }} noWrap>
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-              <Message
-                title="Слишком высокое потребление"
-                description="Комплектующие потребляют слишком много"
-              />
-            </Group>
-          </Box>
+          <Group sx={{ overflowX: 'auto' }} noWrap>
+            <SuccessMessage title="Все в порядке" description="Вы можете сохранить сборку" />
+            <WarnMessage title="Что-то не так" description="Предупреждение" />
+            <ErrorMessage title="Ошибка" description="Ошибка совместимости или размеров" />
+          </Group>
         </Block>
         <Grid columns={48}>
-          <Grid.Col span={34}>
+          <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+            <Grid.Col>
+              <Block>
+                <Tabs defaultValue="info" allowTabDeactivation>
+                  <Tabs.List>
+                    <Tabs.Tab value="info" icon={<IconListCheck size="1.2rem" />}>
+                      Информация
+                    </Tabs.Tab>
+                    <Tabs.Tab value="save" icon={<IconDownload size="1.2rem" />}>
+                      Сохранение
+                    </Tabs.Tab>
+                  </Tabs.List>
+
+                  <Tabs.Panel value="info" pt="xs">
+                    <Stack spacing="xs">
+                      <Text>
+                        Категория сборки: <Text weight={600}>High end (High tier)</Text>
+                      </Text>
+                      <Text>
+                        Примерное потребление: <Text weight={600}>450w</Text>
+                      </Text>
+                      <Text>
+                        <Text>Примерная цена:</Text>
+                        <Group spacing={4}>
+                          <Text weight={600}>150000</Text>
+                          <IconCurrencyRubel size={15} />
+                        </Group>
+                      </Text>
+                    </Stack>
+                  </Tabs.Panel>
+
+                  <Tabs.Panel value="save" pt="xs">
+                    <Stack>
+                      <TextInput
+                        label="Название сборки"
+                        {...form.getInputProps('title')}
+                        required
+                      />
+                      <Textarea
+                        label="Описание сборки"
+                        {...form.getInputProps('description')}
+                        required
+                      />
+                      <Button disabled={!user} type="submit">
+                        Сохранить
+                      </Button>
+                    </Stack>
+                  </Tabs.Panel>
+                </Tabs>
+              </Block>
+            </Grid.Col>
+          </MediaQuery>
+          <Grid.Col span="auto">
             <Stack>
               {isSuccess &&
                 templates.map((t) => (
@@ -266,41 +272,43 @@ export default function HomePage() {
                 ))}
             </Stack>
           </Grid.Col>
-          <Grid.Col span={14}>
-            <Stack>
-              <Block>
-                <Stack>
-                  <TextInput label="Название сборки" {...form.getInputProps('title')} required />
-                  <Textarea
-                    label="Описание сборки"
-                    {...form.getInputProps('description')}
-                    required
-                  />
-                  <Button disabled={!user} type="submit">
-                    Сохранить
-                  </Button>
-                </Stack>
-              </Block>
-              <Block>
-                <Stack spacing="xs">
-                  <Title order={3}>Информация</Title>
-                  <Text>
-                    Категория сборки: <Text weight={600}>High end (High tier)</Text>
-                  </Text>
-                  <Text>
-                    Примерное потребление: <Text weight={600}>450w</Text>
-                  </Text>
-                  <Text>
-                    <Text>Примерная цена:</Text>
-                    <Group spacing={4}>
-                      <Text weight={600}>150000</Text>
-                      <IconCurrencyRubel size={15} />
-                    </Group>
-                  </Text>
-                </Stack>
-              </Block>
-            </Stack>
-          </Grid.Col>
+          <MediaQuery styles={{ display: 'none' }} smallerThan="md">
+            <Grid.Col md={14}>
+              <Stack>
+                <Block>
+                  <Stack>
+                    <TextInput label="Название сборки" {...form.getInputProps('title')} required />
+                    <Textarea
+                      label="Описание сборки"
+                      {...form.getInputProps('description')}
+                      required
+                    />
+                    <Button disabled={!user} type="submit">
+                      Сохранить
+                    </Button>
+                  </Stack>
+                </Block>
+                <Block>
+                  <Stack spacing="xs">
+                    <Title order={3}>Информация</Title>
+                    <Text>
+                      Категория сборки: <Text weight={600}>High end (High tier)</Text>
+                    </Text>
+                    <Text>
+                      Примерное потребление: <Text weight={600}>450w</Text>
+                    </Text>
+                    <Text>
+                      <Text>Примерная цена:</Text>
+                      <Group spacing={4}>
+                        <Text weight={600}>150000</Text>
+                        <IconCurrencyRubel size={15} />
+                      </Group>
+                    </Text>
+                  </Stack>
+                </Block>
+              </Stack>
+            </Grid.Col>
+          </MediaQuery>
         </Grid>
       </form>
     </Container>

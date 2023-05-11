@@ -7,7 +7,10 @@ class ComponentService {
     });
   }
 
-  async getListByTemplate(templateId: string, filter: Record<string, string>) {
+  async getListByTemplate(
+    templateId: string,
+    filter: { [p: string]: string | string[] | undefined }
+  ) {
     const totalCount = await prisma.component.count({
       //TODO: Add more filters
       where: {
@@ -16,7 +19,7 @@ class ComponentService {
           {
             data: {
               path: ['Название'],
-              string_contains: filter?.search || '',
+              string_contains: (filter?.search as string) || '',
             },
           },
         ],
@@ -26,7 +29,7 @@ class ComponentService {
     let currentPage = 1;
     if (filter.page) {
       if (!Number.isNaN(filter.page)) {
-        currentPage = parseInt(filter.page, 10);
+        currentPage = parseInt(filter.page as string, 10);
         if (currentPage <= 0) currentPage = 1;
       }
     }
@@ -40,7 +43,7 @@ class ComponentService {
           {
             data: {
               path: ['Название'],
-              string_contains: filter?.search || '',
+              string_contains: (filter?.search as string) || '',
             },
           },
         ],

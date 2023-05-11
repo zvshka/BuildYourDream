@@ -14,7 +14,6 @@ import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { PageHeader } from '../../components/Layout';
 import { ITemplate } from '../../types/Template';
 import { useTemplatesList } from '../../components/hooks/templates';
-import Link from 'next/link';
 import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
@@ -63,7 +62,7 @@ export default function Parts() {
   const { data: templates, isLoading, isError } = useTemplatesList();
 
   return (
-    <Container size="xl">
+    <Container size="xl" px={0}>
       <Stack>
         <PageHeader
           title="Комплектующие"
@@ -82,7 +81,14 @@ export default function Parts() {
             </Group>
           }
         />
-        <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
+        <SimpleGrid
+          cols={1}
+          breakpoints={[
+            { minWidth: 'lg', cols: 6 },
+            { minWidth: 'md', cols: 4 },
+            { minWidth: 'sm', cols: 2 },
+          ]}
+        >
           {!isLoading &&
             !isError &&
             templates.map((template: ITemplate & { id: string }) => (

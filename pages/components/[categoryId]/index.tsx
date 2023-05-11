@@ -53,33 +53,16 @@ const useStyles = createStyles((theme) => ({
 }));
 export default function Category() {
   const router = useRouter();
-  const { classes } = useStyles();
-  const [showFilters, toggleFilters] = useToggle();
-  const [filters, setFilters] = useState({});
 
   const { user } = useAuth();
 
   const { data: templateData, isSuccess } = useTemplateData(router.query.categoryId as string);
-  const {
-    data: components,
-    isSuccess: isComponentsSuccess,
-    refetch,
-  } = useComponentsList(router.query.categoryId as string, filters);
-
-  useEffect(() => {
-    const { categoryId, ...f } = router.query;
-    setFilters(f);
-  }, [router.query]);
-
-  useEffect(() => {
-    refetch();
-  }, [filters]);
 
   return (
-    <Container size="xl">
+    <Container size="xl" px={0}>
       <Stack>
         <PageHeader
-          title={templateData?.name ?? ''}
+          title={isSuccess ? templateData.name : ''}
           rightSection={
             <Group>
               {user && user.role === 'ADMIN' && (

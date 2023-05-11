@@ -226,7 +226,7 @@ export function NavbarSimpleColored() {
 
   return (
     <Box>
-      <MediaQuery styles={{ display: 'none' }} smallerThan="md">
+      <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
         <Modal
           title={<Title order={3}>Навигация</Title>}
           opened={navigationContext.opened}

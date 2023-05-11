@@ -50,7 +50,7 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
   };
 
   return (
-    <Container size="md">
+    <Container size="md" px={0}>
       <form onSubmit={template.onSubmit(handleSubmit)}>
         <Stack spacing="xs">
           <PageHeader
