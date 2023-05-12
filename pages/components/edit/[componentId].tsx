@@ -125,7 +125,7 @@ export default function editComponentPage() {
 
   return (
     <ComponentFormProvider form={form}>
-      <Container size="sm">
+      <Container size="sm" px={0}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack>
             <PageHeader title={`Изменение компонента: ${componentData?.data['Название']}`} />

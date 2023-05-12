@@ -34,7 +34,7 @@ export default function Profile() {
   const { user } = useAuth();
 
   return (
-    <Container size="xl">
+    <Container size="xl" px={0}>
       <Flex gap="sm">
         <Box>
           <Paper p="sm" shadow="xl">

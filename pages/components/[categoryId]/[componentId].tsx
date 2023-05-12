@@ -73,7 +73,7 @@ export default function partPage() {
   );
 
   return (
-    <Container size="xl">
+    <Container size="xl" px={0}>
       <Stack>
         <Block>
           <Group position="apart">

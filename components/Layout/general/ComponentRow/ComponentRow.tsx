@@ -12,7 +12,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export const ComponentRow = ({ component }: { component: { data: IComponent } }) => {
+export const ComponentRow = ({ component }: { component: IComponent }) => {
   const { classes } = useStyles();
 
   return (

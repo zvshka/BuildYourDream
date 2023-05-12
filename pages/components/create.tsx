@@ -165,7 +165,7 @@ export default function CreatePart() {
 
   return (
     <ComponentFormProvider form={form}>
-      <Container size="sm">
+      <Container size="sm" px={0}>
         <Block sx={{ position: 'relative' }}>
           <LoadingOverlay visible={loading} overlayBlur={2} />
           <form onSubmit={form.onSubmit(handleSubmit)}>

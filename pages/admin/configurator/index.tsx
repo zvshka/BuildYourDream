@@ -82,7 +82,7 @@ export default function AdminConfigurator() {
   };
 
   return (
-    <Container size="xl">
+    <Container size="xl" px={0}>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <PageHeader

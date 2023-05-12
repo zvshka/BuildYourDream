@@ -43,7 +43,7 @@ export default function Configs() {
   }, [filters]);
 
   return (
-    <Container size="xl" sx={{ height: '100%' }}>
+    <Container size="xl" sx={{ height: '100%' }} px={0}>
       <PageHeader title="Пользовательские сборки" />
       <Grid columns={48} mt="md">
         <MediaQuery styles={{ display: 'none' }} smallerThan="md">
@@ -80,7 +80,7 @@ export default function Configs() {
                       description={config.description}
                       //TODO: Add something to configure image
                       image=""
-                      link={config.id}
+                      link={`/configs/${config.id}`}
                       rating="High tier"
                     />
                   </Box>

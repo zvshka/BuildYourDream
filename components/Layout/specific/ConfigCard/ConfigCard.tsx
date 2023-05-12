@@ -11,6 +11,7 @@ import {
   createStyles,
   rem,
 } from '@mantine/core';
+import { NextLink } from '../../general/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -66,21 +67,21 @@ export function ConfigCard({
   ...others
 }: ArticleCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof ArticleCardProps>) {
   const { classes, cx, theme } = useStyles();
-  const linkProps = { href: link, target: '_blank', rel: 'noopener noreferrer' };
+  const linkProps = { href: link };
 
   return (
     <Card withBorder radius="md" className={cx(classes.card, className)} {...others}>
       <Card.Section>
-        <a {...linkProps}>
+        <NextLink {...linkProps}>
           <Image src={image} height={180} withPlaceholder />
-        </a>
+        </NextLink>
       </Card.Section>
 
       <Badge className={classes.rating} variant="gradient" gradient={{ from: 'yellow', to: 'red' }}>
         {rating}
       </Badge>
 
-      <Text className={classes.title} fw={500} component="a" {...linkProps}>
+      <Text className={classes.title} fw={500} component={NextLink} {...linkProps}>
         {title}
       </Text>
 

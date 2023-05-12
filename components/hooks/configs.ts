@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { User } from '../../types/User';
+import { IComponent } from '../../types/Template';
 
 interface IConfigsList {
   totalCount: number;
@@ -20,6 +21,22 @@ export function useConfigsList(filter?: any) {
       const { data } = await axios.get('/api/configs', {
         params: filter,
       });
+      return data;
+    },
+  });
+}
+
+export function useConfigData(configId: string) {
+  return useQuery<{
+    id: string;
+    title: string;
+    description: string;
+    author: User;
+    components: IComponent[];
+  }>({
+    queryKey: ['configs', 'list', configId],
+    queryFn: async (ctx) => {
+      const { data } = await axios.get(`/api/configs/${configId}`);
       return data;
     },
   });

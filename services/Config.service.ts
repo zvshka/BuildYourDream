@@ -19,6 +19,18 @@ class ConfigService {
     });
   }
 
+  async getConfigById(configId: string) {
+    return prisma.config.findUnique({
+      where: {
+        id: configId,
+      },
+      include: {
+        author: true,
+        components: true,
+      },
+    });
+  }
+
   async getList(filter: { [p: string]: string | string[] | undefined }) {
     const totalCount = await prisma.config.count({
       //TODO: Add more filters
