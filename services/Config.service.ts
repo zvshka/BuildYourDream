@@ -2,6 +2,7 @@ import { prisma } from '../lib/prisma';
 import { User } from '../types/User';
 
 class ConfigService {
+  //TODO: Add checks
   create(author: User, data: { title: string; description: string; components: string[] }) {
     return prisma.config.create({
       data: {
@@ -34,6 +35,9 @@ class ConfigService {
   async getList(filter: { [p: string]: string | string[] | undefined }) {
     const totalCount = await prisma.config.count({
       //TODO: Add more filters
+      orderBy: {
+        createdAt: 'desc',
+      },
       where: {
         title: {
           contains: (filter?.search as string) || '',
@@ -52,6 +56,9 @@ class ConfigService {
     const result = await prisma.config.findMany({
       skip: (currentPage - 1) * 15,
       take: 15,
+      orderBy: {
+        createdAt: 'desc',
+      },
       where: {
         title: {
           contains: (filter?.search as string) || '',

@@ -51,6 +51,8 @@ model Component {
   templateId String
 
   configs Config[]
+
+  createdAt DateTime @default(now())
 }
 
 model Config {
@@ -62,6 +64,8 @@ model Config {
 
   components Component[]
   userId     String
+
+  createdAt DateTime @default(now())
 }
 
 enum FieldType {

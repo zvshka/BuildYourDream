@@ -185,11 +185,13 @@ export default function HomePage() {
                         label="Название сборки"
                         {...form.getInputProps('title')}
                         required
+                        maxLength={50}
                       />
                       <Textarea
                         label="Описание сборки"
                         {...form.getInputProps('description')}
                         required
+                        maxLength={500}
                       />
                       <Button disabled={!user} type="submit">
                         Сохранить
@@ -277,11 +279,17 @@ export default function HomePage() {
               <Stack>
                 <Block>
                   <Stack>
-                    <TextInput label="Название сборки" {...form.getInputProps('title')} required />
+                    <TextInput
+                      label="Название сборки"
+                      {...form.getInputProps('title')}
+                      required
+                      maxLength={50}
+                    />
                     <Textarea
                       label="Описание сборки"
                       {...form.getInputProps('description')}
                       required
+                      maxLength={500}
                     />
                     <Button disabled={!user} type="submit">
                       Сохранить

@@ -32,7 +32,11 @@ export function useConfigData(configId: string) {
     title: string;
     description: string;
     author: User;
-    components: IComponent[];
+    components: {
+      id: string;
+      templateId: string;
+      data: IComponent;
+    }[];
   }>({
     queryKey: ['configs', 'list', configId],
     queryFn: async (ctx) => {

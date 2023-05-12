@@ -59,7 +59,7 @@ const Field = ({ data }) => (
 export default function partPage() {
   const router = useRouter();
   const { data: configData, isSuccess } = useConfigData(router.query.configId as string);
-
+  console.log(configData);
   return (
     <Container size="xl" px={0}>
       <Stack>
@@ -119,7 +119,8 @@ export default function partPage() {
                 </Grid.Col>
                 <Grid.Col span={4}>
                   <Stack>
-                    {isSuccess && configData.components.map((c) => <ComponentRow component={c} />)}
+                    {isSuccess &&
+                      configData.components.map((c) => <ComponentRow component={c.data} />)}
                   </Stack>
                 </Grid.Col>
               </Grid>

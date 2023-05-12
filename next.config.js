@@ -9,6 +9,7 @@ const withPWA = require('next-pwa')({
 module.exports = {
   ...withPWA(),
   // distDir: './build',
+  swcMinify: true,
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,

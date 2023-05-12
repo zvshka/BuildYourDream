@@ -1,7 +1,8 @@
 import { prisma } from '../lib/prisma';
 
 class ComponentService {
-  create(data: any) {
+  //TODO: Add checks
+  async create(data: any) {
     return prisma.component.create({
       data,
     });
@@ -37,6 +38,11 @@ class ComponentService {
     const result = await prisma.component.findMany({
       skip: (currentPage - 1) * 10,
       take: 10,
+      orderBy: [
+        {
+          createdAt: 'desc',
+        },
+      ],
       where: {
         templateId,
         AND: [
