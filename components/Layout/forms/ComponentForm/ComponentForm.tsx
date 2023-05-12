@@ -6,6 +6,7 @@ import {
   Group,
   Image,
   Input,
+  MediaQuery,
   NumberInput,
   Radio,
   Select,
@@ -13,6 +14,7 @@ import {
   Switch,
   Textarea,
   TextInput,
+  useMantineTheme,
 } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
@@ -29,6 +31,7 @@ import {
   TEXT,
 } from '../../../../types/FieldTypes';
 import { useTemplatesList } from '../../../hooks/templates';
+import { useMediaQuery } from '@mantine/hooks';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -51,9 +54,12 @@ const getColSpan = (type: string): number => {
 };
 
 export const ComponentForm = ({ fields }: { fields: IField[] }) => {
+  const theme = useMantineTheme();
   const template = useComponentFormContext();
   const resetRef = useRef<() => void>(null);
   const { data: templates, isFetched, isSuccess } = useTemplatesList();
+
+  const media = useMediaQuery(theme.fn.largerThan('md').replace('@media', ''));
 
   const clearFile = () => {
     resetRef.current?.();
@@ -99,7 +105,7 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
           </Stack>
         </Grid.Col>
         {fields.map((field, index) => (
-          <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
+          <Grid.Col key={`field_${index}`} {...(media ? { span: getColSpan(field.type) } : {})}>
             {field.type === TEXT && (
               <TextInput
                 label={field.name}
@@ -172,9 +178,20 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
             required
             {...(template ? template.getInputProps('tier') : {})}
           >
-            <Radio value="low" label="Low" />
-            <Radio value="medium" label="Medium" />
-            <Radio value="high" label="High" />
+            <MediaQuery styles={{ display: 'none' }} largerThan="md">
+              <Stack spacing="xs">
+                <Radio value="low" label="Low" />
+                <Radio value="medium" label="Medium" />
+                <Radio value="high" label="High" />
+              </Stack>
+            </MediaQuery>
+            <MediaQuery styles={{ display: 'none' }} smallerThan="md">
+              <Group spacing="xs">
+                <Radio value="low" label="Low" />
+                <Radio value="medium" label="Medium" />
+                <Radio value="high" label="High" />
+              </Group>
+            </MediaQuery>
           </Radio.Group>
         </Grid.Col>
         <Grid.Col span={6} mb="md">

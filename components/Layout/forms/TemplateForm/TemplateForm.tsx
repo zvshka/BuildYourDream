@@ -6,6 +6,7 @@ import {
   Grid,
   Group,
   LoadingOverlay,
+  MediaQuery,
   Stack,
   Switch,
   Tabs,
@@ -96,9 +97,9 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
                   renderItem={(item, index) =>
                     item.editable ? (
                       <SortableList.Item id={item.id} key={item.id}>
-                        <Grid columns={32}>
-                          <Grid.Col span={2}>
-                            <Block>
+                        <Grid>
+                          <Grid.Col span="content">
+                            <Block px="xs" py="xs">
                               <Group position="center">
                                 <DragHandle />
                               </Group>
@@ -120,14 +121,27 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
                 />
                 <Block mt="md">
                   <Container>
-                    <Group grow>
-                      <Button leftIcon={<IconApps />} onClick={handleAddField}>
-                        Добавить поле
-                      </Button>
-                      <Button leftIcon={<IconDeviceFloppy />} type="submit">
-                        Сохранить
-                      </Button>
-                    </Group>
+                    {/*TODO: Refactor*/}
+                    <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+                      <Group grow>
+                        <Button leftIcon={<IconApps />} onClick={handleAddField}>
+                          Добавить поле
+                        </Button>
+                        <Button leftIcon={<IconDeviceFloppy />} type="submit">
+                          Сохранить
+                        </Button>
+                      </Group>
+                    </MediaQuery>
+                    <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+                      <Stack>
+                        <Button leftIcon={<IconApps />} onClick={handleAddField}>
+                          Добавить поле
+                        </Button>
+                        <Button leftIcon={<IconDeviceFloppy />} type="submit">
+                          Сохранить
+                        </Button>
+                      </Stack>
+                    </MediaQuery>
                   </Container>
                 </Block>
               </Box>
@@ -169,14 +183,27 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
                 />
                 <Block mt="md">
                   <Container>
-                    <Group grow>
-                      <Button leftIcon={<IconApps />} onClick={handleAddSlot}>
-                        Добавить слот
-                      </Button>
-                      <Button leftIcon={<IconDeviceFloppy />} type="submit">
-                        Сохранить
-                      </Button>
-                    </Group>
+                    {/*TODO: Refactor*/}
+                    <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+                      <Group grow>
+                        <Button leftIcon={<IconApps />} onClick={handleAddSlot}>
+                          Добавить слот
+                        </Button>
+                        <Button leftIcon={<IconDeviceFloppy />} type="submit">
+                          Сохранить
+                        </Button>
+                      </Group>
+                    </MediaQuery>
+                    <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+                      <Stack>
+                        <Button leftIcon={<IconApps />} onClick={handleAddSlot}>
+                          Добавить слот
+                        </Button>
+                        <Button leftIcon={<IconDeviceFloppy />} type="submit">
+                          Сохранить
+                        </Button>
+                      </Stack>
+                    </MediaQuery>
                   </Container>
                 </Block>
               </Box>

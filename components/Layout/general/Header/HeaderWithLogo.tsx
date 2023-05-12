@@ -39,7 +39,7 @@ const useStyles = createStyles((theme) => ({
       fontSize: `${px(theme.fontSizes.xl) * 1.1}px`,
     },
     [theme.fn.smallerThan('sm')]: {
-      fontSize: theme.fontSizes.xl,
+      fontSize: `${px(theme.fontSizes.xl) * 1.3}px`,
     },
   },
   header: {

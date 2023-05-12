@@ -1,8 +1,10 @@
 import {
   ActionIcon,
   Box,
+  Button,
   Group,
   Input,
+  MediaQuery,
   MultiSelect,
   Select,
   Stack,
@@ -31,53 +33,125 @@ export const TemplateField = (props) => {
   return (
     <Box>
       <Stack mt="xs" spacing="xs">
-        <Group>
-          <TextInput
-            placeholder="Название"
-            sx={{ flex: 1 }}
-            {...template.getInputProps(`fields.${index}.name`)}
-            disabled={!item.editable}
-            required
-          />
-          <Select
-            data={fieldTypes}
-            {...template.getInputProps(`fields.${index}.type`)}
-            disabled={!item.editable}
-            required
-          />
-          <Switch
-            label="Обязательное"
-            styles={{
-              root: {
-                display: 'flex',
-                alignItems: 'center',
-              },
-            }}
-            disabled={!item.editable}
-            {...template.getInputProps(`fields.${index}.required`, { type: 'checkbox' })}
-          />
-          <ActionIcon
-            disabled={!item.deletable}
-            color="red"
-            onClick={() => template.removeListItem('fields', index)}
-          >
-            <IconTrash size={18} />
-          </ActionIcon>
-        </Group>
-        <Input.Wrapper>
+        <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+          <Group position="apart">
+            <Group grow>
+              <TextInput
+                placeholder="Название"
+                sx={{ flex: 1 }}
+                {...template.getInputProps(`fields.${index}.name`)}
+                disabled={!item.editable}
+                required
+              />
+              <Select
+                data={fieldTypes}
+                {...template.getInputProps(`fields.${index}.type`)}
+                disabled={!item.editable}
+                required
+              />
+            </Group>
+            {/*<ActionIcon*/}
+            {/*  disabled={!item.deletable}*/}
+            {/*  color="red"*/}
+            {/*  onClick={() => template.removeListItem('fields', index)}*/}
+            {/*>*/}
+            {/*  <IconTrash size={18} />*/}
+            {/*</ActionIcon>*/}
+            <Button
+              leftIcon={<IconTrash size={18} />}
+              color="red"
+              variant="outline"
+              disabled={!item.deletable}
+              onClick={() => template.removeListItem('fields', index)}
+            >
+              Удалить
+            </Button>
+          </Group>
+        </MediaQuery>
+        <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+          <Stack>
+            <TextInput
+              placeholder="Название"
+              sx={{ flex: 1 }}
+              {...template.getInputProps(`fields.${index}.name`)}
+              disabled={!item.editable}
+              required
+            />
+            <Select
+              data={fieldTypes}
+              {...template.getInputProps(`fields.${index}.type`)}
+              disabled={!item.editable}
+              required
+            />
+            <Switch
+              label="Обязательное"
+              styles={{
+                root: {
+                  display: 'flex',
+                  alignItems: 'center',
+                },
+              }}
+              disabled={!item.editable}
+              {...template.getInputProps(`fields.${index}.required`, { type: 'checkbox' })}
+            />
+            <Input.Wrapper>
+              <Stack>
+                <Switch
+                  label="Необходимо пояснение?"
+                  {...template.getInputProps(`fields.${index}.haveDescription`, {
+                    type: 'checkbox',
+                  })}
+                />
+                {template.values.fields[index]?.haveDescription && (
+                  <Textarea
+                    placeholder="Опишите на что влияет это поле или что это значит"
+                    {...template.getInputProps(`fields.${index}.description`)}
+                  />
+                )}
+              </Stack>
+            </Input.Wrapper>
+            <Button
+              leftIcon={<IconTrash size={18} />}
+              color="red"
+              variant="outline"
+              disabled={!item.deletable}
+              onClick={() => template.removeListItem('fields', index)}
+            >
+              Удалить
+            </Button>
+          </Stack>
+        </MediaQuery>
+        <MediaQuery styles={{ display: 'none' }} smallerThan="md">
           <Stack>
             <Switch
-              label="Необходимо пояснение?"
-              {...template.getInputProps(`fields.${index}.haveDescription`, { type: 'checkbox' })}
+              label="Обязательное"
+              styles={{
+                root: {
+                  display: 'flex',
+                  alignItems: 'center',
+                },
+              }}
+              disabled={!item.editable}
+              {...template.getInputProps(`fields.${index}.required`, { type: 'checkbox' })}
             />
-            {template.values.fields[index]?.haveDescription && (
-              <Textarea
-                placeholder="Опишите на что влияет это поле или что это значит"
-                {...template.getInputProps(`fields.${index}.description`)}
-              />
-            )}
+            <Input.Wrapper>
+              <Stack>
+                <Switch
+                  label="Необходимо пояснение?"
+                  {...template.getInputProps(`fields.${index}.haveDescription`, {
+                    type: 'checkbox',
+                  })}
+                />
+                {template.values.fields[index]?.haveDescription && (
+                  <Textarea
+                    placeholder="Опишите на что влияет это поле или что это значит"
+                    {...template.getInputProps(`fields.${index}.description`)}
+                  />
+                )}
+              </Stack>
+            </Input.Wrapper>
           </Stack>
-        </Input.Wrapper>
+        </MediaQuery>
         {template.values.fields[index]?.type === SELECT && (
           <MultiSelect
             creatable

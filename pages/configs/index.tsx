@@ -78,6 +78,7 @@ export default function Configs() {
                       author={{ name: config.author.username as string, image: '' }}
                       title={config.title}
                       description={config.description}
+                      //TODO: Add something to configure image
                       image=""
                       link={config.id}
                       rating="High tier"
