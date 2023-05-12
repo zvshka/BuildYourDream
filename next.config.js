@@ -4,10 +4,11 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: !production,
+  disable: false,
 });
 module.exports = {
   ...withPWA(),
+  // distDir: './build',
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,

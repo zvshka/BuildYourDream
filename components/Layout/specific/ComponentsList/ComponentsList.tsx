@@ -4,7 +4,8 @@ import {
   Center,
   Container,
   createStyles,
-  Drawer, Flex,
+  Drawer,
+  Flex,
   Grid,
   Group,
   MediaQuery,
@@ -141,7 +142,7 @@ export const ComponentsList = ({
                       key={component.id}
                       component={NextLink}
                     >
-                      <ComponentRow component={component} />
+                      <ComponentRow component={component.data} />
                     </Box>
                   ) : (
                     <Box
@@ -149,7 +150,7 @@ export const ComponentsList = ({
                       onClick={() => onChoose(categoryId, component)}
                       sx={{ cursor: 'pointer' }}
                     >
-                      <ComponentRow component={component} />
+                      <ComponentRow component={component.data} />
                     </Box>
                   )
                 )}
