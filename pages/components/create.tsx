@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 import { useToggle } from '@mantine/hooks';
+import { useMutation } from '@tanstack/react-query';
 import { ComponentForm } from '../../components/Layout/forms/ComponentForm/ComponentForm';
 import { Block } from '../../components/Layout';
 import {
@@ -23,7 +24,7 @@ import {
 import { IField } from '../../types/Field';
 import { BOOL, DEPENDS_ON, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../types/FieldTypes';
 import { useTemplatesList } from '../../components/hooks/templates';
-import { ITemplate } from '../../types/Template';
+import { IComponentBody, ITemplate } from '../../types/Template';
 import { storage } from '../../lib/utils';
 
 export default function CreatePart() {
@@ -64,51 +65,51 @@ export default function CreatePart() {
     });
   };
 
-  const saveData = (data: typeof form.values, image = null) =>
-    axios.post(
-      '/api/components',
-      {
-        data: {
-          ...data,
-          image,
+  const saveComponent = useMutation(
+    (componentData: IComponentBody) =>
+      axios.post(
+        '/api/components',
+        {
+          data: componentData,
         },
-        templateId,
-      },
-      {
-        headers: {
-          authorization: `Bearer ${storage.getToken()}`,
-        },
-      }
-    );
-
-  //TODO: Make mutation
-  const handleSubmit = (data: typeof form.values) => {
-    toggleLoading();
-    if (data.image?.file) {
-      uploadImage(data.image.file)
-        .then((res) => saveData(data, res.data))
-        .then((res) => {
-          toggleLoading();
-          showNotification({
-            title: 'Успех',
-            message: 'Компонент успешно сохранен',
-            color: 'green',
-          });
-        });
-    } else {
-      saveData(data).then((res) => {
+        {
+          headers: {
+            authorization: `Bearer ${storage.getToken()}`,
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
         toggleLoading();
         showNotification({
           title: 'Успех',
           message: 'Компонент успешно сохранен',
           color: 'green',
         });
-      });
+      },
+      onError: () => {
+        toggleLoading();
+        showNotification({
+          title: 'Ошибка',
+          message: 'При сохранении что-то пошло не так',
+          color: 'red',
+        });
+      },
     }
-    return true;
+  );
+
+  const handleSubmit = (data: typeof form.values) => {
+    toggleLoading();
+    if (data.image?.file) {
+      uploadImage(data.image.file).then((res) =>
+        saveComponent.mutate({ ...data, image: res.data })
+      );
+    } else {
+      saveComponent.mutate({ ...data });
+    }
   };
 
-  const { data: templates, isFetched, isSuccess } = useTemplatesList();
+  const { data: templates, isSuccess } = useTemplatesList();
 
   const handleSelectTemplate = (value: string) => {
     setTemplateId(value);
@@ -149,7 +150,6 @@ export default function CreatePart() {
 
   useEffect(() => {
     if (
-      isFetched &&
       isSuccess &&
       templates.length > 0 &&
       router.query &&
@@ -161,7 +161,7 @@ export default function CreatePart() {
         handleSelectTemplate(possibleTemplate.id as string);
       }
     }
-  }, [isFetched, templates]);
+  }, [isSuccess, templates]);
 
   return (
     <ComponentFormProvider form={form}>
@@ -176,7 +176,7 @@ export default function CreatePart() {
                 </Center>
                 <Select
                   data={
-                    isFetched && isSuccess
+                    isSuccess
                       ? templates.map((t) => ({ label: t.name, value: t.id as string }))
                       : []
                   }

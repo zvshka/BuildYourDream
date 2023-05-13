@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { IComponent } from '../../types/Template';
+import { IComponentBody } from '../../types/Template';
 
 interface IComponentsList {
   totalCount: number;
   currentPage: number;
-  result: { id: string; templateId: string; data: IComponent }[];
+  result: { id: string; templateId: string; data: IComponentBody }[];
 }
 
 export function useComponentsList(templateId: string, filter?: any) {
@@ -22,7 +22,7 @@ export function useComponentsList(templateId: string, filter?: any) {
 }
 
 export function useComponentData(componentId?: string) {
-  return useQuery({
+  return useQuery<{ id: string; templateId: string; data: IComponentBody }>({
     queryKey: ['components', componentId],
     queryFn: async () => {
       const { data } = await axios.get(`/api/components/${componentId}`);

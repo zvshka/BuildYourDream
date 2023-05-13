@@ -67,6 +67,7 @@ export default function Parts() {
         <PageHeader
           title="Комплектующие"
           rightSection={
+            // TODO: Make menu instead buttons
             <Group>
               {user && user.role === 'ADMIN' && (
                 <Button component={NextLink} href="/components/create">

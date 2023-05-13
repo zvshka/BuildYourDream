@@ -23,43 +23,10 @@ import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 import { useConfigData } from '../../components/hooks/configs';
 import { ComponentRow } from '../../components/Layout/general/ComponentRow/ComponentRow';
 
-const Field = ({ data }) => (
-  <Fragment key={data.name}>
-    <Grid.Col span={4}>
-      <Box sx={{ borderBottom: '1px solid #aaa' }}>
-        <Text size={16} weight={700}>
-          {data.name}:
-        </Text>
-      </Box>
-    </Grid.Col>
-    <Grid.Col span={2}>
-      <Box
-        sx={{
-          borderBottom: '1px solid #aaa',
-          display: 'flex',
-          justifyContent: 'center',
-          height: '100%',
-          alignItems: 'center',
-        }}
-      >
-        {[NUMBER, TEXT, SELECT, LARGE_TEXT, DEPENDS_ON].includes(data.type) && (
-          <Text>{data.value}</Text>
-        )}
-        {data.type === BOOL && <Text>{data.value ? 'Да' : 'Нет'}</Text>}
-        {data.type === RANGE && (
-          <Text>
-            {data.value[0]} - {data.value[1]}
-          </Text>
-        )}
-      </Box>
-    </Grid.Col>
-  </Fragment>
-);
-
 export default function partPage() {
   const router = useRouter();
   const { data: configData, isSuccess } = useConfigData(router.query.configId as string);
-  console.log(configData);
+
   return (
     <Container size="xl" px={0}>
       <Stack>

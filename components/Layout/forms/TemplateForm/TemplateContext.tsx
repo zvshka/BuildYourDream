@@ -1,8 +1,8 @@
 import { createFormContext } from '@mantine/form';
-import { IComponent, ITemplate } from '../../../../types/Template';
+import { IComponentBody, ITemplate } from '../../../../types/Template';
 
 export const [ComponentFormProvider, useComponentFormContext, useComponentForm] =
-  createFormContext<IComponent>();
+  createFormContext<IComponentBody>();
 
 export const [TemplateFormProvider, useTemplateFormContext, useTemplateForm] =
   createFormContext<ITemplate>();

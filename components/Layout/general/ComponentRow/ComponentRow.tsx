@@ -1,6 +1,6 @@
 import { Box, createStyles, Group, Image, Text, Title } from '@mantine/core';
 import React from 'react';
-import { IComponent } from '../../../../types/Template';
+import { IComponentBody } from '../../../../types/Template';
 import { Block } from '../Block/Block';
 
 const useStyles = createStyles((theme) => ({
@@ -12,7 +12,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export const ComponentRow = ({ component }: { component: IComponent }) => {
+export const ComponentRow = ({ component }: { component: IComponentBody }) => {
   const { classes } = useStyles();
 
   return (

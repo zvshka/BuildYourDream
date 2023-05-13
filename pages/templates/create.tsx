@@ -57,7 +57,6 @@ export default function createTemplatePage() {
           fields: templateData.fields,
           slots: templateData.slots,
           required: templateData.required,
-          //TODO: Ограничения?
         },
         {
           headers: {

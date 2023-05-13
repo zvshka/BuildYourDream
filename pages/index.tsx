@@ -36,7 +36,7 @@ import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
 import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
-import { IComponent } from '../types/Template';
+import { IComponentBody } from '../types/Template';
 import { storage } from '../lib/utils';
 import {
   ErrorMessage,
@@ -67,7 +67,7 @@ export default function HomePage() {
   const form = useForm<{
     title: string;
     description: string;
-    components: Record<string, IComponent>;
+    components: Record<string, IComponentBody>;
   }>({
     initialValues: {
       title: '',
@@ -80,7 +80,10 @@ export default function HomePage() {
     },
   });
 
-  const onChoose = (c: string, component: { id: string; templateId: string; data: IComponent }) => {
+  const onChoose = (
+    c: string,
+    component: { id: string; templateId: string; data: IComponentBody }
+  ) => {
     handlers.close();
     form.setFieldValue(`components.${c}`, component);
   };
