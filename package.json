@@ -39,6 +39,7 @@
     "@react-buddy/palette-mantine-core": "^6.0.0",
     "@react-buddy/palette-mantine-dates": "^6.0.0",
     "@react-buddy/palette-mantine-form": "^6.0.0",
+    "@react-querybuilder/mantine": "^6.3.0",
     "@tabler/icons-react": "^2.17.0",
     "@tanstack/react-query": "^4.29.5",
     "axios": "^1.4.0",

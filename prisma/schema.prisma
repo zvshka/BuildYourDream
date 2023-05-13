@@ -87,8 +87,11 @@ model Template {
 
   components Component[]
   fields     Json
-  slots      Json?
-  constraits Json?
+}
+
+model Constraint {
+  id   String @id @default(cuid())
+  data Json
 }
 
 model Image {

@@ -1,18 +1,33 @@
-import { Button, Container, Group, Stack, Switch, Text } from '@mantine/core';
-import React, { useEffect } from 'react';
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Container,
+  Group,
+  MediaQuery,
+  Stack,
+  Switch,
+  Tabs,
+  Text,
+} from '@mantine/core';
+import React, { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { storage } from '../../../lib/utils';
+import cuid from 'cuid';
+import { IconTrash } from '@tabler/icons-react';
+import { deepEqual, storage } from '../../../lib/utils';
 import { useTemplatesList } from '../../../components/hooks/templates';
 import { Block, PageHeader } from '../../../components/Layout';
-import { queryClient } from '../../../components/Providers/QueryProvider/QueryProvider';
 import { SortableList } from '../../../components/Layout/general/SortableList/SortableList';
 import { ITemplate } from '../../../types/Template';
+import { IConstraintFieldValue } from '../../../types/Constraints';
+import { useConstraintsList } from '../../../components/hooks/constraints';
+import { ConstraintField } from '../../../components/Layout/inputs/ConstraintField/ConstraintField';
 
-export default function AdminConfigurator() {
-  const { data: templates, isFetched, isSuccess } = useTemplatesList();
+const ConfiguratorForm = () => {
+  const { data: templates, isSuccess } = useTemplatesList();
 
   const form = useForm<{
     templates: ITemplate[];
@@ -24,7 +39,7 @@ export default function AdminConfigurator() {
 
   useEffect(() => {
     isSuccess && form.setFieldValue('templates', templates);
-  }, [isSuccess, isFetched]);
+  }, [isSuccess]);
 
   const templatesUpdate = useMutation(
     (templatesData: any) =>
@@ -34,13 +49,12 @@ export default function AdminConfigurator() {
         },
       }),
     {
-      onSuccess: (data) => {
+      onSuccess: () => {
         showNotification({
           title: 'Успех',
           message: 'Конфигуратор успешно обновлен',
           color: 'green',
         });
-        queryClient.invalidateQueries(['templates', 'list']);
       },
       onError: () => {
         showNotification({
@@ -49,6 +63,7 @@ export default function AdminConfigurator() {
           color: 'red',
         });
       },
+      mutationKey: ['templates', 'list'],
     }
   );
   const handleSubmit = (values: typeof form.values) => {
@@ -65,24 +80,21 @@ export default function AdminConfigurator() {
           required: v.required,
         };
       })
-      .filter((v, index) => {
+      .filter((v) => {
         const original = templates.find((template) => template.id === v.id);
         if (!original) return false;
-        if (
+        return (
           original.position !== v.position ||
           v.showInConfigurator !== original.showInConfigurator ||
           v.required !== original.required
-        ) {
-          return true;
-        }
-        return false;
+        );
       });
 
     templatesUpdate.mutate(toSend);
   };
 
   return (
-    <Container size="xl" px={0}>
+    <Box>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <PageHeader
@@ -121,6 +133,254 @@ export default function AdminConfigurator() {
           />
         </Stack>
       </form>
+    </Box>
+  );
+};
+
+const ConstraintsForm = () => {
+  const { data: constraints, isSuccess } = useConstraintsList();
+  const form = useForm<{
+    constraints: {
+      id: string;
+      data: IConstraintFieldValue;
+    }[];
+  }>({
+    initialValues: {
+      constraints: [],
+    },
+  });
+
+  const [duplicates, setDuplicates] = useState<any[]>([]);
+  const [incomplete, setIncomplete] = useState<any[]>([]);
+
+  useEffect(() => {
+    const dupes = form.values.constraints.filter((c) =>
+      form.values.constraints
+        .filter((cc) => cc.id !== c.id)
+        .some((cc) => deepEqual(c.data, cc.data))
+    );
+    setDuplicates(dupes);
+    const notFull = form.values.constraints.filter(
+      (c) =>
+        !c.data.constraint ||
+        !c.data.leftSide ||
+        !c.data.leftSide.componentId ||
+        !c.data.leftSide.fieldId ||
+        !c.data.rightSide ||
+        !c.data.rightSide.componentId ||
+        !c.data.rightSide.fieldId
+    );
+    setIncomplete(notFull);
+  }, [form.values.constraints]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      form.setValues({
+        constraints,
+      });
+    }
+  }, [isSuccess]);
+
+  const createConstraint = useMutation(
+    (constraintData: any) =>
+      axios.post('/api/constraints', constraintData, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          color: 'green',
+          message: 'Ограничение успешно создано',
+        });
+      },
+      onError: () => {
+        showNotification({
+          title: 'Ошибка',
+          color: 'red',
+          message: 'При создании ограничения что-то пошло не так',
+        });
+      },
+      mutationKey: ['constraints', 'list'],
+    }
+  );
+  const updateConstraint = useMutation(
+    ({ id, ...data }: any) =>
+      axios.patch(`/api/constraints/${id}`, data, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          color: 'green',
+          message: 'Ограничение успешно обновлено',
+        });
+      },
+      onError: () => {
+        showNotification({
+          title: 'Ошибка',
+          color: 'red',
+          message: 'При обновлении ограничения что-то пошло не так',
+        });
+      },
+      mutationKey: ['constraints', 'list'],
+    }
+  );
+  const deleteConstraint = useMutation(
+    (id: string) =>
+      axios.delete(`/api/constraints/${id}`, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          color: 'green',
+          message: 'Ограничение успешно удалено',
+        });
+      },
+      onError: () => {
+        showNotification({
+          title: 'Ошибка',
+          color: 'red',
+          message: 'При удалении ограничения что-то пошло не так',
+        });
+      },
+      mutationKey: ['constraints', 'list'],
+    }
+  );
+
+  const findById = (arr, id) => arr.find((element) => element.id === id);
+
+  function handleSubmit(values: typeof form.values) {
+    if (isSuccess) {
+      if (duplicates.length > 1) {
+        showNotification({
+          title: 'Ошибка',
+          color: 'red',
+          message: 'Существуют дубликаты',
+        });
+      }
+      if (incomplete.length > 0) {
+        showNotification({
+          title: 'Ошибка',
+          color: 'red',
+          message: 'Существуют незаполненные записи',
+        });
+      }
+      if (duplicates.length === 0 && incomplete.length === 0) {
+        const existConstraints = constraints.map((c) => c.id);
+        const toCreate = values.constraints.filter(
+          (constraint) => !existConstraints.includes(constraint.id)
+        );
+
+        const toEdit = constraints
+          .filter((constraint) => findById(values.constraints, constraint.id))
+          .filter(
+            (constraint) => !deepEqual(constraint, findById(values.constraints, constraint.id))
+          );
+
+        const toDelete = constraints.filter(
+          (constraint) => !findById(values.constraints, constraint.id)
+        );
+
+        for (let i = 0; i < toCreate.length; i += 1) {
+          const item = toCreate[i];
+          createConstraint.mutate(item);
+        }
+
+        for (let i = 0; i < toCreate.length; i += 1) {
+          const item = toEdit[i];
+          updateConstraint.mutate(item);
+        }
+
+        for (let i = 0; i < toCreate.length; i += 1) {
+          const item = toDelete[i];
+          deleteConstraint.mutate(item.id);
+        }
+      }
+    }
+  }
+
+  return (
+    <Box>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Stack>
+          <Group>
+            <Button onClick={() => form.insertListItem('constraints', { id: cuid(), data: {} })}>
+              Добавить
+            </Button>
+            <Button type="submit">Сохранить</Button>
+          </Group>
+          <Stack>
+            {form.values.constraints.map((c, index) => (
+              <Block
+                sx={{
+                  outline: duplicates.some((cc) => c.id === cc.id)
+                    ? '1px solid red'
+                    : incomplete.some((cc) => c.id === cc.id)
+                    ? '1px solid orange'
+                    : '',
+                }}
+              >
+                <Group position="apart">
+                  <ConstraintField
+                    key={c.id}
+                    {...form.getInputProps(`constraints.${index}.data`)}
+                  />
+                  <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+                    <ActionIcon
+                      color="red"
+                      onClick={() => form.removeListItem('constraints', index)}
+                    >
+                      <IconTrash />
+                    </ActionIcon>
+                  </MediaQuery>
+                  <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+                    <Button
+                      color="red"
+                      variant="outline"
+                      leftIcon={<IconTrash />}
+                      onClick={() => form.removeListItem('constraints', index)}
+                      sx={{ width: '100%' }}
+                    >
+                      Удалить
+                    </Button>
+                  </MediaQuery>
+                </Group>
+              </Block>
+            ))}
+          </Stack>
+        </Stack>
+      </form>
+    </Box>
+  );
+};
+export default function AdminConfigurator() {
+  return (
+    <Container size="xl" px={0}>
+      <Tabs defaultValue="configurator" variant="pills">
+        <Tabs.List>
+          <Tabs.Tab value="constraints">Настройки ограничений</Tabs.Tab>
+          <Tabs.Tab value="components">Настройки компонентов</Tabs.Tab>
+          <Tabs.Tab value="configurator">Настройки конфигуратора</Tabs.Tab>
+        </Tabs.List>
+
+        <Tabs.Panel value="constraints" pt="xs">
+          <ConstraintsForm />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="configurator" pt="xs">
+          <ConfiguratorForm />
+        </Tabs.Panel>
+      </Tabs>
     </Container>
   );
 }

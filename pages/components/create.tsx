@@ -66,11 +66,12 @@ export default function CreatePart() {
   };
 
   const saveComponent = useMutation(
-    (componentData: IComponentBody) =>
+    (componentData: { templateId: string; data: IComponentBody }) =>
       axios.post(
         '/api/components',
         {
-          data: componentData,
+          templateId: componentData.templateId,
+          data: componentData.data,
         },
         {
           headers: {
@@ -102,10 +103,13 @@ export default function CreatePart() {
     toggleLoading();
     if (data.image?.file) {
       uploadImage(data.image.file).then((res) =>
-        saveComponent.mutate({ ...data, image: res.data })
+        saveComponent.mutate({
+          templateId: templateId as string,
+          data: { ...data, image: res.data },
+        })
       );
     } else {
-      saveComponent.mutate({ ...data });
+      saveComponent.mutate({ templateId: templateId as string, data });
     }
   };
 

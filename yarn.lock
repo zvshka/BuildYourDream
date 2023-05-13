@@ -2849,6 +2849,11 @@
   dependencies:
     "@react-buddy/ide-toolbox" "^2.3.1"
 
+"@react-querybuilder/mantine@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@react-querybuilder/mantine/-/mantine-6.3.0.tgz#b3b5073244a03fd6f9743a9bfa2be37cb6e62ccc"
+  integrity sha512-gD6TQJO66cB98bMmtBX1Y0D3oZmrP1au25skQDC18tQNyb/9b67Pc7SWMzwTlW1SfLG7dU5BZ8QArBTcdT3baA==
+
 "@reactflow/background@11.2.0":
   version "11.2.0"
   resolved "https://registry.yarnpkg.com/@reactflow/background/-/background-11.2.0.tgz#2a6f89d4f4837d488629d32a2bd5f01708018115"

@@ -28,7 +28,7 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import axios from 'axios';
@@ -38,11 +38,8 @@ import { Block } from '../components/Layout';
 import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
 import { IComponentBody } from '../types/Template';
 import { storage } from '../lib/utils';
-import {
-  ErrorMessage,
-  SuccessMessage,
-  WarnMessage,
-} from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
+import { useConstraintsList } from '../components/hooks/constraints';
+import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
 
 //TODO: Добавить помощник выбора в несколько шагов
 /**
@@ -53,10 +50,12 @@ import {
  **/
 export default function HomePage() {
   const { data: templates, isSuccess } = useTemplatesList();
+  const { data: constraints, isSuccess: constraintsLoaded } = useConstraintsList();
   const { user } = useAuth();
   const [categoryId, setCategoryId] = useState<string | null>();
   const [opened, handlers] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
+  const [checks, setChecks] = useState<any[]>([]);
 
   const theme = useMantineTheme();
   const toggleComponentSearch = (c: string) => {
@@ -67,7 +66,14 @@ export default function HomePage() {
   const form = useForm<{
     title: string;
     description: string;
-    components: Record<string, IComponentBody>;
+    components: Record<
+      string,
+      {
+        id: string;
+        data: IComponentBody;
+        createdAt: string;
+      }
+    >;
   }>({
     initialValues: {
       title: '',
@@ -80,6 +86,41 @@ export default function HomePage() {
     },
   });
 
+  useEffect(() => {
+    if (constraintsLoaded && isSuccess) {
+      const checksArray = constraints.map((c) => {
+        const { leftSide, rightSide, constraint } = c.data;
+        const leftTemplate = templates.find((t) => t.id === leftSide.componentId);
+        const rightTemplate = templates.find((t) => t.id === rightSide.componentId);
+
+        const leftComponent = form.values.components[leftSide.componentId as string];
+        const rightComponent = form.values.components[rightSide.componentId as string];
+
+        const leftFieldName = leftTemplate?.fields.find((f) => f.id === leftSide.fieldId)?.name;
+        const rightFieldName = rightTemplate?.fields.find((f) => f.id === rightSide.fieldId)?.name;
+
+        const leftValue = leftComponent && leftComponent.data[leftFieldName as string];
+        const rightValue = rightComponent && rightComponent.data[rightFieldName as string];
+
+        if (!leftValue || !rightValue) return false;
+
+        if (constraint === 'EQUALS') {
+          return leftValue === rightValue
+            ? false
+            : {
+                title: 'Ошибка совместимости',
+                description: `${leftComponent.data['Название']} не совместимо с ${rightComponent.data['Название']}`,
+                type: 'error',
+              };
+        }
+
+        return false;
+      });
+
+      setChecks(checksArray.filter((check) => check));
+    }
+  }, [constraintsLoaded, isSuccess, form.values.components]);
+
   const onChoose = (
     c: string,
     component: { id: string; templateId: string; data: IComponentBody }
@@ -89,7 +130,6 @@ export default function HomePage() {
   };
 
   //TODO: Mutation
-
   const handleSubmit = (values: typeof form.values) => {
     const entries = Object.entries(values.components);
     const notAddedButRequired = templates
@@ -147,14 +187,15 @@ export default function HomePage() {
   return (
     <Container size="xl" sx={{ height: '100%' }} px={0}>
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Block mb="md">
-          {/*<Text>Ошибки и совместимость</Text>*/}
-          {/*<Group sx={{ overflowX: 'auto' }} noWrap>*/}
-          {/*  <SuccessMessage title="Все в порядке" description="Вы можете сохранить сборку" />*/}
-          {/*  /!*<WarnMessage title="Что-то не так" description="Предупреждение" />*!/*/}
-          {/*  /!*<ErrorMessage title="Ошибка" description="Ошибка совместимости или размеров" />*!/*/}
-          {/*</Group>*/}
-        </Block>
+        {checks.length > 0 && (
+          <Block mb="md">
+            <Group sx={{ overflowX: 'auto' }} noWrap>
+              {checks.map((check) => (
+                <ErrorMessage title={check.title} description={check.description} />
+              ))}
+            </Group>
+          </Block>
+        )}
         <Grid columns={48}>
           <MediaQuery styles={{ display: 'none' }} largerThan="sm">
             <Grid.Col>
@@ -249,8 +290,10 @@ export default function HomePage() {
                             width={256 / 1.5}
                             height={256 / 1.5}
                             {...(form.values.components[t.id].data.image &&
-                            form.values.components[t.id].data.image.url
-                              ? { src: `${form.values.components[t.id].data.image.url}?quality=60` }
+                            form.values.components[t.id].data.image?.url
+                              ? {
+                                  src: `${form.values.components[t.id].data.image?.url}?quality=60`,
+                                }
                               : {})}
                           />
                           <Box>
@@ -316,7 +359,17 @@ export default function HomePage() {
                     <Text>
                       <Text>Примерная цена:</Text>
                       <Group spacing={4}>
-                        <Text weight={600}>150000</Text>
+                        <Text weight={600}>
+                          {Object.values(form.values.components)
+                            .reduce(
+                              (prev, next) => [
+                                prev[0] + (next ? next.data['Цена'][0] : 0),
+                                prev[1] + (next ? next.data['Цена'][1] : 0),
+                              ],
+                              [0, 0]
+                            )
+                            .join(' - ')}
+                        </Text>
                         <IconCurrencyRubel size={15} />
                       </Group>
                     </Text>
