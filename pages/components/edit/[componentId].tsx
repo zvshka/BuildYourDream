@@ -13,6 +13,7 @@ import { Block, PageHeader } from '../../../components/Layout';
 import { IField } from '../../../types/Field';
 import { IComponent, ITemplate } from '../../../types/Template';
 import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../../types/FieldTypes';
+import { storage } from '../../../lib/utils';
 
 export default function editComponentPage() {
   const router = useRouter();
@@ -90,13 +91,21 @@ export default function editComponentPage() {
   };
 
   const saveData = (data: typeof form.values, image: null | Record<string, string>) =>
-    axios.patch(`/api/components/${componentData?.id}`, {
-      data: {
-        ...data,
-        image,
+    axios.patch(
+      `/api/components/${componentData?.id}`,
+      {
+        data: {
+          ...data,
+          image,
+        },
+        formId: componentData?.formId,
       },
-      formId: componentData?.formId,
-    });
+      {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }
+    );
 
   const handleSubmit = (data: typeof form.values) => {
     toggleLoading();
@@ -110,16 +119,33 @@ export default function editComponentPage() {
             color: 'green',
           });
           toggleLoading();
+        })
+        .catch((e) => {
+          showNotification({
+            title: 'Ошибка',
+            message: 'Что-то пошло не так',
+            color: 'red',
+          });
+          toggleLoading();
         });
     } else {
-      saveData(data, { url: form.values.image?.base64 as string }).then(() => {
-        showNotification({
-          title: 'Успех',
-          message: 'Компонент успешно сохранен',
-          color: 'green',
+      saveData(data, { url: form.values.image?.base64 as string })
+        .then(() => {
+          showNotification({
+            title: 'Успех',
+            message: 'Компонент успешно сохранен',
+            color: 'green',
+          });
+          toggleLoading();
+        })
+        .catch((e) => {
+          showNotification({
+            title: 'Ошибка',
+            message: 'Что-то пошло не так',
+            color: 'red',
+          });
+          toggleLoading();
         });
-        toggleLoading();
-      });
     }
   };
 

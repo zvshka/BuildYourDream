@@ -29,7 +29,7 @@ import {
 } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import React, { useRef, useState } from 'react';
-import { useForm } from '@mantine/form';
+import { isNotEmpty, useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import axios from 'axios';
 import { useTemplatesList } from '../components/hooks/templates';
@@ -74,6 +74,10 @@ export default function HomePage() {
       description: '',
       components: {},
     },
+    validate: {
+      title: isNotEmpty('Не должно быть пустым'),
+      description: isNotEmpty('Не должно быть пустым'),
+    },
   });
 
   const onChoose = (c: string, component: { id: string; templateId: string; data: IComponent }) => {
@@ -86,6 +90,7 @@ export default function HomePage() {
   const handleSubmit = (values: typeof form.values) => {
     const entries = Object.entries(values.components);
     const notAddedButRequired = templates
+      ?.filter((t) => t.required)
       ?.filter((t) => !entries.some((e) => e[0] === t.id && !!e[1]))
       .map((t) => t.name);
 
@@ -141,11 +146,11 @@ export default function HomePage() {
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Block mb="md">
           {/*<Text>Ошибки и совместимость</Text>*/}
-          <Group sx={{ overflowX: 'auto' }} noWrap>
-            <SuccessMessage title="Все в порядке" description="Вы можете сохранить сборку" />
-            <WarnMessage title="Что-то не так" description="Предупреждение" />
-            <ErrorMessage title="Ошибка" description="Ошибка совместимости или размеров" />
-          </Group>
+          {/*<Group sx={{ overflowX: 'auto' }} noWrap>*/}
+          {/*  <SuccessMessage title="Все в порядке" description="Вы можете сохранить сборку" />*/}
+          {/*  /!*<WarnMessage title="Что-то не так" description="Предупреждение" />*!/*/}
+          {/*  /!*<ErrorMessage title="Ошибка" description="Ошибка совместимости или размеров" />*!/*/}
+          {/*</Group>*/}
         </Block>
         <Grid columns={48}>
           <MediaQuery styles={{ display: 'none' }} largerThan="sm">
