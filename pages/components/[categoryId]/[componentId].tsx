@@ -120,8 +120,8 @@ export default function partPage() {
                     </Text>
                     <Text size={20}>
                       {componentData &&
-                        (componentData.data.tier > 0
-                          ? componentData.data.tier > 50
+                        (componentData.data.tier
+                          ? componentData.data.tier === 'high'
                             ? 'High'
                             : 'Medium'
                           : 'Low')}{' '}

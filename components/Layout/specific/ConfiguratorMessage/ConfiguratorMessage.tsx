@@ -6,7 +6,7 @@ import { Block } from '../../general/Block/Block';
 const Message = ({ title, description, color, Icon }) => (
   <Block
     sx={{
-      border: `2px solid ${color}`,
+      outline: `1px solid ${color}`,
       flex: '0 0 auto',
     }}
   >
@@ -26,7 +26,7 @@ export const ErrorMessage = ({ title, description }) => {
     <Message
       title={title}
       description={description}
-      color={theme.colors.red[3]}
+      color={theme.colors.red[5]}
       Icon={IconCircleX}
     />
   );
@@ -38,7 +38,7 @@ export const WarnMessage = ({ title, description }) => {
     <Message
       title={title}
       description={description}
-      color={theme.colors.orange[3]}
+      color={theme.colors.orange[5]}
       Icon={IconExclamationCircle}
     />
   );
@@ -50,7 +50,7 @@ export const SuccessMessage = ({ title, description }) => {
     <Message
       title={title}
       description={description}
-      color={theme.colors.green[3]}
+      color={theme.colors.green[5]}
       Icon={IconCircleCheck}
     />
   );

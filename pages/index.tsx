@@ -168,14 +168,14 @@ export default function HomePage() {
           },
         }
       )
-      .then((res) =>
+      .then(() =>
         showNotification({
           title: 'Успех',
           color: 'green',
           message: 'Сборка успешно сохранена',
         })
       )
-      .catch((e) =>
+      .catch(() =>
         showNotification({
           title: 'Ошибка',
           color: 'red',
@@ -218,10 +218,21 @@ export default function HomePage() {
                       <Text>
                         Примерное потребление: <Text weight={600}>450w</Text>
                       </Text>
+                      {/*TODO: Refactor*/}
                       <Text>
                         <Text>Примерная цена:</Text>
                         <Group spacing={4}>
-                          <Text weight={600}>150000</Text>
+                          <Text weight={600}>
+                            {Object.values(form.values.components)
+                              .reduce(
+                                (prev, next) => [
+                                  prev[0] + (next ? next.data['Цена'][0] : 0),
+                                  prev[1] + (next ? next.data['Цена'][1] : 0),
+                                ],
+                                [0, 0]
+                              )
+                              .join(' - ')}
+                          </Text>
                           <IconCurrencyRubel size={15} />
                         </Group>
                       </Text>
