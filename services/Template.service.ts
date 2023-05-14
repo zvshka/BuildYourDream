@@ -32,7 +32,11 @@ class TemplateService {
       where: {
         id,
       },
-      data,
+      data: {
+        fields: data.fields,
+        required: data.required,
+        name: data.name,
+      },
     });
   }
 
@@ -40,12 +44,9 @@ class TemplateService {
     data: { id: string; position: number; showInConfigurator: boolean; required: boolean }[]
   ) {
     return prisma.$transaction(async (prismaBase) => {
-      //@ts-ignore
-      // eslint-disable-next-line no-restricted-syntax
-      for (const template of data) {
-        //@ts-ignore
-        // eslint-disable-next-line no-await-in-loop
-        await prismaBase.template.update({
+      for (let i = 0; i < data.length; i += 1) {
+        const template = data[i];
+        prismaBase.template.update({
           where: {
             id: template.id,
           },

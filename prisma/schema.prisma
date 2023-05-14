@@ -27,9 +27,34 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role     Role      @default(USER)
-  messages Message[]
-  configs  Config[]
+  role         Role      @default(USER)
+  messages     Message[]
+  configs      Config[]
+  likedConfigs Config[]  @relation(name: "liked")
+
+  reports   Report[] @relation(name: "suspiciousUser")
+  myReports Report[] @relation(name: "myReports")
+}
+
+model Report {
+  id String @id @default(cuid())
+
+  author      User    @relation(fields: [authorId], references: [id], name: "myReports")
+  reason      String
+  description String
+  approved    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  config  Config?  @relation(fields: [configId], references: [id])
+  user    User?    @relation(fields: [userId], references: [id], name: "suspiciousUser")
+  message Message? @relation(fields: [messageId], references: [id])
+
+  configId  String?
+  userId    String?
+  authorId  String
+  messageId String?
 }
 
 model Message {
@@ -41,6 +66,8 @@ model Message {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  reports Report[]
 }
 
 model Component {
@@ -66,6 +93,9 @@ model Config {
   userId     String
 
   createdAt DateTime @default(now())
+
+  reports    Report[]
+  likedUsers User[]   @relation(name: "liked")
 }
 
 enum FieldType {
