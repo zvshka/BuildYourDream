@@ -241,14 +241,17 @@ export default function partPage() {
                         </Tabs.Tab>
                       </Tabs.List>
                       <Tabs.Panel value="pros" mt="xs">
-                        <List icon={<IconPlus size={24} />} spacing="xs" size="sm" center>
+                        <List
+                          icon={<IconPlus size={24} color="green" />}
+                          spacing="xs"
+                          size="sm"
+                          center
+                        >
                           {isComponentDataFetched &&
                             (componentData.data?.pros?.length > 0 ? (
                               componentData.data.pros.map((pros: string, index) => (
                                 <List.Item key={index}>
-                                  <Text color="green" weight={600}>
-                                    {pros}
-                                  </Text>
+                                  <Text weight={600}>{pros}</Text>
                                 </List.Item>
                               ))
                             ) : (
@@ -259,14 +262,17 @@ export default function partPage() {
                         </List>
                       </Tabs.Panel>
                       <Tabs.Panel value="cons" mt="xs">
-                        <List icon={<IconMinus size={24} />} spacing="xs" size="sm" center>
+                        <List
+                          icon={<IconMinus size={24} color="red" />}
+                          spacing="xs"
+                          size="sm"
+                          center
+                        >
                           {isComponentDataFetched &&
                             (componentData.data?.cons?.length > 0 ? (
                               componentData.data.cons.map((cons: string, index) => (
                                 <List.Item key={index}>
-                                  <Text color="red" weight={600}>
-                                    {cons}
-                                  </Text>
+                                  <Text weight={600}>{cons}</Text>
                                 </List.Item>
                               ))
                             ) : (
@@ -277,47 +283,6 @@ export default function partPage() {
                         </List>
                       </Tabs.Panel>
                     </Tabs>
-                    {/*<Grid grow sx={{ display: 'none' }}>*/}
-                    {/*  <Grid.Col span="content">*/}
-                    {/*    <Stack>*/}
-                    {/*      {isComponentDataFetched &&*/}
-                    {/*        (componentData.data?.pros?.length > 0 ? (*/}
-                    {/*          componentData.data.pros.map((pros: string, index) => (*/}
-                    {/*            <Text key={index} color="green" weight={600}>*/}
-                    {/*              {pros}*/}
-                    {/*            </Text>*/}
-                    {/*          ))*/}
-                    {/*        ) : (*/}
-                    {/*          <Center>*/}
-                    {/*            <Text sx={{ textAlign: 'center' }}>Нет плюсов</Text>*/}
-                    {/*          </Center>*/}
-                    {/*        ))}*/}
-                    {/*    </Stack>*/}
-                    {/*  </Grid.Col>*/}
-                    {/*  <Grid.Col span="auto" style={{ display: 'flex', justifyContent: 'center' }}>*/}
-                    {/*    <Divider*/}
-                    {/*      size="lg"*/}
-                    {/*      orientation="vertical"*/}
-                    {/*      style={{ maxWidth: 10, height: '100%' }}*/}
-                    {/*    />*/}
-                    {/*  </Grid.Col>*/}
-                    {/*  <Grid.Col span="content">*/}
-                    {/*    <Stack>*/}
-                    {/*      {componentData &&*/}
-                    {/*        (componentData.data?.cons?.length > 0 ? (*/}
-                    {/*          componentData.data.cons.map((cons: string, index) => (*/}
-                    {/*            <Text key={index} color="red" weight={600}>*/}
-                    {/*              {cons}*/}
-                    {/*            </Text>*/}
-                    {/*          ))*/}
-                    {/*        ) : (*/}
-                    {/*          <Center>*/}
-                    {/*            <Text>Нет минусов</Text>*/}
-                    {/*          </Center>*/}
-                    {/*        ))}*/}
-                    {/*    </Stack>*/}
-                    {/*  </Grid.Col>*/}
-                    {/*</Grid>*/}
                   </Block>
                 </Grid.Col>
               </Grid>
