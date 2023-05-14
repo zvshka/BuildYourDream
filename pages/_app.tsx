@@ -18,12 +18,12 @@ import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Providers/AuthContext/AuthWrapper';
 
-import 'reactflow/dist/style.css';
+// import 'reactflow/dist/style.css';
 import 'react-querybuilder/dist/query-builder.css';
 import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
 import { ContextMenuProvider } from 'mantine-contextmenu';
-import { DevSupport } from '@react-buddy/ide-toolbox-next';
-import { ComponentPreviews, useInitial } from '../components/toolbox';
+// import { DevSupport } from '@react-buddy/ide-toolbox-next';
+// import { ComponentPreviews, useInitial } from '../components/toolbox';
 import Layout from '../components/Layout/Layout';
 
 dayjs.extend(relativeTime);
@@ -104,24 +104,24 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
             <ContextMenuProvider>
               <ModalsProvider>
-                  <ReactQueryProvider>
-                    <AuthProvider>
-                      <DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>
-                      <NavigationProvider>
-                        <Notifications />
-                        <RouterTransition />
-                        {/*@ts-ignore*/}
-                        {Component.noShell ? (
+                <ReactQueryProvider>
+                  <AuthProvider>
+                    {/*<DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>*/}
+                    <NavigationProvider>
+                      <Notifications />
+                      <RouterTransition />
+                      {/*@ts-ignore*/}
+                      {Component.noShell ? (
+                        <Component {...pageProps} />
+                      ) : (
+                        <Layout>
                           <Component {...pageProps} />
-                        ) : (
-                          <Layout>
-                            <Component {...pageProps} />
-                          </Layout>
-                        )}
-                      </NavigationProvider>
-                      </DevSupport>
-                    </AuthProvider>
-                  </ReactQueryProvider>
+                        </Layout>
+                      )}
+                    </NavigationProvider>
+                    {/*</DevSupport>*/}
+                  </AuthProvider>
+                </ReactQueryProvider>
               </ModalsProvider>
             </ContextMenuProvider>
           </MantineProvider>

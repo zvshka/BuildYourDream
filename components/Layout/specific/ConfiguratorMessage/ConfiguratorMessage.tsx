@@ -6,7 +6,7 @@ import { Block } from '../../general/Block/Block';
 const Message = ({ title, description, color, Icon }) => (
   <Block
     sx={{
-      outline: `1px solid ${color}`,
+      border: `2px solid ${color}`,
       flex: '0 0 auto',
     }}
   >

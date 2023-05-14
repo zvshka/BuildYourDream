@@ -1,5 +1,6 @@
-import { Button, Container, Group, Stack } from '@mantine/core';
+import { ActionIcon, Box, Button, Container, Group, MediaQuery, Menu, Stack } from '@mantine/core';
 import { useRouter } from 'next/router';
+import { IconArrowLeft, IconCirclePlus, IconDotsVertical, IconPencil } from '@tabler/icons-react';
 import { useAuth } from '../../../components/Providers/AuthContext/AuthWrapper';
 import { PageHeader } from '../../../components/Layout';
 import { useTemplateData } from '../../../components/hooks/templates';
@@ -15,28 +16,63 @@ export default function Category() {
 
   return (
     <Container size="xl" px={0}>
-      <Stack>
+      <Stack spacing={0}>
         <PageHeader
           title={isSuccess ? templateData.name : ''}
+          leftSection={
+            <ActionIcon href="/components" component={NextLink}>
+              <IconArrowLeft />
+            </ActionIcon>
+          }
           rightSection={
-            <Group>
-              {user && user.role === 'ADMIN' && (
-                <Button href={`/templates/edit/${router.query.categoryId}`} component={NextLink}>
-                  Изменить
-                </Button>
-              )}
-              {user && user.role === 'ADMIN' && (
-                <Button
-                  href={`/components/create?templateId=${router.query.categoryId}`}
-                  component={NextLink}
-                >
-                  Добавить
-                </Button>
-              )}
-              <Button href="/components" component={NextLink}>
-                Назад
-              </Button>
-            </Group>
+            user &&
+            user.role === 'ADMIN' && (
+              <Box>
+                <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+                  <Group>
+                    <Button
+                      leftIcon={<IconPencil />}
+                      href={`/templates/edit/${router.query.categoryId}`}
+                      component={NextLink}
+                    >
+                      Изменить
+                    </Button>
+                    <Button
+                      href={`/components/create?templateId=${router.query.categoryId}`}
+                      component={NextLink}
+                      leftIcon={<IconCirclePlus />}
+                    >
+                      Добавить
+                    </Button>
+                  </Group>
+                </MediaQuery>
+                <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+                  <Menu>
+                    <Menu.Target>
+                      <ActionIcon>
+                        <IconDotsVertical />
+                      </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        icon={<IconPencil size={18} />}
+                        href={`/templates/edit/${router.query.categoryId}`}
+                        component={NextLink}
+                      >
+                        Изменить шаблон
+                      </Menu.Item>
+                      <Menu.Item
+                        icon={<IconCirclePlus size={18} />}
+                        href={`/components/create?templateId=${router.query.categoryId}`}
+                        component={NextLink}
+                      >
+                        Добавить компонент
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </MediaQuery>
+              </Box>
+            )
           }
         />
         <ComponentsList categoryId={router.query.categoryId as string} />

@@ -1,4 +1,7 @@
 const production = process.env.NODE_ENV === 'production';
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -8,6 +11,7 @@ const withPWA = require('next-pwa')({
 });
 module.exports = {
   ...withPWA(),
+  ...withBundleAnalyzer(),
   // distDir: './build',
   swcMinify: true,
   reactStrictMode: false,

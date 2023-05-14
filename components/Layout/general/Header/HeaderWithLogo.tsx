@@ -2,7 +2,6 @@ import {
   Avatar,
   Burger,
   Button,
-  Code,
   Container,
   createStyles,
   Flex,
@@ -79,7 +78,7 @@ export function HeaderWithLogo() {
   return (
     <Header height={80} p="md" className={classes.header}>
       <Container size="xl" sx={{ width: '100%' }} px={0}>
-        <Grid sx={{ width: '100%' }}>
+        <Grid sx={{ width: '100%' }} m={0}>
           <Grid.Col span="auto">
             <Flex sx={{ height: '100%' }} align="center">
               <Burger

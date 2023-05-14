@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
-    "analyze": "ANALYZE=true next build",
+    "analyze": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "export": "next build && next export",
@@ -34,6 +34,7 @@
     "@mantine/next": "6.0.10",
     "@mantine/notifications": "6.0.10",
     "@mantine/nprogress": "6.0.10",
+    "@next/bundle-analyzer": "^13.4.2",
     "@prisma/client": "^4.13.0",
     "@react-buddy/ide-toolbox-next": "^2.4.0",
     "@react-buddy/palette-mantine-core": "^6.0.0",

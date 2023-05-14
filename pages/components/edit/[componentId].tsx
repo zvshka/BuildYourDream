@@ -23,9 +23,11 @@ export default function editComponentPage() {
   const { data: componentData, isSuccess: isComponentLoaded } = useComponentData(
     router.query.componentId as string
   );
-  const { data: templateData, isSuccess: isTemplateLoaded } = useTemplateData(componentData?.id);
+  const { data: templateData, isSuccess: isTemplateLoaded } = useTemplateData(
+    componentData?.templateId
+  );
   const [templateIsReady, setTemplateIsReady] = useState<boolean>(false);
-  const [loading, toggleLoading] = useToggle();
+  const [loading, toggleLoading] = useToggle([true, false]);
   const form = useComponentForm({
     initialValues: {
       tier: 'low',

@@ -12,12 +12,14 @@ import {
   Select,
   Stack,
   Switch,
+  Tabs,
   Textarea,
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
-import { IconTrashX } from '@tabler/icons-react';
+import { IconCircleMinus, IconCirclePlus, IconTrashX } from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
+import { useMediaQuery } from '@mantine/hooks';
 import { RangeInput } from '../../index';
 import { useComponentFormContext } from '../TemplateForm/TemplateContext';
 import { IField } from '../../../../types/Field';
@@ -31,7 +33,6 @@ import {
   TEXT,
 } from '../../../../types/FieldTypes';
 import { useTemplatesList } from '../../../hooks/templates';
-import { useMediaQuery } from '@mantine/hooks';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -178,70 +179,119 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
             required
             {...(template ? template.getInputProps('tier') : {})}
           >
-            <MediaQuery styles={{ display: 'none' }} largerThan="md">
-              <Stack spacing="xs">
-                <Radio value="low" label="Low" />
-                <Radio value="medium" label="Medium" />
-                <Radio value="high" label="High" />
-              </Stack>
-            </MediaQuery>
-            <MediaQuery styles={{ display: 'none' }} smallerThan="md">
-              <Group spacing="xs">
-                <Radio value="low" label="Low" />
-                <Radio value="medium" label="Medium" />
-                <Radio value="high" label="High" />
-              </Group>
-            </MediaQuery>
+            <Group spacing="xs" mt="xs">
+              <Radio value="low" label="Low" />
+              <Radio value="medium" label="Medium" />
+              <Radio value="high" label="High" />
+            </Group>
           </Radio.Group>
         </Grid.Col>
         <Grid.Col span={6} mb="md">
           <Input.Wrapper label="Плюсы и минусы">
-            <Group grow align="normal">
-              <Stack>
-                {template.values &&
-                  template.values.pros &&
-                  template.values.pros.map((value: string, index: number) => (
-                    <TextInput
-                      key={`pros_${index}`}
-                      required
-                      {...template.getInputProps(`pros.${index}`)}
-                      rightSection={
-                        <ActionIcon
-                          style={{ maxWidth: 28 }}
-                          color="red"
-                          variant="filled"
-                          onClick={() => template.removeListItem('pros', index)}
-                        >
-                          <IconTrashX />
-                        </ActionIcon>
-                      }
-                    />
-                  ))}
-                <Button onClick={handleAddPros}>Добавить плюс</Button>
-              </Stack>
-              <Stack>
-                {template.values &&
-                  template.values.cons &&
-                  template.values.cons.map((value: string, index: number) => (
-                    <TextInput
-                      key={`cons_${index}`}
-                      required
-                      {...template.getInputProps(`cons.${index}`)}
-                      rightSection={
-                        <ActionIcon
-                          style={{ maxWidth: 28 }}
-                          color="red"
-                          variant="filled"
-                          onClick={() => template.removeListItem('cons', index)}
-                        >
-                          <IconTrashX />
-                        </ActionIcon>
-                      }
-                    />
-                  ))}
-                <Button onClick={handleAddCons}>Добавить минус</Button>
-              </Stack>
-            </Group>
+            <Tabs defaultValue="pros">
+              <Tabs.List>
+                <Tabs.Tab icon={<IconCirclePlus size={20} color="green" />} value="pros">
+                  Плюсы
+                </Tabs.Tab>
+                <Tabs.Tab icon={<IconCircleMinus size={20} color="red" />} value="cons">
+                  Минусы
+                </Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panel value="pros" mt="xs">
+                <Stack>
+                  {template.values &&
+                    template.values.pros &&
+                    template.values.pros.map((value: string, index: number) => (
+                      <TextInput
+                        key={`pros_${index}`}
+                        required
+                        {...template.getInputProps(`pros.${index}`)}
+                        rightSection={
+                          <ActionIcon
+                            style={{ maxWidth: 28 }}
+                            color="red"
+                            variant="filled"
+                            onClick={() => template.removeListItem('pros', index)}
+                          >
+                            <IconTrashX />
+                          </ActionIcon>
+                        }
+                      />
+                    ))}
+                  <Button onClick={handleAddPros}>Добавить плюс</Button>
+                </Stack>
+              </Tabs.Panel>
+              <Tabs.Panel value="cons" mt="xs">
+                <Stack>
+                  {template.values &&
+                    template.values.cons &&
+                    template.values.cons.map((value: string, index: number) => (
+                      <TextInput
+                        key={`cons_${index}`}
+                        required
+                        {...template.getInputProps(`cons.${index}`)}
+                        rightSection={
+                          <ActionIcon
+                            style={{ maxWidth: 28 }}
+                            color="red"
+                            variant="filled"
+                            onClick={() => template.removeListItem('cons', index)}
+                          >
+                            <IconTrashX />
+                          </ActionIcon>
+                        }
+                      />
+                    ))}
+                  <Button onClick={handleAddCons}>Добавить минус</Button>
+                </Stack>
+              </Tabs.Panel>
+            </Tabs>
+            {/*<Group grow align="normal" display="none">*/}
+            {/*  <Stack>*/}
+            {/*    {template.values &&*/}
+            {/*      template.values.pros &&*/}
+            {/*      template.values.pros.map((value: string, index: number) => (*/}
+            {/*        <TextInput*/}
+            {/*          key={`pros_${index}`}*/}
+            {/*          required*/}
+            {/*          {...template.getInputProps(`pros.${index}`)}*/}
+            {/*          rightSection={*/}
+            {/*            <ActionIcon*/}
+            {/*              style={{ maxWidth: 28 }}*/}
+            {/*              color="red"*/}
+            {/*              variant="filled"*/}
+            {/*              onClick={() => template.removeListItem('pros', index)}*/}
+            {/*            >*/}
+            {/*              <IconTrashX />*/}
+            {/*            </ActionIcon>*/}
+            {/*          }*/}
+            {/*        />*/}
+            {/*      ))}*/}
+            {/*    <Button onClick={handleAddPros}>Добавить плюс</Button>*/}
+            {/*  </Stack>*/}
+            {/*  <Stack>*/}
+            {/*    {template.values &&*/}
+            {/*      template.values.cons &&*/}
+            {/*      template.values.cons.map((value: string, index: number) => (*/}
+            {/*        <TextInput*/}
+            {/*          key={`cons_${index}`}*/}
+            {/*          required*/}
+            {/*          {...template.getInputProps(`cons.${index}`)}*/}
+            {/*          rightSection={*/}
+            {/*            <ActionIcon*/}
+            {/*              style={{ maxWidth: 28 }}*/}
+            {/*              color="red"*/}
+            {/*              variant="filled"*/}
+            {/*              onClick={() => template.removeListItem('cons', index)}*/}
+            {/*            >*/}
+            {/*              <IconTrashX />*/}
+            {/*            </ActionIcon>*/}
+            {/*          }*/}
+            {/*        />*/}
+            {/*      ))}*/}
+            {/*    <Button onClick={handleAddCons}>Добавить минус</Button>*/}
+            {/*  </Stack>*/}
+            {/*</Group>*/}
           </Input.Wrapper>
         </Grid.Col>
       </Grid>

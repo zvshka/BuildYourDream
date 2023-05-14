@@ -235,7 +235,7 @@ export function NavbarSimpleColored() {
           size="xl"
           centered
           transitionProps={{ transition: 'fade', duration: 100, timingFunction: 'linear' }}
-          zIndex={20}
+          lockScroll={false}
         >
           <Stack>
             <SegmentedControl

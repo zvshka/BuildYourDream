@@ -1,9 +1,9 @@
 import {
+  ActionIcon,
   Box,
-  Button,
   Container,
   createStyles,
-  Group,
+  Menu,
   Paper,
   SimpleGrid,
   Stack,
@@ -15,6 +15,12 @@ import { PageHeader } from '../../components/Layout';
 import { ITemplate } from '../../types/Template';
 import { useTemplatesList } from '../../components/hooks/templates';
 import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
+import {
+  IconCirclePlus,
+  IconCircleSquare,
+  IconDotsVertical,
+  IconPackage,
+} from '@tabler/icons-react';
 
 const useStyles = createStyles((theme) => ({
   box: {
@@ -67,25 +73,35 @@ export default function Parts() {
         <PageHeader
           title="Комплектующие"
           rightSection={
-            // TODO: Make menu instead buttons
-            <Group>
-              {user && user.role === 'ADMIN' && (
-                <Button component={NextLink} href="/components/create">
+            <Menu>
+              <Menu.Target>
+                <ActionIcon>
+                  <IconDotsVertical />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  component={NextLink}
+                  href="/components/create"
+                  icon={<IconCircleSquare size={18} />}
+                >
                   Добавить деталь
-                </Button>
-              )}
-              {user && user.role === 'ADMIN' && (
-                <Button component={NextLink} href="/templates/create">
-                  Добавить группу/форму
-                </Button>
-              )}
-            </Group>
+                </Menu.Item>
+                <Menu.Item
+                  component={NextLink}
+                  href="/templates/create"
+                  icon={<IconPackage size={18} />}
+                >
+                  Добавить группу
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           }
         />
         <SimpleGrid
           cols={1}
           breakpoints={[
-            { minWidth: 'lg', cols: 6 },
+            { minWidth: 'lg', cols: 5 },
             { minWidth: 'md', cols: 4 },
             { minWidth: 'sm', cols: 2 },
           ]}
