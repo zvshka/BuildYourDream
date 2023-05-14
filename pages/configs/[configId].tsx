@@ -43,20 +43,10 @@ export default function partPage() {
               user.role === 'ADMIN' && (
                 <Group sx={{ height: '100%' }}>
                   <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
-                    <Button
-                      href={`/components/edit/${router.query.componentId}`}
-                      component={NextLink}
-                    >
-                      Изменить
-                    </Button>
+                    <Button leftIcon={<IconPencil />}>Изменить</Button>
                   </MediaQuery>
                   <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-                    <ActionIcon
-                      color="blue"
-                      variant="filled"
-                      href={`/components/edit/${router.query.componentId}`}
-                      component={NextLink}
-                    >
+                    <ActionIcon color="blue" variant="filled">
                       <IconPencil />
                     </ActionIcon>
                   </MediaQuery>
