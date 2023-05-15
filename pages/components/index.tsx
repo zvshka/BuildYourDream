@@ -10,17 +10,12 @@ import {
   Text,
 } from '@mantine/core';
 import React from 'react';
+import { IconCircleSquare, IconDotsVertical, IconPackage } from '@tabler/icons-react';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { PageHeader } from '../../components/Layout';
 import { ITemplate } from '../../types/Template';
 import { useTemplatesList } from '../../components/hooks/templates';
 import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
-import {
-  IconCirclePlus,
-  IconCircleSquare,
-  IconDotsVertical,
-  IconPackage,
-} from '@tabler/icons-react';
 
 const useStyles = createStyles((theme) => ({
   box: {

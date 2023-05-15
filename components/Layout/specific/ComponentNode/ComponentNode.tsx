@@ -1,10 +1,10 @@
 import { Box, Image, Stack, Text, Title } from '@mantine/core';
 import { Handle, Position } from 'reactflow';
 import { memo } from 'react';
+import { useContextMenu } from 'mantine-contextmenu';
+import { IconTrash } from '@tabler/icons-react';
 import { Block } from '../../general/Block/Block';
 import { useTemplateData } from '../../../hooks/templates';
-import { useContextMenu } from 'mantine-contextmenu';
-import { IconCopy, IconDownload, IconTrash } from '@tabler/icons-react';
 
 const handleStyleVertical = {
   width: '14px',

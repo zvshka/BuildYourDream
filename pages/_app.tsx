@@ -21,9 +21,8 @@ import { AuthProvider } from '../components/Providers/AuthContext/AuthWrapper';
 // import 'reactflow/dist/style.css';
 import 'react-querybuilder/dist/query-builder.css';
 import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
+// eslint-disable-next-line import/order
 import { ContextMenuProvider } from 'mantine-contextmenu';
-// import { DevSupport } from '@react-buddy/ide-toolbox-next';
-// import { ComponentPreviews, useInitial } from '../components/toolbox';
 import Layout from '../components/Layout/Layout';
 
 dayjs.extend(relativeTime);

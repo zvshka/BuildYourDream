@@ -14,17 +14,7 @@ export interface ITemplate {
   showInConfigurator: boolean;
 
   fields: IField[];
-  slots: ISlot[];
 }
-
-export interface ISlot {
-  id: string;
-  componentId: string;
-  innerField: string;
-  outerField: string;
-  compatibilityCondition: string;
-}
-
 export interface IComponentBody {
   image?: IComponentImage;
   tier: 'low' | 'medium' | 'high';

@@ -182,7 +182,7 @@ const ConstraintsForm = () => {
   }, [isSuccess]);
 
   const createConstraint = useMutation(
-    (constraintData: any) =>
+    (constraintData: { id: string; data: IConstraintFieldValue }) =>
       axios.post('/api/constraints', constraintData, {
         headers: {
           authorization: `Bearer ${storage.getToken()}`,
