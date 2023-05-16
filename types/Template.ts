@@ -28,4 +28,5 @@ export interface IComponent {
   id: string;
   templateId: string;
   data: IComponentBody;
+  approved?: Boolean;
 }

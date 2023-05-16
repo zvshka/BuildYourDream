@@ -82,13 +82,15 @@ export default function Parts() {
                 >
                   Добавить деталь
                 </Menu.Item>
-                <Menu.Item
-                  component={NextLink}
-                  href="/templates/create"
-                  icon={<IconPackage size={18} />}
-                >
-                  Добавить группу
-                </Menu.Item>
+                {user && user.role === 'ADMIN' && (
+                  <Menu.Item
+                    component={NextLink}
+                    href="/templates/create"
+                    icon={<IconPackage size={18} />}
+                  >
+                    Добавить группу
+                  </Menu.Item>
+                )}
               </Menu.Dropdown>
             </Menu>
           }

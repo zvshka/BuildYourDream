@@ -25,8 +25,7 @@ export default function Category() {
             </ActionIcon>
           }
           rightSection={
-            user &&
-            user.role === 'ADMIN' && (
+            user && (
               <Box>
                 <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
                   <Group>

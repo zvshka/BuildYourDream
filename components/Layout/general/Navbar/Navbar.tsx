@@ -23,6 +23,7 @@ import {
   IconDeviceDesktop,
   IconLogout,
   IconUser,
+  IconUsersGroup,
 } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
@@ -173,6 +174,7 @@ const tabs = {
     { link: '/', label: 'Конфигуратор', Icon: IconCpu },
     { link: '/configs', label: 'Конфигурации', Icon: IconDeviceDesktop },
     { link: '/components', label: 'Комплектующие', Icon: Icon3dCubeSphere },
+    { link: '/community', label: 'Комьюнити', Icon: IconUsersGroup },
   ],
   adminPages: [
     { link: '/admin/users', label: 'Пользователи', Icon: IconUser },

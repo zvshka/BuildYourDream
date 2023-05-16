@@ -112,8 +112,7 @@ export default function partPage() {
             </ActionIcon>
           }
           rightSection={
-            user &&
-            user.role === 'ADMIN' && (
+            user && (
               <Group sx={{ height: '100%' }}>
                 <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
                   <Button

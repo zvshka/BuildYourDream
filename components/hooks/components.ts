@@ -21,6 +21,18 @@ export function useComponentsList(templateId: string, filter?: any) {
   });
 }
 
+export function useUnapprovedList(filter?: any) {
+  return useQuery<IComponentsList>({
+    queryKey: ['components', 'list', 'unapproved'],
+    queryFn: async (ctx) => {
+      const { data } = await axios.get('/api/components/unapproved', {
+        params: filter,
+      });
+      return data;
+    },
+  });
+}
+
 export function useComponentData(componentId?: string) {
   return useQuery<{ id: string; templateId: string; data: IComponentBody }>({
     queryKey: ['components', componentId],
