@@ -46,11 +46,11 @@ export default function Configs() {
     <Container size="xl" sx={{ height: '100%' }} px={0}>
       <PageHeader title="Пользовательские сборки" />
       <Grid columns={48} mt="md">
-        <MediaQuery styles={{ display: 'none' }} smallerThan="md">
-          <Grid.Col span={12} sx={{ height: '100%' }}>
-            <Block sx={{ height: '45rem' }}>Filters</Block>
-          </Grid.Col>
-        </MediaQuery>
+        {/*<MediaQuery styles={{ display: 'none' }} smallerThan="md">*/}
+        {/*  <Grid.Col span={12} sx={{ height: '100%' }}>*/}
+        {/*    <Block sx={{ height: '45rem' }}>Filters</Block>*/}
+        {/*  </Grid.Col>*/}
+        {/*</MediaQuery>*/}
         <Grid.Col span="auto">
           <Stack>
             <Block shadow={0}>
@@ -68,7 +68,7 @@ export default function Configs() {
               cols={1}
               breakpoints={[
                 { minWidth: 'xs', cols: 2 },
-                { minWidth: 'sm', cols: 3 },
+                { minWidth: 'sm', cols: 4 },
               ]}
             >
               {isConfigsSuccess &&

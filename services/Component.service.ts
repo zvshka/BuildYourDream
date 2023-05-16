@@ -66,6 +66,7 @@ class ComponentService {
         templateId: componentData.templateId,
         approved: user.role === 'ADMIN',
         data: componentData.data,
+        creatorId: user.id,
       },
     });
   }

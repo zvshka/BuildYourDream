@@ -44,7 +44,6 @@ export default function createTemplatePage() {
           required: true,
         }),
       ],
-      slots: [],
     },
   });
 
@@ -55,7 +54,6 @@ export default function createTemplatePage() {
         {
           name: templateData.name,
           fields: templateData.fields,
-          slots: templateData.slots,
           required: templateData.required,
         },
         {

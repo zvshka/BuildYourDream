@@ -24,7 +24,6 @@ export default function EditForm() {
       name: '',
       required: false,
       fields: [],
-      slots: [],
       showInConfigurator: false,
       position: -1,
     },
@@ -45,7 +44,6 @@ export default function EditForm() {
         {
           name: newTemplateData.name,
           fields: newTemplateData.fields,
-          slots: newTemplateData.slots,
           required: newTemplateData.required,
         },
         {

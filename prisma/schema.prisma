@@ -32,8 +32,9 @@ model User {
   configs      Config[]
   likedConfigs Config[]  @relation(name: "liked")
 
-  reports   Report[] @relation(name: "suspiciousUser")
-  myReports Report[] @relation(name: "myReports")
+  reports      Report[]    @relation(name: "suspiciousUser")
+  myReports    Report[]    @relation(name: "myReports")
+  myComponents Component[] @relation(name: "myComponents")
 
   updateRequests    UpdateRequest[]
   proceedRequests   UpdateRequest[] @relation(name: "requestInspector")
@@ -109,6 +110,9 @@ model Component {
 
   admin   User?   @relation(fields: [adminId], references: [id], name: "componentInspector")
   adminId String?
+
+  creator   User?   @relation(fields: [creatorId], references: [id], name: "myComponents")
+  creatorId String?
 
   approved Boolean @default(false)
   rejected Boolean @default(false)

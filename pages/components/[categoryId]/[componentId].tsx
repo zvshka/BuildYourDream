@@ -143,7 +143,7 @@ export default function partPage() {
                 <Block>
                   <Image
                     withPlaceholder
-                    {...(componentData?.data.image
+                    {...(componentData?.data.image && componentData?.data.image.url
                       ? { src: `${componentData.data?.image.url}?quality=60` }
                       : { height: 256 })}
                   />

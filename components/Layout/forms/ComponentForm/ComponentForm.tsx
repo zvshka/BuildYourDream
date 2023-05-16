@@ -62,6 +62,8 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
 
   const media = useMediaQuery(theme.fn.largerThan('md').replace('@media', ''));
 
+  console.log(template.values);
+
   const clearFile = () => {
     resetRef.current?.();
     template.setFieldValue('image.base64', '');

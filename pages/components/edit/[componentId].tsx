@@ -13,7 +13,15 @@ import { ComponentForm } from '../../../components/Layout/forms/ComponentForm/Co
 import { Block, PageHeader } from '../../../components/Layout';
 import { IField } from '../../../types/Field';
 import { IComponentBody } from '../../../types/Template';
-import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../../types/FieldTypes';
+import {
+  BOOL,
+  DEPENDS_ON,
+  LARGE_TEXT,
+  NUMBER,
+  RANGE,
+  SELECT,
+  TEXT,
+} from '../../../types/FieldTypes';
 import { storage } from '../../../lib/utils';
 import { useTemplateData } from '../../../components/hooks/templates';
 import { useComponentData } from '../../../components/hooks/components';
@@ -58,11 +66,13 @@ export default function editComponentPage() {
             form.setFieldValue(field.name, componentData.data[field.name] || [0, 0]);
             break;
           case SELECT:
+          case DEPENDS_ON:
             form.setFieldValue(field.name, componentData.data[field.name] || '');
             break;
         }
       });
 
+      form.setFieldValue('tier', componentData.data.tier);
       form.setFieldValue('pros', componentData.data.pros || []);
       form.setFieldValue('cons', componentData.data.cons || []);
       form.setFieldValue('image', { base64: componentData.data.image?.url || '', file: null });
