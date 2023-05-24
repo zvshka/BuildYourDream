@@ -40,6 +40,7 @@ import {
 } from '../../../types/FieldTypes';
 import { useAuth } from '../../../components/Providers/AuthContext/AuthWrapper';
 import { NextLink } from '../../../components/Layout/general/NextLink/NextLink';
+import { Comments } from '../../../components/Layout/specific/Comments/Comments';
 
 const Field = ({ data }) => (
   <Fragment key={data.name}>
@@ -133,7 +134,7 @@ export default function partPage() {
         />
         <Box>
           <Grid columns={3}>
-            <Grid.Col md={3} lg={1}>
+            <Grid.Col span="auto">
               <Stack>
                 <Block>
                   <Image
@@ -179,107 +180,125 @@ export default function partPage() {
             <Grid.Col md={3} lg={2}>
               <Grid columns={4}>
                 <Grid.Col>
-                  <Block>
-                    <Spoiler maxHeight={100} hideLabel="Спрятать" showLabel="Показать все">
-                      <Text>{componentData?.data['Описание детали']}</Text>
-                    </Spoiler>
-                  </Block>
-                </Grid.Col>
-                <Grid.Col span={4}>
-                  <Block>
-                    <Spoiler
-                      maxHeight={200}
-                      hideLabel="Спрятать"
-                      showLabel="Показать все"
-                      styles={() => ({
-                        control: {
-                          marginTop: '1rem',
-                          textAlign: 'center',
-                          width: '100%',
-                        },
-                      })}
-                    >
-                      <Grid columns={6}>
-                        {isTemplateDataFetched &&
-                          isComponentDataFetched &&
-                          templateData.fields
-                            .filter(
-                              (field) =>
-                                !['Название', 'Описание детали', 'Цена'].includes(field.name)
-                            )
-                            .map((field) => (
-                              <Field
-                                key={field.name}
-                                data={{
-                                  name: field.name,
-                                  value:
-                                    field.name in componentData.data
-                                      ? componentData.data[field.name]
-                                      : 'Нет данных',
-                                  type: field.name in componentData.data ? field.type : 'TEXT',
-                                  description: field.description,
-                                }}
-                              />
-                            ))}
-                      </Grid>
-                    </Spoiler>
-                  </Block>
-                </Grid.Col>
-                <Grid.Col span="auto">
-                  <Block>
-                    <Tabs defaultValue="pros">
+                  <Tabs defaultValue="info">
+                    <Block>
                       <Tabs.List>
-                        <Tabs.Tab icon={<IconCirclePlus size={20} color="green" />} value="pros">
-                          Плюсы
-                        </Tabs.Tab>
-                        <Tabs.Tab icon={<IconCircleMinus size={20} color="red" />} value="cons">
-                          Минусы
-                        </Tabs.Tab>
+                        <Tabs.Tab value="info">Информация</Tabs.Tab>
+                        <Tabs.Tab value="comments">Комментарии</Tabs.Tab>
                       </Tabs.List>
-                      <Tabs.Panel value="pros" mt="xs">
-                        <List
-                          icon={<IconPlus size={24} color="green" />}
-                          spacing="xs"
-                          size="sm"
-                          center
-                        >
-                          {isComponentDataFetched &&
-                            (componentData.data?.pros?.length > 0 ? (
-                              componentData.data.pros.map((pros: string, index) => (
-                                <List.Item key={index}>
-                                  <Text weight={600}>{pros}</Text>
-                                </List.Item>
-                              ))
-                            ) : (
-                              <Center>
-                                <Text sx={{ textAlign: 'center' }}>Нет плюсов</Text>
-                              </Center>
-                            ))}
-                        </List>
-                      </Tabs.Panel>
-                      <Tabs.Panel value="cons" mt="xs">
-                        <List
-                          icon={<IconMinus size={24} color="red" />}
-                          spacing="xs"
-                          size="sm"
-                          center
-                        >
-                          {isComponentDataFetched &&
-                            (componentData.data?.cons?.length > 0 ? (
-                              componentData.data.cons.map((cons: string, index) => (
-                                <List.Item key={index}>
-                                  <Text weight={600}>{cons}</Text>
-                                </List.Item>
-                              ))
-                            ) : (
-                              <Center>
-                                <Text>Нет минусов</Text>
-                              </Center>
-                            ))}
-                        </List>
-                      </Tabs.Panel>
-                    </Tabs>
-                  </Block>
+                    </Block>
+                    <Tabs.Panel value="info">
+                      <Stack spacing="xs" mt="xs">
+                        <Block>
+                          <Spoiler maxHeight={100} hideLabel="Спрятать" showLabel="Показать все">
+                            <Text>{componentData?.data['Описание детали']}</Text>
+                          </Spoiler>
+                        </Block>
+                        <Block>
+                          <Spoiler
+                            maxHeight={200}
+                            hideLabel="Спрятать"
+                            showLabel="Показать все"
+                            styles={() => ({
+                              control: {
+                                marginTop: '1rem',
+                                textAlign: 'center',
+                                width: '100%',
+                              },
+                            })}
+                          >
+                            <Grid columns={6}>
+                              {isTemplateDataFetched &&
+                                isComponentDataFetched &&
+                                templateData.fields
+                                  .filter(
+                                    (field) =>
+                                      !['Название', 'Описание детали', 'Цена'].includes(field.name)
+                                  )
+                                  .map((field) => (
+                                    <Field
+                                      key={field.name}
+                                      data={{
+                                        name: field.name,
+                                        value:
+                                          field.name in componentData.data
+                                            ? componentData.data[field.name]
+                                            : 'Нет данных',
+                                        type:
+                                          field.name in componentData.data ? field.type : 'TEXT',
+                                        description: field.description,
+                                      }}
+                                    />
+                                  ))}
+                            </Grid>
+                          </Spoiler>
+                        </Block>
+                        <Block>
+                          <Tabs defaultValue="pros">
+                            <Tabs.List>
+                              <Tabs.Tab
+                                icon={<IconCirclePlus size={20} color="green" />}
+                                value="pros"
+                              >
+                                Плюсы
+                              </Tabs.Tab>
+                              <Tabs.Tab
+                                icon={<IconCircleMinus size={20} color="red" />}
+                                value="cons"
+                              >
+                                Минусы
+                              </Tabs.Tab>
+                            </Tabs.List>
+                            <Tabs.Panel value="pros" mt="xs">
+                              <List
+                                icon={<IconPlus size={24} color="green" />}
+                                spacing="xs"
+                                size="sm"
+                                center
+                              >
+                                {isComponentDataFetched &&
+                                  (componentData.data?.pros?.length > 0 ? (
+                                    componentData.data.pros.map((pros: string, index) => (
+                                      <List.Item key={index}>
+                                        <Text weight={600}>{pros}</Text>
+                                      </List.Item>
+                                    ))
+                                  ) : (
+                                    <Center>
+                                      <Text sx={{ textAlign: 'center' }}>Нет плюсов</Text>
+                                    </Center>
+                                  ))}
+                              </List>
+                            </Tabs.Panel>
+                            <Tabs.Panel value="cons" mt="xs">
+                              <List
+                                icon={<IconMinus size={24} color="red" />}
+                                spacing="xs"
+                                size="sm"
+                                center
+                              >
+                                {isComponentDataFetched &&
+                                  (componentData.data?.cons?.length > 0 ? (
+                                    componentData.data.cons.map((cons: string, index) => (
+                                      <List.Item key={index}>
+                                        <Text weight={600}>{cons}</Text>
+                                      </List.Item>
+                                    ))
+                                  ) : (
+                                    <Center>
+                                      <Text>Нет минусов</Text>
+                                    </Center>
+                                  ))}
+                              </List>
+                            </Tabs.Panel>
+                          </Tabs>
+                        </Block>
+                      </Stack>
+                    </Tabs.Panel>
+                    <Tabs.Panel value="comments">
+                      <Comments />
+                    </Tabs.Panel>
+                  </Tabs>
                 </Grid.Col>
               </Grid>
             </Grid.Col>

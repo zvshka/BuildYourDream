@@ -66,17 +66,23 @@ model Comment {
   id       String  @id @default(cuid())
   author   User?   @relation(fields: [authorId], references: [id])
   authorId String?
-  username String
-  body     String
+
+  body String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  reports     Report[]
   component   Component? @relation(fields: [componentId], references: [id])
   componentId String?
-  config      Config?    @relation(fields: [configId], references: [id])
-  configId    String?
+
+  config   Config? @relation(fields: [configId], references: [id])
+  configId String?
+
+  replyComment   Comment @relation(fields: [replyCommentId], references: [id], name: "reply")
+  replyCommentId String
+
+  answers Comment[] @relation(name: "reply")
+  reports Report[]
 }
 
 model UpdateRequest {

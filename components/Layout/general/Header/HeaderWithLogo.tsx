@@ -23,6 +23,7 @@ import { useModals } from '@mantine/modals';
 import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
 import { useNavigationContext } from '../../../Providers/NavigationContext/NavigationContext';
 import { NextLink } from '../NextLink/NextLink';
+import Link from 'next/link';
 
 const useStyles = createStyles((theme) => ({
   version: {
@@ -34,6 +35,7 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 700,
   },
   logo: {
+    cursor: 'pointer',
     [theme.fn.smallerThan('md')]: {
       fontSize: `${px(theme.fontSizes.xl) * 1.1}px`,
     },
@@ -95,13 +97,15 @@ export function HeaderWithLogo() {
           </Grid.Col>
           <Grid.Col span="content">
             <Flex justify="center" sx={{ height: '100%' }} align="center">
-              <Title order={1} className={classes.logo}>
-                <Text
-                  color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
-                >
-                  Build Your Dream
-                </Text>
-              </Title>
+              <Link href="/">
+                <Title order={1} className={classes.logo}>
+                  <Text
+                    color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
+                  >
+                    Build Your Dream
+                  </Text>
+                </Title>
+              </Link>
             </Flex>
           </Grid.Col>
           <Grid.Col span="auto">
