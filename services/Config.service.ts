@@ -2,9 +2,21 @@ import { prisma } from '../lib/prisma';
 import { User } from '../types/User';
 import { ApiError } from '../lib/ApiError';
 import ComponentService from './Component.service';
+import ConstraintsService from './Constraints.service';
+import { IConstraint } from '../types/Constraints';
+import TemplateService from './Template.service';
+import { IComponent, ITemplate } from '../types/Template';
+import { configErrors } from '../lib/utils';
 
 class ConfigService {
-  async create(author: User, data: { title: string; description: string; components: string[] }) {
+  async create(
+    author: User,
+    data: {
+      title: string;
+      description: string;
+      components: { componentId: string; count: number }[];
+    }
+  ) {
     const title = data.title.trim();
     const description = data.description.trim();
 
@@ -16,13 +28,20 @@ class ConfigService {
       throw ApiError.BadRequest('Описание должно быть от 10 до 500 символов');
     }
 
-    const componentsCheck = await Promise.all(
-      data.components.map((c) => ComponentService.getComponentById(c))
-    );
+    const componentsInstances = (await Promise.all(
+      data.components.map((c) => ComponentService.getComponentById(c.componentId))
+    )) as unknown as IComponent[];
 
-    if (componentsCheck.length < data.components.length) {
+    if (componentsInstances.length < data.components.length) {
       throw ApiError.BadRequest('Не все компоненты валидны');
     }
+
+    const constraints = (await ConstraintsService.getList()) as unknown[] as IConstraint[];
+    const templates = (await TemplateService.getList()) as unknown[] as ITemplate[];
+
+    const errors = configErrors(constraints, templates, componentsInstances);
+
+    if (errors.length > 0) throw ApiError.BadRequest('Неверная конфигурация', errors);
 
     return prisma.config.create({
       data: {
@@ -34,7 +53,9 @@ class ConfigService {
           },
         },
         components: {
-          connect: data.components.map((id) => ({ id })),
+          createMany: {
+            data: data.components,
+          },
         },
       },
     });

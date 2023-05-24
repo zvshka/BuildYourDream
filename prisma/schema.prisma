@@ -28,7 +28,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   role         Role      @default(USER)
-  messages     Message[]
+  comments     Comment[]
   configs      Config[]
   likedConfigs Config[]  @relation(name: "liked")
 
@@ -54,15 +54,15 @@ model Report {
 
   config  Config?  @relation(fields: [configId], references: [id])
   user    User?    @relation(fields: [userId], references: [id], name: "suspiciousUser")
-  message Message? @relation(fields: [messageId], references: [id])
+  comment Comment? @relation(fields: [commentId], references: [id])
 
   configId  String?
   userId    String?
   authorId  String
-  messageId String?
+  commentId String?
 }
 
-model Message {
+model Comment {
   id       String  @id @default(cuid())
   author   User?   @relation(fields: [authorId], references: [id])
   authorId String?
@@ -72,7 +72,11 @@ model Message {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  reports Report[]
+  reports     Report[]
+  component   Component? @relation(fields: [componentId], references: [id])
+  componentId String?
+  config      Config?    @relation(fields: [configId], references: [id])
+  configId    String?
 }
 
 model UpdateRequest {
@@ -121,8 +125,20 @@ model Component {
 
   createdAt DateTime @default(now())
 
-  configs        Config[]
+  configs        ComponentInConfig[]
   updateRequests UpdateRequest[]
+  comments       Comment[]
+}
+
+model ComponentInConfig {
+  component   Component @relation(fields: [componentId], references: [id])
+  config      Config    @relation(fields: [configId], references: [id])
+  componentId String
+  configId    String
+
+  count Int @default(1)
+
+  @@id([configId, componentId])
 }
 
 model Config {
@@ -132,13 +148,14 @@ model Config {
 
   author User @relation(fields: [userId], references: [id])
 
-  components Component[]
-  userId     String
+  userId String
 
   createdAt DateTime @default(now())
 
   reports    Report[]
-  likedUsers User[]   @relation(name: "liked")
+  components ComponentInConfig[]
+  likedUsers User[]              @relation(name: "liked")
+  comments   Comment[]
 }
 
 enum FieldType {
@@ -153,7 +170,6 @@ model Template {
   id       String  @id @default(cuid())
   name     String  @unique
   required Boolean @default(false)
-  maxCount Int     @default(1)
   position Int     @default(autoincrement())
 
   showInConfigurator Boolean @default(false)
@@ -161,7 +177,8 @@ model Template {
   components     Component[]
   updateRequests UpdateRequest[]
 
-  fields Json
+  maxCount Json? @default("{\"type\": \"number\", \"count\": 1}")
+  fields   Json
 }
 
 model Constraint {

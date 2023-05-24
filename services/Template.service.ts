@@ -56,6 +56,7 @@ class TemplateService {
           fields: data.fields as unknown as JsonArray,
           required: data.required,
           name: data.name,
+          maxCount: data.maxCount as unknown as JsonObject,
         },
       });
     }

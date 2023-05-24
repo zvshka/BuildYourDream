@@ -9,12 +9,12 @@ const withPWA = require('next-pwa')({
   skipWaiting: true,
   disable: !production,
 });
+
 module.exports = {
   ...withPWA(),
   ...withBundleAnalyzer(),
-  // distDir: './build',
   swcMinify: true,
-  reactStrictMode: false,
+  reactStrictMode: !production,
   eslint: {
     ignoreDuringBuilds: true,
   },

@@ -11,6 +11,7 @@ import {
   MediaQuery,
   Paper,
   ScrollArea,
+  Skeleton,
   Stack,
   Tabs,
   Text,
@@ -31,15 +32,17 @@ import { useDisclosure } from '@mantine/hooks';
 import React, { useEffect, useRef, useState } from 'react';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
 import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
-import { IComponentBody } from '../types/Template';
-import { storage } from '../lib/utils';
+import { IComponent, IComponentBody, ITemplate } from '../types/Template';
 import { useConstraintsList } from '../components/hooks/constraints';
 import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
+import { useComponentData } from '../components/hooks/components';
+import { configErrors, getCount, storage } from '../lib/utils';
 
 //TODO: Добавить помощник выбора в несколько шагов
 /**
@@ -48,14 +51,87 @@ import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/
  * Далее он заполняет форму в несколько этапов
  * После ему подбираются комплектующие по указанным критериям
  **/
+
+const ComponentRow = ({ componentId, onLoad }: { componentId: string; onLoad?: any }) => {
+  const { data: componentData, isSuccess, isFetched } = useComponentData(componentId);
+
+  useEffect(() => {
+    if (isFetched) {
+      onLoad && onLoad(componentData);
+    }
+  }, [isFetched]);
+
+  return (
+    <MediaQuery styles={{ flexWrap: 'wrap' }} smallerThan="sm">
+      <Group align="normal" sx={{ flexWrap: 'initial' }}>
+        <Image
+          withPlaceholder
+          radius="sm"
+          width={256 / 1.5}
+          height={256 / 1.5}
+          {...(isSuccess && componentData.data.imageUrl && componentData.data.imageUrl
+            ? {
+                src: `${componentData.data.imageUrl}?quality=60`,
+              }
+            : {})}
+        />
+        <Stack spacing={0}>
+          {isSuccess && <Title order={3}>{componentData.data['Название']}</Title>}
+          {!isSuccess && (
+            <Skeleton maw={400}>
+              <Title order={3}>Loading</Title>
+            </Skeleton>
+          )}
+          <Group spacing={4}>
+            <Text>Примерная цена:</Text>
+            {isSuccess && componentData.data['Цена'][0]}
+            {!isSuccess && (
+              <Skeleton maw={100}>
+                <Text>9999</Text>
+              </Skeleton>
+            )}
+            <Text>-</Text>
+            {isSuccess && componentData.data['Цена'][1]}
+            {!isSuccess && (
+              <Skeleton maw={100}>
+                <Text>9999</Text>
+              </Skeleton>
+            )}
+          </Group>
+          <Group spacing={4}>
+            <Text>Tier компонента:</Text>
+            {isSuccess && <Text>{componentData.data.tier.toUpperCase()}</Text>}
+            {!isSuccess && (
+              <Skeleton maw={150}>
+                <Text>LOADING</Text>
+              </Skeleton>
+            )}
+          </Group>
+        </Stack>
+      </Group>
+    </MediaQuery>
+  );
+};
+
 export default function HomePage() {
-  const { data: templates, isSuccess } = useTemplatesList();
+  const { data: templates, isSuccess, refetch } = useTemplatesList();
   const { data: constraints, isSuccess: constraintsLoaded } = useConstraintsList();
+  const [totalPrice, setTotalPrice] = useState([0, 0]);
   const { user } = useAuth();
   const [categoryId, setCategoryId] = useState<string | null>();
   const [opened, handlers] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
   const [checks, setChecks] = useState<any[]>([]);
+
+  const [templatesObject, setTemplatesObject] = useState<Record<string, Omit<ITemplate, 'id'>>>({});
+
+  useEffect(() => {
+    if (isSuccess) {
+      const mapped = templates.map(({ id, ...data }) => [id, data]);
+      const object = Object.fromEntries(mapped);
+      setTemplatesObject(object);
+    }
+  }, [isSuccess]);
 
   const theme = useMantineTheme();
   const toggleComponentSearch = (c: string) => {
@@ -66,14 +142,7 @@ export default function HomePage() {
   const form = useForm<{
     title: string;
     description: string;
-    components: Record<
-      string,
-      {
-        id: string;
-        data: IComponentBody;
-        createdAt: string;
-      }
-    >;
+    components: Record<string, IComponent[]>;
   }>({
     initialValues: {
       title: '',
@@ -87,54 +156,121 @@ export default function HomePage() {
   });
 
   useEffect(() => {
+    if (isSuccess) {
+      const ids = templates.map((t) => [t.id, []]);
+      const object = Object.fromEntries(ids);
+      form.setFieldValue('components', object);
+    }
+  }, [isSuccess]);
+
+  const onLoad = (templateId: string, componentData: IComponent, index: number) => {
+    if (componentData) {
+      const alreadyExist = form.values.components[templateId][index]?.data;
+      if (!alreadyExist) {
+        form.setFieldValue(`components.${templateId}.${index}.data`, componentData);
+      }
+    } else {
+      // form.setFieldValue(`components.${templateId}`, null);
+      // storage.updateConfig(templateId, '');
+    }
+  };
+
+  // useEffect(() => {
+  //   const configData = storage.getConfig();
+  //   if (isSuccess) {
+  //     const entries = Object.entries(configData)
+  //       .filter(([_, value]) => (value as string).length > 0)
+  //       .map(([key, value]) => [key, { id: value, data: {} }]);
+  //     const result = Object.fromEntries(entries);
+  //     form.setFieldValue('components', result);
+  //   }
+  // }, [isSuccess]);
+
+  useEffect(() => {
+    const price = Object.values(form.values.components)
+      .flat()
+      .reduce(
+        (prev, next) => [
+          prev[0] + (next && next.data['Цена'] ? next.data['Цена'][0] : 0),
+          prev[1] + (next && next.data['Цена'] ? next.data['Цена'][1] : 0),
+        ],
+        [0, 0]
+      );
+    setTotalPrice(price);
+  }, [form.values.components]);
+
+  useEffect(() => {
     if (constraintsLoaded && isSuccess) {
-      const checksArray = constraints.map((c) => {
-        const { leftSide, rightSide, constraint } = c.data;
-        const leftTemplate = templates.find((t) => t.id === leftSide.componentId);
-        const rightTemplate = templates.find((t) => t.id === rightSide.componentId);
+      const errors = configErrors(
+        constraints,
+        templates,
+        Object.values(form.values.components).flat()
+      );
 
-        const leftComponent = form.values.components[leftSide.componentId as string];
-        const rightComponent = form.values.components[rightSide.componentId as string];
-
-        const leftFieldName = leftTemplate?.fields.find((f) => f.id === leftSide.fieldId)?.name;
-        const rightFieldName = rightTemplate?.fields.find((f) => f.id === rightSide.fieldId)?.name;
-
-        const leftValue = leftComponent && leftComponent.data[leftFieldName as string];
-        const rightValue = rightComponent && rightComponent.data[rightFieldName as string];
-
-        if (!leftValue || !rightValue) return false;
-
-        if (constraint === 'EQUALS') {
-          return leftValue === rightValue
-            ? false
-            : {
-                title: 'Ошибка совместимости',
-                description: `${leftComponent.data['Название']} не совместимо с ${rightComponent.data['Название']}`,
-                type: 'error',
-              };
-        }
-
-        return false;
-      });
-
-      setChecks(checksArray.filter((check) => check));
+      setChecks(errors);
     }
   }, [constraintsLoaded, isSuccess, form.values.components]);
 
-  const onChoose = (
-    c: string,
-    component: { id: string; templateId: string; data: IComponentBody }
-  ) => {
-    handlers.close();
-    form.setFieldValue(`components.${c}`, component);
+  const onRemove = (templateId: string, index?: number) => {
+    if (index === undefined) {
+      form.setFieldValue(`components.${templateId}`, []);
+    } else {
+      form.removeListItem(`components.${templateId}`, index);
+    }
   };
 
-  //TODO: Mutation
+  const onChoose = (
+    templateId: string,
+    component: { id: string; templateId: string; data: IComponentBody }
+  ) => {
+    form.insertListItem(`components.${templateId}`, component);
+    if (isSuccess) {
+      const currentState = [...Object.values(form.values.components).flat(), component];
+      const [currentCount, maxCount] = getCount(
+        templatesObject,
+        templates.find((t) => t.id === templateId)!,
+        currentState
+      );
+      if (currentCount === maxCount) {
+        handlers.close();
+      }
+    }
+  };
+
+  const createConfigMutation = useMutation(
+    (configData: {
+      title: string;
+      description: string;
+      components: { componentId: string; count: number }[];
+    }) =>
+      axios.post('/api/configs', configData, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Сборка успешно создана',
+          color: 'green',
+        });
+        refetch();
+      },
+      onError: () => {
+        showNotification({
+          title: 'Ошибка',
+          message: 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
   const handleSubmit = (values: typeof form.values) => {
     const entries = Object.entries(values.components);
     const notAddedButRequired = templates
       ?.filter((t) => t.required)
-      ?.filter((t) => !entries.some((e) => e[0] === t.id && !!e[1]))
+      ?.filter((t) => entries.find((e) => e[0] === t.id)?.[1].length === 0)
       .map((t) => t.name);
 
     if (notAddedButRequired && notAddedButRequired.length > 0) {
@@ -152,36 +288,20 @@ export default function HomePage() {
         message: 'Вы не авторизованы',
       });
     }
+    const components = Object.values(values.components)
+      .map((arr) =>
+        arr.map((c) => ({
+          componentId: c.id,
+          count: arr.length,
+        }))
+      )
+      .flat();
 
-    const components = Object.values(values.components).map((c) => c.id);
-    return axios
-      .post(
-        '/api/configs',
-        {
-          title: values.title,
-          description: values.description,
-          components,
-        },
-        {
-          headers: {
-            authorization: `Bearer ${storage.getToken()}`,
-          },
-        }
-      )
-      .then(() =>
-        showNotification({
-          title: 'Успех',
-          color: 'green',
-          message: 'Сборка успешно сохранена',
-        })
-      )
-      .catch(() =>
-        showNotification({
-          title: 'Ошибка',
-          color: 'red',
-          message: 'Что-то пошло не так',
-        })
-      );
+    return createConfigMutation.mutate({
+      components,
+      title: values.title,
+      description: values.description,
+    });
   };
 
   return (
@@ -218,21 +338,10 @@ export default function HomePage() {
                       <Text>
                         Примерное потребление: <Text weight={600}>450w</Text>
                       </Text>
-                      {/*TODO: Refactor*/}
                       <Text>
                         <Text>Примерная цена:</Text>
                         <Group spacing={4}>
-                          <Text weight={600}>
-                            {Object.values(form.values.components)
-                              .reduce(
-                                (prev, next) => [
-                                  prev[0] + (next ? next.data['Цена'][0] : 0),
-                                  prev[1] + (next ? next.data['Цена'][1] : 0),
-                                ],
-                                [0, 0]
-                              )
-                              .join(' - ')}
-                          </Text>
+                          <Text weight={600}>{totalPrice.join(' - ')}</Text>
                           <IconCurrencyRubel size={15} />
                         </Group>
                       </Text>
@@ -276,50 +385,64 @@ export default function HomePage() {
                         py="md"
                       >
                         <Group position="apart">
-                          <Text>
-                            {t.name} {t.required ? '*' : ''}
-                          </Text>
-                          {t.id in form.values.components && !!form.values.components[t.id] ? (
-                            <ActionIcon
-                              color="red"
-                              onClick={() => form.setFieldValue(`components.${t.id}`, null)}
-                            >
-                              <IconTrash />
-                            </ActionIcon>
-                          ) : (
-                            <ActionIcon color="blue" onClick={() => toggleComponentSearch(t.id)}>
-                              {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
-                            </ActionIcon>
-                          )}
+                          <Group>
+                            <Text>
+                              {t.name} {t.required ? '*' : ''}
+                            </Text>
+                            {t.maxCount.type === 'depends_on' &&
+                              getCount(
+                                templatesObject,
+                                t,
+                                Object.values(form.values.components).flat()
+                              ).join(' / ')}
+                          </Group>
+                          <Group>
+                            {t.id in form.values.components &&
+                              form.values.components[t.id].length > 0 && (
+                                <ActionIcon color="red" onClick={() => onRemove(t.id)}>
+                                  <IconTrash />
+                                </ActionIcon>
+                              )}
+                            {t.id in form.values.components &&
+                              getCount(
+                                templatesObject,
+                                t,
+                                Object.values(form.values.components).flat()
+                              )[0] <
+                                getCount(
+                                  templatesObject,
+                                  t,
+                                  Object.values(form.values.components).flat()
+                                )[1] && (
+                                <ActionIcon
+                                  color="blue"
+                                  onClick={() => toggleComponentSearch(t.id)}
+                                >
+                                  {categoryId === t.id && opened ? <IconX /> : <IconPlus />}
+                                </ActionIcon>
+                              )}
+                          </Group>
                         </Group>
                       </Card.Section>
-                      {t.id in form.values.components && !!form.values.components[t.id] && (
-                        <Group align="normal" pt="md">
-                          <Image
-                            withPlaceholder
-                            radius="sm"
-                            width={256 / 1.5}
-                            height={256 / 1.5}
-                            {...(form.values.components[t.id].data.image &&
-                            form.values.components[t.id].data.image?.url
-                              ? {
-                                  src: `${form.values.components[t.id].data.image?.url}?quality=60`,
-                                }
-                              : {})}
-                          />
-                          <Box>
-                            <Title order={3}>{form.values.components[t.id].data['Название']}</Title>
-                            <Text>
-                              Примерная цена: {form.values.components[t.id].data['Цена'][0]} -{' '}
-                              {form.values.components[t.id].data['Цена'][1]} Руб.
-                            </Text>
-                            <Text>
-                              Tier компонента:{' '}
-                              {form.values.components[t.id].data.tier.toUpperCase()}
-                            </Text>
-                          </Box>
-                        </Group>
-                      )}
+                      {t.id in form.values.components &&
+                        !!form.values.components[t.id] &&
+                        form.values.components[t.id].map((component, index) => (
+                          <Group position="apart" align="normal" pt="md">
+                            <ComponentRow
+                              componentId={component.id}
+                              onLoad={(data) => onLoad(t.id, data, index)}
+                            />
+                            {form.values.components[t.id].length > 1 && (
+                              <Button
+                                color="red"
+                                variant="outline"
+                                onClick={() => onRemove(t.id, index)}
+                              >
+                                Удалить
+                              </Button>
+                            )}
+                          </Group>
+                        ))}
                     </Card>
                     <Collapse in={categoryId === t.id && opened}>
                       <Paper sx={{ backgroundColor: theme.colors.gray[4] }}>
@@ -370,17 +493,7 @@ export default function HomePage() {
                     <Text>
                       <Text>Примерная цена:</Text>
                       <Group spacing={4}>
-                        <Text weight={600}>
-                          {Object.values(form.values.components)
-                            .reduce(
-                              (prev, next) => [
-                                prev[0] + (next ? next.data['Цена'][0] : 0),
-                                prev[1] + (next ? next.data['Цена'][1] : 0),
-                              ],
-                              [0, 0]
-                            )
-                            .join(' - ')}
-                        </Text>
+                        <Text weight={600}>{totalPrice.join(' - ')}</Text>
                         <IconCurrencyRubel size={15} />
                       </Group>
                     </Text>

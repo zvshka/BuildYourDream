@@ -1,6 +1,5 @@
 import multer from 'multer';
 import { NextApiRequest, NextApiResponse } from 'next';
-// import { AuthGuard } from '@lib/AuthGuard';
 import sharp from 'sharp';
 import { MIME_TYPES } from '@mantine/dropzone';
 import fs from 'fs';

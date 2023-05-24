@@ -11,7 +11,7 @@ interface IComponentsList {
 export function useComponentsList(templateId: string, filter?: any) {
   return useQuery<IComponentsList>({
     queryKey: ['components', 'list', templateId],
-    queryFn: async (ctx) => {
+    queryFn: async () => {
       const { data } = await axios.get(`/api/templates/${templateId}/list`, {
         params: filter,
       });
@@ -24,7 +24,7 @@ export function useComponentsList(templateId: string, filter?: any) {
 export function useUnapprovedList(filter?: any) {
   return useQuery<IComponentsList>({
     queryKey: ['components', 'list', 'unapproved'],
-    queryFn: async (ctx) => {
+    queryFn: async () => {
       const { data } = await axios.get('/api/components/unapproved', {
         params: filter,
       });

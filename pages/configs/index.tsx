@@ -1,11 +1,9 @@
 import {
+  Anchor,
   Box,
-  Card,
   Container,
+  Flex,
   Grid,
-  Group,
-  Image,
-  MediaQuery,
   Pagination,
   SimpleGrid,
   Stack,
@@ -15,8 +13,8 @@ import React, { useEffect, useState } from 'react';
 import { useWindowScroll } from '@mantine/hooks';
 import { Block, PageHeader } from '../../components/Layout';
 import { useConfigsList } from '../../components/hooks/configs';
-import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { ConfigCard } from '../../components/Layout/specific/ConfigCard/ConfigCard';
+import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 
 export default function Configs() {
   const [activePage, setPage] = useState(1);
@@ -24,17 +22,12 @@ export default function Configs() {
     page: activePage,
   });
 
-  const { user } = useAuth();
   const { data: configs, isSuccess: isConfigsSuccess, refetch } = useConfigsList(filters);
 
   const [scroll, scrollTo] = useWindowScroll();
 
   useEffect(() => {
-    // if (viewport && viewport.current) {
-    //   viewport.current.scrollTo({ top: 0, behavior: 'smooth' });
-    // } else {
     scrollTo({ y: 0 });
-    // }
     setFilters((currentFilter) => ({ ...currentFilter, page: activePage }));
   }, [activePage]);
 
@@ -46,11 +39,6 @@ export default function Configs() {
     <Container size="xl" sx={{ height: '100%' }} px={0}>
       <PageHeader title="Пользовательские сборки" />
       <Grid columns={48} mt="md">
-        {/*<MediaQuery styles={{ display: 'none' }} smallerThan="md">*/}
-        {/*  <Grid.Col span={12} sx={{ height: '100%' }}>*/}
-        {/*    <Block sx={{ height: '45rem' }}>Filters</Block>*/}
-        {/*  </Grid.Col>*/}
-        {/*</MediaQuery>*/}
         <Grid.Col span="auto">
           <Stack>
             <Block shadow={0}>
@@ -64,15 +52,15 @@ export default function Configs() {
                 onChange={setPage}
               />
             </Block>
-            <SimpleGrid
-              cols={1}
-              breakpoints={[
-                { minWidth: 'xs', cols: 2 },
-                { minWidth: 'sm', cols: 4 },
-              ]}
-            >
-              {isConfigsSuccess &&
-                configs.result.map((config) => (
+            {isConfigsSuccess && configs.result.length > 0 && (
+              <SimpleGrid
+                cols={1}
+                breakpoints={[
+                  { minWidth: 'xs', cols: 2 },
+                  { minWidth: 'sm', cols: 4 },
+                ]}
+              >
+                {configs.result.map((config) => (
                   <Box sx={{ height: '100%' }}>
                     <ConfigCard
                       author={{ name: config.author.username as string, image: '' }}
@@ -85,7 +73,20 @@ export default function Configs() {
                     />
                   </Box>
                 ))}
-            </SimpleGrid>
+              </SimpleGrid>
+            )}
+            {isConfigsSuccess && configs.result.length === 0 && (
+              <Block h={300}>
+                <Flex justify="center" align="center" h="100%">
+                  <Stack align="center">
+                    <Text>Упс... здесь ничего нет, еще никто не сделал сборку</Text>
+                    <Anchor component={NextLink} href="/">
+                      К конфигуратору
+                    </Anchor>
+                  </Stack>
+                </Flex>
+              </Block>
+            )}
             <Block shadow={0}>
               <Pagination
                 value={activePage}

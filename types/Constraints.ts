@@ -8,3 +8,8 @@ export interface IConstraintFieldValue {
   rightSide: IComponentFieldValue;
   constraint: string;
 }
+
+export interface IConstraint {
+  id: string;
+  data: IConstraintFieldValue;
+}

@@ -31,8 +31,8 @@ export const ComponentRow = ({
               radius="sm"
               width={256 / 1.5}
               height={256 / 1.5}
-              {...(component.image && component.image.url
-                ? { src: `${component.image.url}?quality=60` }
+              {...(component.imageUrl && component.imageUrl.length > 0
+                ? { src: `${component.imageUrl}?quality=60` }
                 : {})}
             />
             <Box>

@@ -10,7 +10,7 @@ const Message = ({ title, description, color, Icon }) => (
       flex: '0 0 auto',
     }}
   >
-    <Group>
+    <Group align="normal">
       <Icon color={color} size={36} />
       <Stack spacing={0}>
         <Text weight={600}>{title}</Text>

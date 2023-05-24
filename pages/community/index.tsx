@@ -263,6 +263,7 @@ const UpdateRow = ({
   const [oldDataText, setOldDataText] = useState('');
   const [newDataText, setNewDataText] = useState('');
   const theme = useMantineTheme();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (updateData.templateToUpdate) {
@@ -358,7 +359,7 @@ const UpdateRow = ({
     <Box>
       <Modal opened={opened} onClose={toggle} size={1200} centered title="Изменения">
         <Box sx={{ height: '100%', width: '100%', overflowX: 'auto', display: 'flex' }}>
-          <Box sx={{ flex: '1 0 auto' }}>
+          <Box sx={{ flex: '1 0 auto', maxWidth: 1800 }}>
             <ReactDiffViewer
               oldValue={oldDataText}
               newValue={newDataText}
@@ -383,12 +384,16 @@ const UpdateRow = ({
             <Grid.Col span={12} md="content">
               <Stack justify="center" sx={{ height: '100%' }}>
                 <Button onClick={() => toggle()}>Изменения</Button>
-                <Button onClick={() => onApprove(updateData.id)} color="green">
-                  Одобрить
-                </Button>
-                <Button onClick={() => onReject(updateData.id)} color="red">
-                  Отклонить
-                </Button>
+                {user && user.role === 'ADMIN' && (
+                  <>
+                    <Button onClick={() => onApprove(updateData.id)} color="green">
+                      Одобрить
+                    </Button>
+                    <Button onClick={() => onReject(updateData.id)} color="red">
+                      Отклонить
+                    </Button>
+                  </>
+                )}
               </Stack>
             </Grid.Col>
           </Grid>
@@ -400,12 +405,16 @@ const UpdateRow = ({
             rightSide={
               <Stack justify="center" sx={{ height: '100%' }}>
                 <Button onClick={() => toggle()}>Изменения</Button>
-                <Button onClick={() => onApprove(updateData.id)} color="green">
-                  Одобрить
-                </Button>
-                <Button onClick={() => onReject(updateData.id)} color="red">
-                  Отклонить
-                </Button>
+                {user && user.role === 'ADMIN' && (
+                  <>
+                    <Button onClick={() => onApprove(updateData.id)} color="green">
+                      Одобрить
+                    </Button>
+                    <Button onClick={() => onReject(updateData.id)} color="red">
+                      Отклонить
+                    </Button>
+                  </>
+                )}
               </Stack>
             }
           />
@@ -416,6 +425,7 @@ const UpdateRow = ({
 };
 
 const UpdatesPanel = () => {
+  const { user } = useAuth();
   const [activePage, setPage] = useState(1);
   const [filters, setFilters] = useState({
     page: activePage,

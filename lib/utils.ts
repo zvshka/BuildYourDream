@@ -1,4 +1,6 @@
 import { internalsSymbol, Position } from 'reactflow';
+import { IConstraint } from '../types/Constraints';
+import { IComponent, ITemplate } from '../types/Template';
 
 export const storage = {
   getToken: () =>
@@ -7,6 +9,21 @@ export const storage = {
       : '',
   setToken: (token: string) => window.localStorage.setItem('accessToken', JSON.stringify(token)),
   clearToken: () => window.localStorage.removeItem('accessToken'),
+  getConfig: () =>
+    window.localStorage.getItem('config')
+      ? JSON.parse(window.localStorage.getItem('config') || '')
+      : '',
+  setConfig: (data: Record<string, string>) =>
+    window.localStorage.setItem('config', JSON.stringify(data)),
+  updateConfig: (templateId: string, componentId: string) => {
+    const currentConfig = window.localStorage.getItem('config')
+      ? JSON.parse(window.localStorage.getItem('config') || '{}')
+      : {};
+
+    currentConfig[templateId] = componentId;
+
+    window.localStorage.setItem('config', JSON.stringify(currentConfig));
+  },
 };
 
 function getNodeCenter(node) {
@@ -167,3 +184,117 @@ function deepEqual(x, y) {
   // equal, so x and y are deeply equal.
   return true;
 }
+
+export const getCount = (
+  templatesObject: Record<string, Omit<ITemplate, 'id'>>,
+  template: ITemplate,
+  currentState: IComponent[]
+) => {
+  let currentCount = 0;
+  const components = currentState.filter((c) => c.templateId === template.id);
+  if (components.length > 0) {
+    const field = templatesObject[template.id].fields.find(
+      (f) => f.id === (template.maxCount.multiplierId as string)
+    );
+
+    currentCount = components.reduce(
+      (previousValue, currentValue) =>
+        previousValue + 1 * (template.maxCount.multiplierId ? currentValue.data[field!.name] : 1),
+      0
+    );
+  }
+
+  let maxCount = template.maxCount.count;
+
+  const component = currentState.filter((c) => c.templateId === template.maxCount.templateId)[0];
+  if (component) {
+    const field = templatesObject[component.templateId].fields.find(
+      (f) => f.id === template.maxCount.fieldId
+    );
+
+    maxCount = component.data[field?.name as string] || template.maxCount.count;
+  }
+
+  return [currentCount, maxCount];
+};
+
+export const configErrors = (
+  constraints: IConstraint[],
+  templates: ITemplate[],
+  components: IComponent[]
+) => {
+  const checksArray = constraints.map((c: IConstraint) => {
+    const { leftSide, rightSide, constraint } = c.data;
+    const leftTemplate = templates.find((t) => t.id === leftSide.componentId);
+    const rightTemplate = templates.find((t) => t.id === rightSide.componentId);
+
+    const leftComponents = components.filter(
+      (component) => component.templateId === leftSide.componentId
+    );
+    const rightComponents = components.filter(
+      (component) => component.templateId === rightSide.componentId
+    );
+
+    const leftFieldName = leftTemplate?.fields.find((f) => f.id === leftSide.fieldId)?.name;
+    const rightFieldName = rightTemplate?.fields.find((f) => f.id === rightSide.fieldId)?.name;
+
+    const leftValues =
+      leftComponents &&
+      leftComponents.map((leftComponent) => ({
+        component: leftComponent,
+        value: leftComponent.data[leftFieldName as string],
+      }));
+    const rightValues =
+      rightComponents &&
+      rightComponents.map((rightComponent) => ({
+        component: rightComponent,
+        value: rightComponent.data[rightFieldName as string],
+      }));
+
+    if (!leftValues || leftValues.length === 0 || !rightValues || rightValues.length === 0) {
+      return false;
+    }
+
+    if (constraint === 'EQUALS') {
+      const arr: { title: string; description: string; type: string }[] = [];
+      for (let i = 0; i < leftValues.length; i += 1) {
+        const { component: leftComponent, value: leftValue } = leftValues[i];
+        for (let j = 0; j < rightValues.length; j += 1) {
+          const { component: rightComponent, value: rightValue } = rightValues[j];
+          if (leftValue !== rightValue) {
+            arr.push({
+              title: 'Ошибка совместимости',
+              description: `${leftComponent.data['Название']} не совместимо с ${rightComponent.data['Название']}`,
+              type: 'error',
+            });
+          }
+        }
+      }
+      return arr;
+    }
+
+    return false;
+  });
+
+  const mapped = templates.map(({ id, ...templateData }) => [id, templateData]);
+  const object = Object.fromEntries(mapped);
+
+  const maxCountCheck = templates
+    .map((template) => {
+      const [currentCount, maxCount] = getCount(object, template, components);
+      if (currentCount > maxCount) {
+        return {
+          title: 'Ошибка количества',
+          description: `Вы выбрали слшком много ${template.name}`,
+          type: 'error',
+        };
+      }
+      return false;
+    })
+    .filter((check) => check);
+
+  return checksArray
+    .filter((check) => check)
+    .flat()
+    .concat(maxCountCheck);
+};

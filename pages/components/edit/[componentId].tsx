@@ -35,20 +35,18 @@ export default function editComponentPage() {
     componentData?.templateId
   );
   const [templateIsReady, setTemplateIsReady] = useState<boolean>(false);
-  const [loading, toggleLoading] = useToggle([true, false]);
+  const [loading, toggleLoading] = useToggle();
   const form = useComponentForm({
     initialValues: {
       tier: 'low',
       pros: [],
       cons: [],
-      image: {
-        base64: '',
-        file: null,
-      },
+      imageUrl: '',
     },
   });
 
   useEffect(() => {
+    // toggleLoading();
     if (isComponentLoaded && isTemplateLoaded) {
       templateData.fields.forEach((field: IField) => {
         switch (field.type) {
@@ -75,10 +73,10 @@ export default function editComponentPage() {
       form.setFieldValue('tier', componentData.data.tier);
       form.setFieldValue('pros', componentData.data.pros || []);
       form.setFieldValue('cons', componentData.data.cons || []);
-      form.setFieldValue('image', { base64: componentData.data.image?.url || '', file: null });
+      form.setFieldValue('imageUrl', componentData.data.imageUrl);
 
       setTemplateIsReady(true);
-      toggleLoading();
+      // toggleLoading();
     }
   }, [templateData]);
 
@@ -112,7 +110,7 @@ export default function editComponentPage() {
           message: 'Компонент успешно сохранен',
           color: 'green',
         });
-        toggleLoading();
+        // toggleLoading();
       },
       onError: () => {
         showNotification({
@@ -120,13 +118,13 @@ export default function editComponentPage() {
           message: 'Что-то пошло не так',
           color: 'red',
         });
-        toggleLoading();
+        // toggleLoading();
       },
     }
   );
 
   const handleSubmit = (data: typeof form.values) => {
-    toggleLoading();
+    // toggleLoading();
     if (data.image?.file) {
       uploadImage(data.image.file).then((res) =>
         updateComponent.mutate({ ...data, image: res.data })
@@ -141,7 +139,10 @@ export default function editComponentPage() {
       <Container size="sm" px={0}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack>
-            <PageHeader title={`Изменение компонента: ${componentData?.data['Название']}`} />
+            <PageHeader
+              addBack
+              title={`Изменение компонента: ${componentData?.data['Название']}`}
+            />
             <Block sx={{ position: 'relative' }}>
               <LoadingOverlay visible={loading} overlayBlur={2} />
               {templateData && templateIsReady && <ComponentForm fields={templateData.fields} />}

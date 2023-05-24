@@ -33,11 +33,7 @@ export default function partPage() {
         <Stack>
           <PageHeader
             title={isSuccess ? configData.title : ''}
-            leftSection={
-              <ActionIcon href="/configs" component={NextLink}>
-                <IconArrowLeft />
-              </ActionIcon>
-            }
+            addBack
             rightSection={
               user &&
               user.role === 'ADMIN' && (

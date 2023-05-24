@@ -26,6 +26,10 @@ export default function EditForm() {
       fields: [],
       showInConfigurator: false,
       position: -1,
+      maxCount: {
+        type: 'number',
+        count: 1,
+      },
     },
   });
 
@@ -45,6 +49,7 @@ export default function EditForm() {
           name: newTemplateData.name,
           fields: newTemplateData.fields,
           required: newTemplateData.required,
+          maxCount: newTemplateData.maxCount,
         },
         {
           headers: {

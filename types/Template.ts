@@ -1,9 +1,11 @@
 import { IField } from './Field';
 
-export interface IComponentImage {
-  base64?: string;
-  file?: File | null;
-  url?: string;
+export interface IMaxCount {
+  type: 'number' | 'depends_on';
+  count: number;
+  templateId?: string;
+  fieldId?: string;
+  multiplierId?: string;
 }
 
 export interface ITemplate {
@@ -13,10 +15,13 @@ export interface ITemplate {
   position: number;
   showInConfigurator: boolean;
 
+  maxCount: IMaxCount;
+
   fields: IField[];
 }
+
 export interface IComponentBody {
-  image?: IComponentImage;
+  imageUrl?: string;
   tier: 'low' | 'medium' | 'high';
   pros: string[];
   cons: string[];

@@ -303,7 +303,9 @@ const ConstraintsForm = () => {
 
         for (let i = 0; i < toCreate.length; i += 1) {
           const item = toDelete[i];
-          deleteConstraint.mutate(item.id);
+          if (item) {
+            deleteConstraint.mutate(item.id);
+          }
         }
       }
     }

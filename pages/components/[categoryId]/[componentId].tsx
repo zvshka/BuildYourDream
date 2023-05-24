@@ -18,14 +18,13 @@ import {
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
 import {
-  IconArrowLeft,
   IconCircleMinus,
   IconCirclePlus,
   IconCurrencyRubel,
+  IconInfoCircle,
   IconMinus,
   IconPencil,
   IconPlus,
-  IconQuestionMark,
 } from '@tabler/icons-react';
 import { Block, PageHeader } from '../../../components/Layout';
 import { useComponentData } from '../../../components/hooks/components';
@@ -46,15 +45,15 @@ const Field = ({ data }) => (
   <Fragment key={data.name}>
     <Grid.Col span={4}>
       <Box sx={{ borderBottom: '1px solid #aaa' }}>
-        <Group spacing={0}>
+        <Group spacing={0} align="center" sx={{ height: '110%' }}>
           <Text size={16} weight={700}>
             {data.name}:
           </Text>
           {data.description && (
             <HoverCard width={200}>
               <HoverCard.Target>
-                <ActionIcon size="xs">
-                  <IconQuestionMark />
+                <ActionIcon size="md">
+                  <IconInfoCircle />
                 </ActionIcon>
               </HoverCard.Target>
               <HoverCard.Dropdown>
@@ -106,11 +105,7 @@ export default function partPage() {
       <Stack>
         <PageHeader
           title={isComponentDataFetched && componentData.data['Название']}
-          leftSection={
-            <ActionIcon href={`/components/${router.query.categoryId}`} component={NextLink}>
-              <IconArrowLeft />
-            </ActionIcon>
-          }
+          addBack
           rightSection={
             user && (
               <Group sx={{ height: '100%' }}>
@@ -143,8 +138,10 @@ export default function partPage() {
                 <Block>
                   <Image
                     withPlaceholder
-                    {...(componentData?.data.image && componentData?.data.image.url
-                      ? { src: `${componentData.data?.image.url}?quality=60` }
+                    {...(isComponentDataFetched &&
+                    componentData?.data.imageUrl &&
+                    componentData?.data.imageUrl.length > 0
+                      ? { src: `${componentData?.data.imageUrl}?quality=60` }
                       : { height: 256 })}
                   />
                 </Block>

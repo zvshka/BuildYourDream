@@ -21,6 +21,10 @@ export default function createTemplatePage() {
       showInConfigurator: true,
       name: '',
       required: false,
+      maxCount: {
+        type: 'number',
+        count: 1,
+      },
       fields: [
         CreateField({
           name: 'Название',

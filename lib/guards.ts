@@ -16,7 +16,12 @@ export const authGuard = async (
   const [type, token] = tokenHeader.split(' ');
   if (type.toLowerCase() !== 'bearer') throw ApiError.UnauthorizedError();
   if (!token) throw ApiError.UnauthorizedError();
-  const tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+  let tokenData;
+  try {
+    tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+  } catch (e) {
+    throw ApiError.UnauthorizedError();
+  }
   if (!tokenData.id) throw ApiError.UnauthorizedError();
   req.token = token;
   const data = await AuthService.exchange(token);
@@ -27,7 +32,12 @@ export const authGuard = async (
 };
 
 export const roleGuard = (role) => async (req, res, next) => {
-  const tokenData = jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+  let tokenData;
+  try {
+    tokenData = jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+  } catch (e) {
+    throw ApiError.UnauthorizedError();
+  }
   if (!tokenData.id) throw ApiError.UnauthorizedError();
   if (tokenData.role !== role) throw ApiError.Forbidden();
   await next();
