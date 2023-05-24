@@ -1,6 +1,6 @@
-import { handler } from '../../../lib/handler';
-import { authGuard } from '../../../lib/guards';
-import CommentService from '../../../services/Comment.service';
+import { handler } from '../../../../lib/handler';
+import { authGuard } from '../../../../lib/guards';
+import CommentService from '../../../../services/Comment.service';
 
 const api = handler();
 
@@ -15,11 +15,6 @@ api.patch(authGuard, async (req, res) => {
 
 api.delete(authGuard, async (req, res) => {
   const result = await CommentService.delete(req.user, req.query.commentId as string);
-  res.send(result);
-});
-
-api.get('/undelete', authGuard, async (req, res) => {
-  const result = await CommentService.undelete(req.user, req.query.commentId as string);
   res.send(result);
 });
 

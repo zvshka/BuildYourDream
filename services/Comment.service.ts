@@ -37,20 +37,21 @@ class CommentService {
       }
     }
 
-    if (query.componentId) {
+    if (replyCandidate && query.componentId) {
       if (!componentCandidate) throw ApiError.BadRequest('Такого компонента не существует');
       if (replyCandidate.configId || replyCandidate.componentId !== query.componentId) {
         throw ApiError.BadRequest('Нельзя так делать');
       }
     }
 
-    if (query.configId && !configCandidate) {
+    if (replyCandidate && query.configId && !configCandidate) {
       if (!configCandidate) throw ApiError.BadRequest('Такой сборки не существует');
       if (replyCandidate.componentId || replyCandidate.configId !== query.configId) {
         throw ApiError.BadRequest('Нельзя так делать');
       }
     }
 
+    if (data.body.trim().length === 0) throw ApiError.BadRequest('Комментарий не может быть пустым');
     return prisma.comment.create({
       data: {
         authorId: author.id,
@@ -124,7 +125,7 @@ class CommentService {
 
     if (!candidate) throw ApiError.BadRequest('Такого комментария не существует');
     if (candidate.isDeleted) throw ApiError.BadRequest('Нельзя такое сделать');
-    if (user.id !== candidate.authorId || !['ADMIN', 'MODERATOR'].includes(user.role)) {
+    if (user.id !== candidate.authorId && !['ADMIN', 'MODERATOR'].includes(user.role)) {
       throw ApiError.UnauthorizedError();
     }
 

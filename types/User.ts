@@ -2,6 +2,7 @@ export interface User {
   id: string;
   email: string;
   emailVerified?: any;
+  avatarUrl?: string
   username?: string;
   role: string;
   createdAt: any;

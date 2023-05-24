@@ -42,10 +42,10 @@ export const CommentInput = ({
         queryClient.invalidateQueries(['comments', componentId || configId]);
         form.reset();
       },
-      onError: () => {
+      onError: (err: any) => {
         showNotification({
           title: 'Ошибка',
-          message: 'Что-то пошло не так',
+          message: err.response.data.message || 'Что-то пошло не так',
           color: 'red',
         });
       },
@@ -66,6 +66,7 @@ export const CommentInput = ({
           autosize
           {...form.getInputProps('body')}
           autoFocus
+          required
         />
         <ActionIcon color="blue" variant="outline" size="lg" type="submit" disabled={!user}>
           <IconSend />

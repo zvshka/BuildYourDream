@@ -70,6 +70,7 @@ export default function SignIn() {
           <Title order={2}>Вход</Title>
           <TextInput
             label="Никнейм"
+            aria-label="username"
             className={classes.input}
             required
             {...form.getInputProps('username')}

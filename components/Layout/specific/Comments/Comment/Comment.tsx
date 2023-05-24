@@ -4,28 +4,31 @@ import {
   Box,
   createStyles,
   Group,
-  Menu,
   rem,
   Text,
+  Textarea,
   UnstyledButton,
 } from '@mantine/core';
 import dayjs from 'dayjs';
 import {
   IconArrowBack,
-  IconDotsVertical,
   IconMinusVertical,
   IconPencil,
+  IconPencilOff,
+  IconSend,
   IconTrash,
 } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { openConfirmModal } from '@mantine/modals';
+import { useToggle } from '@mantine/hooks';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 import { Block } from '../../../general/Block/Block';
 import { User } from '../../../../../types/User';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
+import { useForm } from '@mantine/form';
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -55,10 +58,7 @@ export function Comment({
   commentData: {
     id: string;
     replyCommentId: string;
-    author: {
-      username: string;
-      avatarUrl?: string;
-    };
+    author: User;
     createdAt: Date;
     body: string;
     configId?: string;
@@ -72,6 +72,13 @@ export function Comment({
 }) {
   const { classes } = useStyles();
   const { user } = useAuth();
+  const [isEditing, toggleEditing] = useToggle([false, true]);
+
+  const form = useForm({
+    initialValues: {
+      body: commentData.body,
+    },
+  });
 
   const deleteMutation = useMutation(
     () =>
@@ -131,6 +138,36 @@ export function Comment({
     }
   );
 
+  const updateMutation = useMutation(
+    (values: typeof form.values) =>
+      axios.patch(`/api/comments/${commentData.id}`, values, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Вы успешно изменили комментарий',
+          color: 'green',
+        });
+        toggleEditing();
+        queryClient.invalidateQueries([
+          'comments',
+          commentData.componentId || commentData.configId,
+        ]);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
+
   const handleDelete = () => {
     openConfirmModal({
       title: 'Удаление комментария',
@@ -147,6 +184,10 @@ export function Comment({
 
   const handleUndelete = () => {
     undeleteMutation.mutate();
+  };
+
+  const handleSubmit = (values: typeof form.values) => {
+    updateMutation.mutate(values);
   };
 
   return (
@@ -171,19 +212,19 @@ export function Comment({
           </Box>
         </Group>
         {!commentData.isDeleted && (
-          <Menu>
-            <Menu.Target>
-              <ActionIcon>
-                <IconDotsVertical />
+          <Group spacing="xs">
+            {user && commentData.author.id === user.id && (
+              <ActionIcon color="blue" size="lg" onClick={() => toggleEditing()}>
+                {!isEditing ? <IconPencil /> : <IconPencilOff />}
               </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item icon={<IconPencil size={16} />}>Изменить</Menu.Item>
-              <Menu.Item onClick={handleDelete} icon={<IconTrash size={16} />}>
-                Удалить
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+            )}
+            {user &&
+              (commentData.author.id === user.id || ['ADMIN', 'MODERATOR'].includes(user.role)) && (
+                <ActionIcon color="red" size="lg" onClick={handleDelete}>
+                  <IconTrash />
+                </ActionIcon>
+              )}
+          </Group>
         )}
         {user &&
           commentData.isDeleted &&
@@ -202,24 +243,43 @@ export function Comment({
             </ActionIcon>
           )}
       </Group>
-      <Text
-        className={classes.body}
-        size="sm"
-        color={commentData.isDeleted ? 'gray' : 'black'}
-        italic={commentData.isDeleted}
-      >
-        {commentData.isDeleted ? (
-          <>
-            <Text>
-              {' '}
-              {'<'}Сообщение удалено{'>'}{' '}
-            </Text>
-            <Text>{commentData.body}</Text>
-          </>
-        ) : (
-          commentData.body
-        )}
-      </Text>
+      {!isEditing && (
+        <Text
+          className={classes.body}
+          size="sm"
+          color={commentData.isDeleted ? 'gray' : 'black'}
+          italic={commentData.isDeleted}
+        >
+          {commentData.isDeleted ? (
+            <>
+              <Text>
+                {' '}
+                {'<'}Сообщение удалено{'>'}{' '}
+              </Text>
+              <Text>{commentData.body}</Text>
+            </>
+          ) : (
+            commentData.body
+          )}
+        </Text>
+      )}
+      {isEditing && (
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Group mt="xs">
+            <Textarea
+              sx={{ flex: '1' }}
+              minRows={1}
+              maxRows={3}
+              autosize
+              ml={rem(54)}
+              {...form.getInputProps('body')}
+            />
+            <ActionIcon color="blue" variant="outline" size="lg" type="submit" disabled={!user}>
+              <IconSend />
+            </ActionIcon>
+          </Group>
+        </form>
+      )}
       <Group mt="xs" spacing={4} align="center">
         <UnstyledButton className={classes.answer} onClick={() => onChooseReply && onChooseReply()}>
           <Text h={30} size="sm">

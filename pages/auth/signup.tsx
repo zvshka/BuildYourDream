@@ -20,7 +20,6 @@ import { forwardRef, useState } from 'react';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
-import Link from 'next/link';
 import { validateEmail } from '../../lib/validateEmail';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
@@ -175,12 +174,14 @@ export default function SignUp() {
           <Title order={2}>Регистрация</Title>
           <TextInput
             label="Никнейм"
+            aria-label="username"
             className={classes.input}
             required
             {...form.getInputProps('username')}
           />
           <TextInput
             label="Email"
+            aria-label="email"
             className={classes.input}
             required
             {...form.getInputProps('email')}
