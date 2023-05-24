@@ -62,7 +62,10 @@ class CommentService {
     });
   }
 
-  async getList(query: any) {
+  async getList(query: any, user?: User) {
+    if (query.componentId && query.configId) {
+      throw ApiError.BadRequest('Вы не можете сделать такой запрос');
+    }
     const result = await prisma.comment.findMany({
       where: {
         componentId: query.componentId,
@@ -70,10 +73,22 @@ class CommentService {
       },
       include: {
         author: true,
+        deletedBy: {
+          select: {
+            role: true,
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
     });
 
-    return result.map((c) => ({ ...c, body: c.isDeleted ? '' : c.body }));
+    return result.map((c) => ({
+      ...c,
+      body: c.isDeleted && (!user || (user && user.role === 'USER')) ? '' : c.body,
+    }));
   }
 
   async update(user: User, commentId: string, body: string) {

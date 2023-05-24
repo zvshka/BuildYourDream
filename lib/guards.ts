@@ -31,6 +31,31 @@ export const authGuard = async (
   await next();
 };
 
+export const authMiddleware = async (
+  req: NextApiRequest & { token?: string; user?: User },
+  res: NextApiResponse,
+  next: NextHandler
+) => {
+  const tokenHeader = req.headers.authorization;
+  if (!tokenHeader) return next();
+  const [type, token] = tokenHeader.split(' ');
+  if (type.toLowerCase() !== 'bearer') return next();
+  if (!token) return next();
+  let tokenData;
+  try {
+    tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+  } catch (e) {
+    return next();
+  }
+  if (!tokenData.id) return next();
+  req.token = token;
+  const data = await AuthService.exchange(token);
+  if (!(data instanceof ApiError)) {
+    req.user = data.user;
+  }
+  return next();
+};
+
 export const roleGuard = (role) => async (req, res, next) => {
   let tokenData;
   try {

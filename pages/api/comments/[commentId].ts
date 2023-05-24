@@ -13,4 +13,14 @@ api.patch(authGuard, async (req, res) => {
   res.send(result);
 });
 
+api.delete(authGuard, async (req, res) => {
+  const result = await CommentService.delete(req.user, req.query.commentId as string);
+  res.send(result);
+});
+
+api.get('/undelete', authGuard, async (req, res) => {
+  const result = await CommentService.undelete(req.user, req.query.commentId as string);
+  res.send(result);
+});
+
 export default api;

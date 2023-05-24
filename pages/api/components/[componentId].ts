@@ -5,14 +5,14 @@ import { authGuard } from '../../../lib/guards';
 const api = handler();
 
 api.get(async (req, res) => {
-  const part = await ComponentService.getComponentById(req.query.partId as string);
+  const part = await ComponentService.getComponentById(req.query.componentId as string);
   res.send(part);
 });
 
 api.patch(authGuard, async (req, res) => {
   const part = await ComponentService.updateComponentById(
     req.user,
-    req.query.partId as string,
+    req.query.componentId as string,
     req.body
   );
   res.send(part);
