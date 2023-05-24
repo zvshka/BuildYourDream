@@ -8,15 +8,16 @@ import {
   Group,
   MediaQuery,
   Stack,
+  Tabs,
   Text,
 } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { IconArrowLeft, IconPencil } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 import { Block, PageHeader } from '../../components/Layout';
-import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 import { useConfigData } from '../../components/hooks/configs';
 import { ComponentRow } from '../../components/Layout/general/ComponentRow/ComponentRow';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
+import { Comments } from '../../components/Layout/specific/Comments/Comments';
 
 export default function partPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function partPage() {
 
   const { user } = useAuth();
 
-  if (isSuccess && !configData) router.push('/configs');
+  if (isSuccess && !configData) router.back();
 
   return (
     isSuccess &&
@@ -35,8 +36,9 @@ export default function partPage() {
             title={isSuccess ? configData.title : ''}
             addBack
             rightSection={
+              isSuccess &&
               user &&
-              user.role === 'ADMIN' && (
+              configData.author.id === user.id && (
                 <Group sx={{ height: '100%' }}>
                   <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
                     <Button leftIcon={<IconPencil />}>Изменить</Button>
@@ -52,7 +54,7 @@ export default function partPage() {
           />
           <Box>
             <Grid columns={3}>
-              <Grid.Col md={3} lg={1}>
+              <Grid.Col span="auto">
                 <Stack>
                   <Block>
                     <Stack align="center">
@@ -83,20 +85,31 @@ export default function partPage() {
                   </Block>
                 </Stack>
               </Grid.Col>
-              <Grid.Col md={3} lg={2}>
-                <Grid columns={4}>
-                  <Grid.Col>
-                    <Block>
-                      <Text>{isSuccess && configData.description}</Text>
-                    </Block>
-                  </Grid.Col>
-                  <Grid.Col span={4}>
+              <Grid.Col xs={3} sm={2}>
+                <Tabs defaultValue="info">
+                  <Block>
+                    <Tabs.List>
+                      <Tabs.Tab value="info">Информация</Tabs.Tab>
+                      <Tabs.Tab value="comments">Комментарии</Tabs.Tab>
+                    </Tabs.List>
+                  </Block>
+                  <Tabs.Panel value="info" mt="xs">
                     <Stack>
-                      {isSuccess &&
-                        configData.components.map((c) => <ComponentRow component={c.data} />)}
+                      <Block>
+                        <Text>{isSuccess && configData.description}</Text>
+                      </Block>
+                      <Stack>
+                        {isSuccess &&
+                          configData.components.map((c) => (
+                            <ComponentRow key={c.id} component={c.component.data} />
+                          ))}
+                      </Stack>
                     </Stack>
-                  </Grid.Col>
-                </Grid>
+                  </Tabs.Panel>
+                  <Tabs.Panel value="comments" mt="xs">
+                    <Comments configId={router.query.configId as string} />
+                  </Tabs.Panel>
+                </Tabs>
               </Grid.Col>
             </Grid>
           </Box>

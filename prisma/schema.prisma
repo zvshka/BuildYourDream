@@ -24,6 +24,8 @@ model User {
   avatarURL      String?
   hashedPassword String
 
+  isBanned Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -39,15 +41,17 @@ model User {
   updateRequests    UpdateRequest[]
   proceedRequests   UpdateRequest[] @relation(name: "requestInspector")
   proceedComponents Component[]     @relation(name: "componentInspector")
+  deletedComments   Comment[]       @relation(name: "deletedBy")
 }
 
 model Report {
   id String @id @default(cuid())
 
-  author      User    @relation(fields: [authorId], references: [id], name: "myReports")
-  reason      String
-  description String
-  approved    Boolean @default(false)
+  author     User     @relation(fields: [authorId], references: [id], name: "myReports")
+  reason     String
+  approved   Boolean  @default(false)
+  approvedAt DateTime
+  expiredAt  DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,11 +67,16 @@ model Report {
 }
 
 model Comment {
-  id       String  @id @default(cuid())
-  author   User?   @relation(fields: [authorId], references: [id])
-  authorId String?
+  id       String @id @default(cuid())
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
 
-  body String
+  body      String
+  isDeleted Boolean @default(false)
+  isEdited  Boolean @default(false)
+
+  deletedBy   User?   @relation(name: "deletedBy", fields: [deletedById], references: [id])
+  deletedById String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -78,8 +87,8 @@ model Comment {
   config   Config? @relation(fields: [configId], references: [id])
   configId String?
 
-  replyComment   Comment @relation(fields: [replyCommentId], references: [id], name: "reply")
-  replyCommentId String
+  replyComment   Comment? @relation(fields: [replyCommentId], references: [id], name: "reply")
+  replyCommentId String?
 
   answers Comment[] @relation(name: "reply")
   reports Report[]
@@ -137,8 +146,9 @@ model Component {
 }
 
 model ComponentInConfig {
-  component   Component @relation(fields: [componentId], references: [id])
-  config      Config    @relation(fields: [configId], references: [id])
+  component Component @relation(fields: [componentId], references: [id])
+  config    Config    @relation(fields: [configId], references: [id])
+
   componentId String
   configId    String
 

@@ -62,15 +62,7 @@ export default function Configs() {
               >
                 {configs.result.map((config) => (
                   <Box sx={{ height: '100%' }}>
-                    <ConfigCard
-                      author={{ name: config.author.username as string, image: '' }}
-                      title={config.title}
-                      description={config.description}
-                      //TODO: Add something to configure image
-                      image=""
-                      link={`/configs/${config.id}`}
-                      rating="High tier"
-                    />
+                    <ConfigCard link={`/configs/${config.id}`} configData={config} />
                   </Box>
                 ))}
               </SimpleGrid>

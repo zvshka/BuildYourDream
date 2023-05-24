@@ -1,16 +1,5 @@
-import { IconBookmark, IconHeart, IconShare } from '@tabler/icons-react';
-import {
-  Card,
-  Image,
-  Text,
-  ActionIcon,
-  Badge,
-  Group,
-  Center,
-  Avatar,
-  createStyles,
-  rem,
-} from '@mantine/core';
+import { IconFlag, IconHeart } from '@tabler/icons-react';
+import { ActionIcon, Avatar, Card, Center, createStyles, Group, rem, Text } from '@mantine/core';
 import { NextLink } from '../../general/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
@@ -28,7 +17,7 @@ const useStyles = createStyles((theme) => ({
 
   title: {
     display: 'block',
-    marginTop: theme.spacing.md,
+    // marginTop: theme.spacing.md,
     marginBottom: rem(5),
   },
 
@@ -44,68 +33,46 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface ArticleCardProps {
-  image: string;
-  link: string;
-  title: string;
-  description: string;
-  rating: string;
-  author: {
-    name: string;
-    image: string;
-  };
-}
-
-export function ConfigCard({
-  className,
-  image,
-  link,
-  title,
-  description,
-  author,
-  rating,
-  ...others
-}: ArticleCardProps & Omit<React.ComponentPropsWithoutRef<'div'>, keyof ArticleCardProps>) {
-  const { classes, cx, theme } = useStyles();
+export function ConfigCard({ link, configData }) {
+  const { classes, theme } = useStyles();
   const linkProps = { href: link };
 
   return (
-    <Card withBorder radius="md" className={cx(classes.card, className)} {...others}>
-      <Card.Section>
-        <NextLink {...linkProps}>
-          <Image src={image} height={180} withPlaceholder />
-        </NextLink>
-      </Card.Section>
-
-      <Badge className={classes.rating} variant="gradient" gradient={{ from: 'yellow', to: 'red' }}>
-        {rating}
-      </Badge>
-
-      <Text className={classes.title} fw={500} component={NextLink} {...linkProps}>
-        {title}
+    <Card withBorder radius="md" className={classes.card} component={NextLink} {...linkProps}>
+      <Text className={classes.title} fw={500}>
+        {configData.title}
       </Text>
 
       <Text fz="sm" color="dimmed" lineClamp={4}>
-        {description}
+        {configData.description}
       </Text>
 
       <Group position="apart" className={classes.footer}>
         <Center>
-          <Avatar src={author.image} size={24} radius="xl" mr="xs" />
+          <Avatar src={configData.author.avatarUrl} size={24} radius="xl" mr="xs" />
           <Text fz="sm" inline>
-            {author.name}
+            {configData.author.username}
           </Text>
         </Center>
 
         <Group spacing={8} mr={0}>
-          <ActionIcon className={classes.action}>
+          <ActionIcon
+            className={classes.action}
+            onClick={(event) => {
+              event.stopPropagation();
+              event.preventDefault();
+            }}
+          >
             <IconHeart size="1rem" color={theme.colors.red[6]} />
           </ActionIcon>
-          <ActionIcon className={classes.action}>
-            <IconBookmark size="1rem" color={theme.colors.yellow[7]} />
-          </ActionIcon>
-          <ActionIcon className={classes.action}>
-            <IconShare size="1rem" />
+          <ActionIcon
+            className={classes.action}
+            onClick={(event) => {
+              event.stopPropagation();
+              event.preventDefault();
+            }}
+          >
+            <IconFlag size="1rem" />
           </ActionIcon>
         </Group>
       </Group>

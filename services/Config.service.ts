@@ -62,13 +62,25 @@ class ConfigService {
   }
 
   async getConfigById(configId: string) {
+    const candidate = await prisma.config.findUnique({
+      where: {
+        id: configId,
+      },
+    });
+
+    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
+
     return prisma.config.findUnique({
       where: {
         id: configId,
       },
       include: {
         author: true,
-        components: true,
+        components: {
+          include: {
+            component: true,
+          },
+        },
       },
     });
   }

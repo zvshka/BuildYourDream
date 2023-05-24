@@ -1,5 +1,7 @@
+import { User } from '../types/User';
+
 class ReportService {
-  async create(author, reportData) {
+  async create(author: User) {
     return {};
   }
 }
