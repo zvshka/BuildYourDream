@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import UserService from './User.service';
 import { ApiError } from '../lib/ApiError';
 import { tokenPayload } from '../types/tokenPayload';
+import { User } from '../types/User';
+import { prisma } from '../lib/prisma';
 
 class AuthService {
   async signup({
@@ -73,6 +75,18 @@ class AuthService {
     } catch (e) {
       throw ApiError.UnauthorizedError();
     }
+  }
+
+  async updateProfile(user: User, data: any) {
+    return prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        avatarUrl: data.avatarUrl ? data.avatarUrl : '',
+        bio: data.bio,
+      },
+    });
   }
 }
 

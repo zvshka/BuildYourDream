@@ -70,7 +70,7 @@ class ConfigService {
 
     if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
 
-    return prisma.config.findUnique({
+    const result = await prisma.config.findUnique({
       where: {
         id: configId,
       },
@@ -83,6 +83,37 @@ class ConfigService {
         },
       },
     });
+
+    if (result) {
+      const price = result.components.reduce(
+        (prev, next) => [
+          prev[0] + next.component!.data!['Цена'][0],
+          prev[1] + next.component!.data!['Цена'][1],
+        ],
+        [0, 0]
+      );
+      const componentsTierSummary =
+        result.components.reduce(
+          (prev, next) =>
+            // @ts-ignore
+            prev + next.component.data!.tier === 'low'
+              ? 1
+              : // @ts-ignore
+              next.component.data!.tier === 'medium'
+              ? 2
+              : 3,
+          0
+        ) / result.components.length;
+      const configTier =
+        componentsTierSummary > 1 && componentsTierSummary < 1.5
+          ? 'Low tier'
+          : componentsTierSummary >= 1.5 && componentsTierSummary < 2.2
+          ? 'Medium tier'
+          : 'High tier';
+      return { ...result, price, configTier };
+    }
+
+    throw ApiError.BadRequest('Такой сборки не существует');
   }
 
   async getList(filter: { [p: string]: string | string[] | undefined }) {

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { User } from '../../types/User';
-import { IComponent, IComponentBody } from '../../types/Template';
+import { IComponent } from '../../types/Template';
 
 interface IConfigsList {
   totalCount: number;
@@ -33,10 +33,11 @@ export function useConfigData(configId: string) {
     description: string;
     author: User;
     authorId: string;
+    price: [number, number];
+    configTier: string;
     components: {
       id: string;
       templateId: string;
-      // data: IComponentBody;
       componentId: string;
       component: IComponent;
     }[];

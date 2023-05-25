@@ -1,5 +1,15 @@
 import { IconFlag, IconHeart } from '@tabler/icons-react';
-import { ActionIcon, Avatar, Card, Center, createStyles, Group, rem, Text } from '@mantine/core';
+import {
+  ActionIcon,
+  Avatar,
+  Card,
+  Center,
+  createStyles,
+  Group,
+  rem,
+  Text,
+  Title,
+} from '@mantine/core';
 import { NextLink } from '../../general/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
@@ -39,9 +49,9 @@ export function ConfigCard({ link, configData }) {
 
   return (
     <Card withBorder radius="md" className={classes.card} component={NextLink} {...linkProps}>
-      <Text className={classes.title} fw={500}>
+      <Title order={3} className={classes.title} fw={500}>
         {configData.title}
-      </Text>
+      </Title>
 
       <Text fz="sm" color="dimmed" lineClamp={4}>
         {configData.description}
@@ -66,6 +76,7 @@ export function ConfigCard({ link, configData }) {
             <IconHeart size="1rem" color={theme.colors.red[6]} />
           </ActionIcon>
           <ActionIcon
+            size="md"
             className={classes.action}
             onClick={(event) => {
               event.stopPropagation();

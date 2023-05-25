@@ -100,7 +100,9 @@ export function HeaderWithLogo() {
               <Link href="/">
                 <Title order={1} className={classes.logo}>
                   <Text
-                    color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
+                    color={
+                      theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]
+                    }
                   >
                     Build Your Dream
                   </Text>
@@ -116,7 +118,7 @@ export function HeaderWithLogo() {
                     <Menu.Target>
                       <UnstyledButton>
                         <Group>
-                          <Avatar size="md" />
+                          <Avatar size="md" src={user.avatarUrl} />
                           <Stack spacing={0}>
                             <Text size={18}>{user?.username}</Text>
                             <Text size={12} color="dimmed">

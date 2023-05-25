@@ -232,7 +232,7 @@ export function NavbarSimpleColored() {
     <Box>
       <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
         <Modal
-          title={<Title order={3}>Навигация</Title>}
+          title={<Text size="xl">Навигация</Text>}
           opened={navigationContext.opened}
           onClose={() => navigationContext.setClosed()}
           closeOnEscape={false}
@@ -350,7 +350,7 @@ export function NavbarSimpleColored() {
                           </UnstyledButton>
                         </Collapse>
                         <UserButton
-                          image=""
+                          image={user.avatarUrl || ''}
                           name={user.username as string}
                           email={user.email}
                           onClick={() => toggle()}

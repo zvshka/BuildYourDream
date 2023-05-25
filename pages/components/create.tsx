@@ -36,10 +36,7 @@ export default function CreatePart() {
       pros: [],
       cons: [],
       tier: 'low',
-      image: {
-        base64: '',
-        file: null,
-      },
+      imageUrl: '',
     },
   });
   const [loading, toggleLoading] = useToggle();
@@ -54,16 +51,6 @@ export default function CreatePart() {
       }
       return current < 3 ? current + 1 : current;
     });
-
-  const uploadImage = (file: File) => {
-    const formData = new FormData();
-    formData.append('upload', file);
-    return axios.post('/api/images', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  };
 
   const saveComponent = useMutation(
     (componentData: { templateId: string; data: IComponentBody }) =>
@@ -101,16 +88,7 @@ export default function CreatePart() {
 
   const handleSubmit = (data: typeof form.values) => {
     toggleLoading();
-    if (data.image?.file) {
-      uploadImage(data.image.file).then((res) =>
-        saveComponent.mutate({
-          templateId: templateId as string,
-          data: { ...data, image: res.data },
-        })
-      );
-    } else {
-      saveComponent.mutate({ templateId: templateId as string, data });
-    }
+    saveComponent.mutate({ templateId: templateId as string, data });
   };
 
   const { data: templates, isSuccess } = useTemplatesList();

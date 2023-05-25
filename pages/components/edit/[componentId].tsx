@@ -80,16 +80,6 @@ export default function EditComponentPage() {
     }
   }, [templateData]);
 
-  const uploadImage = (file: File) => {
-    const fd = new FormData();
-    fd.append('upload', file);
-    return axios.post('/api/images', fd, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  };
-
   const updateComponent = useMutation(
     (newComponentData: IComponentBody) =>
       axios.patch(
@@ -124,14 +114,7 @@ export default function EditComponentPage() {
   );
 
   const handleSubmit = (data: typeof form.values) => {
-    // toggleLoading();
-    if (data.image?.file) {
-      uploadImage(data.image.file).then((res) =>
-        updateComponent.mutate({ ...data, image: res.data })
-      );
-    } else {
-      updateComponent.mutate({ ...data, image: { url: form.values.image?.base64 as string } });
-    }
+    updateComponent.mutate(data);
   };
 
   return (
