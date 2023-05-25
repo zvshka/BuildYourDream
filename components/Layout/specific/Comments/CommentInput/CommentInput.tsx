@@ -12,8 +12,10 @@ export const CommentInput = ({
   replyCommentId,
   configId,
   componentId,
+  threadCommentId,
 }: {
   replyCommentId?: string;
+  threadCommentId?: string;
   configId?: string;
   componentId?: string;
 }) => {
@@ -23,6 +25,7 @@ export const CommentInput = ({
     initialValues: {
       body: '',
       replyCommentId: replyCommentId || '',
+      threadCommentId: threadCommentId || '',
     },
   });
 
@@ -67,6 +70,7 @@ export const CommentInput = ({
           {...form.getInputProps('body')}
           autoFocus
           required
+          maxLength={150}
         />
         <ActionIcon color="blue" variant="outline" size="lg" type="submit" disabled={!user}>
           <IconSend />

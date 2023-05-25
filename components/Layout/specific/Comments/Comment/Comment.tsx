@@ -207,7 +207,8 @@ export function Comment({
           <Box>
             <Text size="sm">{commentData.author.username}</Text>
             <Text size="xs" color="dimmed">
-              {dayjs(commentData.createdAt).toDate().toLocaleDateString()}
+              {dayjs(commentData.createdAt).toDate().toLocaleDateString()}{' '}
+              {commentData.isEdited ? '(Изменено)' : ''}
             </Text>
           </Box>
         </Group>

@@ -71,7 +71,8 @@ model Comment {
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
-  body      String
+  body String
+
   isDeleted Boolean @default(false)
   isEdited  Boolean @default(false)
 
@@ -90,6 +91,10 @@ model Comment {
   replyComment   Comment? @relation(fields: [replyCommentId], references: [id], name: "reply")
   replyCommentId String?
 
+  threadComment   Comment? @relation(name: "thread", fields: [threadCommentId], references: [id])
+  threadCommentId String?
+
+  thread  Comment[] @relation(name: "thread")
   answers Comment[] @relation(name: "reply")
   reports Report[]
 }

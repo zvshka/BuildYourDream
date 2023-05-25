@@ -26,7 +26,7 @@ import { storage } from '../../../lib/utils';
 import { useTemplateData } from '../../../components/hooks/templates';
 import { useComponentData } from '../../../components/hooks/components';
 
-export default function editComponentPage() {
+export default function EditComponentPage() {
   const router = useRouter();
   const { data: componentData, isSuccess: isComponentLoaded } = useComponentData(
     router.query.componentId as string

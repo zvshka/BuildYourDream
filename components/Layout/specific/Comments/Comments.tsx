@@ -14,6 +14,7 @@ export const Comments = ({
   componentId?: string;
 }) => {
   const [replyCommentId, setReplyCommentId] = useState('');
+  const [threadCommentId, setThreadCommentId] = useState('');
 
   const { data: comments, isSuccess: commentsFetched } = useCommentsList({
     configId,
@@ -24,52 +25,78 @@ export const Comments = ({
     <Stack mt="xs">
       <Block>
         <CommentInput
+          threadCommentId={threadCommentId}
           replyCommentId={replyCommentId}
           componentId={componentId}
           configId={configId}
         />
       </Block>
       {commentsFetched &&
-        comments.map((comment) => (
-          <Comment
-            commentData={comment}
-            onChooseReply={() => setReplyCommentId(comment.id)}
-            replyId={replyCommentId}
-          />
-        ))}
-      {replyCommentId.length > 0 && (
-        <Block ml="3rem">
-          <Stack spacing={0}>
-            <Group spacing={4}>
-              <Center>
-                <Text h={30} color="dimmed">
-                  Ответ
-                </Text>
-              </Center>
-              <UnstyledButton
-                sx={(theme) => ({
-                  color: theme.colors.blue[6],
-                  '&:hover': {
-                    color: theme.colors.blue[9],
-                  },
-                })}
-              >
-                <Center>
-                  <Text h={30}>admin</Text>
-                </Center>
-              </UnstyledButton>
-              <UnstyledButton h={30} onClick={() => setReplyCommentId('')}>
-                <IconX size={18} color="gray" />
-              </UnstyledButton>
-            </Group>
-            <CommentInput
-              replyCommentId={replyCommentId}
-              componentId={componentId}
-              configId={configId}
-            />
+        comments.map((comment, index) => (
+          <Stack key={comment.id}>
+            <Stack>
+              <Comment
+                commentData={comment}
+                onChooseReply={() => {
+                  setReplyCommentId(comment.id);
+                  setThreadCommentId(comment.id);
+                }}
+                replyId={replyCommentId}
+              />
+              {comment.thread.map((answer) => (
+                <Comment
+                  key={answer.id}
+                  commentData={answer}
+                  onChooseReply={() => {
+                    setReplyCommentId(answer.id);
+                    setThreadCommentId(comment.id);
+                  }}
+                  replyId={replyCommentId}
+                />
+              ))}
+            </Stack>
+            {threadCommentId === comment.id && (
+              <Block ml="3rem">
+                <Stack spacing={0}>
+                  <Group spacing={4}>
+                    <Center>
+                      <Text h={30} color="dimmed">
+                        Ответ
+                      </Text>
+                    </Center>
+                    <UnstyledButton
+                      sx={(theme) => ({
+                        color: theme.colors.blue[6],
+                        '&:hover': {
+                          color: theme.colors.blue[9],
+                        },
+                      })}
+                    >
+                      <Center>
+                        <Text h={30}>admin</Text>
+                      </Center>
+                    </UnstyledButton>
+                    <UnstyledButton
+                      h={30}
+                      onClick={() => {
+                        setThreadCommentId('');
+                        setReplyCommentId('');
+                      }}
+                    >
+                      <IconX size={18} color="gray" />
+                    </UnstyledButton>
+                  </Group>
+                  <CommentInput
+                    replyCommentId={replyCommentId}
+                    componentId={componentId}
+                    configId={configId}
+                    threadCommentId={threadCommentId}
+                  />
+                </Stack>
+              </Block>
+            )}
           </Stack>
-        </Block>
-      )}
+        ))}
     </Stack>
   );
 };

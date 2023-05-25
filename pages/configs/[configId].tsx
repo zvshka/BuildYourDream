@@ -19,7 +19,7 @@ import { ComponentRow } from '../../components/Layout/general/ComponentRow/Compo
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { Comments } from '../../components/Layout/specific/Comments/Comments';
 
-export default function partPage() {
+export default function ConfigPage() {
   const router = useRouter();
   const { data: configData, isSuccess } = useConfigData(router.query.configId as string);
 

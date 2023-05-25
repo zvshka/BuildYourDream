@@ -7,7 +7,7 @@ import { useTemplateData } from '../../../components/hooks/templates';
 import { NextLink } from '../../../components/Layout/general/NextLink/NextLink';
 import { ComponentsList } from '../../../components/Layout/specific/ComponentsList/ComponentsList';
 
-export default function Category() {
+export default function CategoryPage() {
   const router = useRouter();
 
   const { user } = useAuth();

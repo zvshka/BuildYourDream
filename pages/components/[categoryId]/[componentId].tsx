@@ -89,7 +89,7 @@ const Field = ({ data }) => (
   </Fragment>
 );
 
-export default function partPage() {
+export default function ComponentPage() {
   const router = useRouter();
   const { user } = useAuth();
 

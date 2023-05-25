@@ -21,6 +21,7 @@ import {
   Icon3dCubeSphere,
   IconCpu,
   IconDeviceDesktop,
+  IconFlag,
   IconLogout,
   IconUser,
   IconUsersGroup,
@@ -180,6 +181,7 @@ const tabs = {
     { link: '/admin/users', label: 'Пользователи', Icon: IconUser },
     { link: '/admin/configs', label: 'Сборки', Icon: Icon3dCubeSphere },
     { link: '/admin/configurator', label: 'Конфигуратор', Icon: Icon3dCubeSphere },
+    { link: '/admin/reports', label: 'Жалобы', Icon: IconFlag },
   ],
 };
 

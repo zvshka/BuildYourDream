@@ -4,6 +4,7 @@ import { ApiError } from '../lib/ApiError';
 
 class CommentService {
   async create(author: User, query: any, data: any) {
+    console.log(data);
     let componentCandidate;
     if (query.componentId && query.componentId.length > 0) {
       componentCandidate = await prisma.component.findUnique({
@@ -51,12 +52,35 @@ class CommentService {
       }
     }
 
-    if (data.body.trim().length === 0) throw ApiError.BadRequest('Комментарий не может быть пустым');
+    let threadCandidate;
+    if (data.threadCommentId && data.threadCommentId.length > 0) {
+      threadCandidate = await prisma.comment.findUnique({
+        where: {
+          id: data.threadCommentId,
+        },
+      });
+
+      if (!threadCandidate) {
+        throw ApiError.BadRequest('Такого комментария не существует');
+      }
+    }
+
+    if (threadCandidate && replyCandidate) {
+      if (replyCandidate.threadCommentId && replyCandidate.threadCommentId !== threadCandidate.id) {
+        throw ApiError.BadRequest('Нельзя так делать');
+      }
+    }
+
+    if (data.body.trim().length === 0) {
+      throw ApiError.BadRequest('Комментарий не может быть пустым');
+    }
+
     return prisma.comment.create({
       data: {
         authorId: author.id,
         body: data.body,
         replyCommentId: data.replyCommentId.length > 0 ? data.replyCommentId : undefined,
+        threadCommentId: data.threadCommentId.length > 0 ? data.threadCommentId : undefined,
         componentId: query.componentId,
         configId: query.configId,
       },
@@ -71,6 +95,7 @@ class CommentService {
       where: {
         componentId: query.componentId,
         configId: query.configId,
+        threadCommentId: null,
       },
       include: {
         author: true,
@@ -78,6 +103,17 @@ class CommentService {
           select: {
             role: true,
             id: true,
+          },
+        },
+        thread: {
+          include: {
+            author: true,
+            deletedBy: {
+              select: {
+                role: true,
+                id: true,
+              },
+            },
           },
         },
       },
