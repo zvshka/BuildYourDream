@@ -142,7 +142,7 @@ export const ComponentsList = ({
                       key={component.id}
                       component={NextLink}
                     >
-                      <ComponentRow component={component.data} />
+                      <ComponentRow component={component.data} templateId={component.templateId}/>
                     </Box>
                   ) : (
                     <Box
@@ -150,7 +150,7 @@ export const ComponentsList = ({
                       onClick={() => onChoose(categoryId, component)}
                       sx={{ cursor: 'pointer' }}
                     >
-                      <ComponentRow component={component.data} />
+                      <ComponentRow component={component.data} templateId={component.templateId} />
                     </Box>
                   )
                 )}

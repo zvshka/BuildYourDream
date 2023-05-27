@@ -189,7 +189,10 @@ const ComponentsPanel = () => {
                         key={component.id}
                         component={NextLink}
                       >
-                        <ComponentRow component={component.data} />
+                        <ComponentRow
+                          component={component.data}
+                          templateId={component.templateId}
+                        />
                       </Box>
                     </Grid.Col>
                     {user && user.role === 'ADMIN' && (
@@ -211,7 +214,7 @@ const ComponentsPanel = () => {
                       key={component.id}
                       component={NextLink}
                     >
-                      <ComponentRow component={component.data} />
+                      <ComponentRow component={component.data} templateId={component.templateId} />
                     </Box>
                     {user && user.role === 'ADMIN' && (
                       <Block>
@@ -400,24 +403,25 @@ const UpdateRow = ({
         </Block>
       ) : (
         <Stack spacing="xs">
-          <ComponentRow
-            component={updateData.componentToUpdate.data}
-            rightSide={
-              <Stack justify="center" sx={{ height: '100%' }}>
-                <Button onClick={() => toggle()}>Изменения</Button>
-                {user && user.role === 'ADMIN' && (
-                  <>
-                    <Button onClick={() => onApprove(updateData.id)} color="green">
-                      Одобрить
-                    </Button>
-                    <Button onClick={() => onReject(updateData.id)} color="red">
-                      Отклонить
-                    </Button>
-                  </>
-                )}
-              </Stack>
-            }
-          />
+          {/*<ComponentRow*/}
+          {/*  component={updateData.componentToUpdate.data}*/}
+          {/*  templateId={component.templateId}*/}
+          {/*  rightSide={*/}
+          {/*    <Stack justify="center" sx={{ height: '100%' }}>*/}
+          {/*      <Button onClick={() => toggle()}>Изменения</Button>*/}
+          {/*      {user && user.role === 'ADMIN' && (*/}
+          {/*        <>*/}
+          {/*          <Button onClick={() => onApprove(updateData.id)} color="green">*/}
+          {/*            Одобрить*/}
+          {/*          </Button>*/}
+          {/*          <Button onClick={() => onReject(updateData.id)} color="red">*/}
+          {/*            Отклонить*/}
+          {/*          </Button>*/}
+          {/*        </>*/}
+          {/*      )}*/}
+          {/*    </Stack>*/}
+          {/*  }*/}
+          {/*/>*/}
         </Stack>
       )}
     </Box>

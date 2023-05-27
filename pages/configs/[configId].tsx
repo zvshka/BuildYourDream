@@ -26,7 +26,7 @@ export default function ConfigPage() {
 
   const { user } = useAuth();
 
-  if (isSuccess && !configData) router.back();
+  if (isSuccess && !configData) router.push('/configs')
 
   return (
     isSuccess &&
@@ -116,7 +116,11 @@ export default function ConfigPage() {
                     <Stack>
                       {isSuccess &&
                         configData.components.map((c) => (
-                          <ComponentRow key={c.id} component={c.component.data} />
+                          <ComponentRow
+                            key={c.id}
+                            component={c.component.data}
+                            templateId={c.component.templateId}
+                          />
                         ))}
                     </Stack>
                   </Stack>

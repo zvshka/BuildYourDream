@@ -81,7 +81,7 @@ export function HeaderWithLogo() {
     <Header height={80} p="md" className={classes.header}>
       <Container size="xl" sx={{ width: '100%' }} px={0}>
         <Grid sx={{ width: '100%' }} m={0}>
-          <Grid.Col span="auto">
+          <Grid.Col span="auto" pl={0}>
             <Flex sx={{ height: '100%' }} align="center">
               <Burger
                 opened={navigationContext.opened}
