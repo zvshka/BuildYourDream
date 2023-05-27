@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma';
+import { ApiError } from '../lib/ApiError';
 
 class UserService {
   create({
@@ -27,12 +28,21 @@ class UserService {
     });
   }
 
-  findOneByUsername(username: string) {
-    return prisma.user.findUnique({
+  async findOneByUsername(username: string) {
+    const candidate = await prisma.user.findUnique({
       where: {
         username,
       },
+      include: {
+        configs: true,
+      },
     });
+
+    if (!candidate) throw ApiError.BadRequest('Такого пользователя не существует');
+
+    const { hashedPassword, ...data } = candidate;
+
+    return data;
   }
 
   findOneById(id: string) {

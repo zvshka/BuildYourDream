@@ -70,6 +70,8 @@ export default function ProfilePage() {
     });
   };
 
+  //TODO: Refactor
+
   return (
     <Container size="xl" px={0}>
       <Grid>

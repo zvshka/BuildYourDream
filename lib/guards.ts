@@ -26,7 +26,7 @@ export const authGuard = async (
   req.token = token;
   const data = await AuthService.exchange(token);
   if (!(data instanceof ApiError)) {
-    req.user = data.user;
+    req.user = <User>data.user;
   }
   await next();
 };
@@ -51,7 +51,7 @@ export const authMiddleware = async (
   req.token = token;
   const data = await AuthService.exchange(token);
   if (!(data instanceof ApiError)) {
-    req.user = data.user;
+    req.user = <User>data.user;
   }
   return next();
 };
