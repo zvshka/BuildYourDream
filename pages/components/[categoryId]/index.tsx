@@ -19,11 +19,7 @@ export default function CategoryPage() {
       <Stack spacing={0}>
         <PageHeader
           title={isSuccess ? templateData.name : ''}
-          leftSection={
-            <ActionIcon href="/components" component={NextLink}>
-              <IconArrowLeft />
-            </ActionIcon>
-          }
+          addBack
           rightSection={
             user && (
               <Box>

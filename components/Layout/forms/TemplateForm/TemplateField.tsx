@@ -50,13 +50,6 @@ export const TemplateField = (props) => {
                 required
               />
             </Group>
-            {/*<ActionIcon*/}
-            {/*  disabled={!item.deletable}*/}
-            {/*  color="red"*/}
-            {/*  onClick={() => template.removeListItem('fields', index)}*/}
-            {/*>*/}
-            {/*  <IconTrash size={18} />*/}
-            {/*</ActionIcon>*/}
             <Button
               leftIcon={<IconTrash size={18} />}
               color="red"
@@ -94,6 +87,17 @@ export const TemplateField = (props) => {
               disabled={!item.editable}
               {...template.getInputProps(`fields.${index}.required`, { type: 'checkbox' })}
             />
+            <Switch
+              label="Показывать в карточке"
+              styles={{
+                root: {
+                  display: 'flex',
+                  alignItems: 'center',
+                },
+              }}
+              disabled={!item.editable}
+              {...template.getInputProps(`fields.${index}.showInDetails`, { type: 'checkbox' })}
+            />
             <Input.Wrapper>
               <Stack>
                 <Switch
@@ -121,7 +125,7 @@ export const TemplateField = (props) => {
             </Button>
           </Stack>
         </MediaQuery>
-        <MediaQuery styles={{ display: 'none' }} smallerThan="md">
+        <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
           <Stack>
             <Switch
               label="Обязательное"
@@ -133,6 +137,17 @@ export const TemplateField = (props) => {
               }}
               disabled={!item.editable}
               {...template.getInputProps(`fields.${index}.required`, { type: 'checkbox' })}
+            />
+            <Switch
+              label="Показывать в карточке"
+              styles={{
+                root: {
+                  display: 'flex',
+                  alignItems: 'center',
+                },
+              }}
+              disabled={!item.editable}
+              {...template.getInputProps(`fields.${index}.showInDetails`, { type: 'checkbox' })}
             />
             <Input.Wrapper>
               <Stack>

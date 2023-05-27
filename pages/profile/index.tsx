@@ -2,7 +2,6 @@ import {
   Button,
   Center,
   Container,
-  createStyles,
   Grid,
   Image,
   Stack,
@@ -10,24 +9,34 @@ import {
   Text,
   Textarea,
   Title,
-  useMantineTheme,
 } from '@mantine/core';
-import { useRouter } from 'next/router';
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../../components/Layout';
 import { uploadImageMutation } from '../../components/hooks/images';
 import { storage } from '../../lib/utils';
+import { useUserConfigsList } from '../../components/hooks/profile';
 
 export default function ProfilePage() {
   const { user, refetch } = useAuth();
 
+  const { data: userConfigs, isSuccess: isUserConfigsFetched } = useUserConfigsList(user?.username);
+
+  const [bio, setBio] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setBio(user.bio);
+    }
+  }, [user]);
+
   const imageUpload = useMutation(uploadImageMutation);
 
-  const updateProfileMutattion = useMutation(
+  const updateProfileMutation = useMutation(
     (data: any) =>
       axios.patch('/api/auth/me', data, {
         headers: {
@@ -58,19 +67,24 @@ export default function ProfilePage() {
     formData.append('upload', files[0]);
     const response = await imageUpload.mutateAsync(formData);
     if (response && response.data.url) {
-      updateProfileMutattion.mutate({
+      updateProfileMutation.mutate({
         avatarUrl: response.data.url,
       });
     }
   };
 
   const handleResetImage = () => {
-    updateProfileMutattion.mutate({
+    updateProfileMutation.mutate({
       avatarUr: null,
     });
   };
 
-  //TODO: Refactor
+  const handleSaveBio = () => {
+    updateProfileMutation.mutate({
+      avatarUrl: user?.avatarUrl,
+      bio,
+    });
+  };
 
   return (
     <Container size="xl" px={0}>
@@ -131,7 +145,17 @@ export default function ProfilePage() {
             <Tabs.Panel value="info" mt="md">
               <Stack>
                 <Block>
-                  <Textarea minRows={7} label="Биография" />
+                  <Stack>
+                    <Textarea
+                      minRows={7}
+                      autosize
+                      maxRows={15}
+                      label="Биография"
+                      value={bio}
+                      onChange={(event) => setBio(event.currentTarget.value)}
+                    />
+                    <Button onClick={handleSaveBio}>Сохранить</Button>
+                  </Stack>
                 </Block>
                 <Block h={200}>
                   <Center h="100%">

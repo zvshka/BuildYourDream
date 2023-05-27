@@ -417,7 +417,6 @@ export const TemplateForm = ({ handleSubmit, loading }) => {
                 />
                 <Block mt="md" sx={{ position: 'sticky', bottom: theme.spacing.md }}>
                   <Container>
-                    {/*TODO: Refactor*/}
                     <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
                       <Group grow>
                         <Button leftIcon={<IconApps />} onClick={handleAddField}>

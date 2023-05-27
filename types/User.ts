@@ -1,4 +1,5 @@
 export interface User {
+  bio: string;
   id: string;
   email: string;
   emailVerified?: any;

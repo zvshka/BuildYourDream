@@ -5,7 +5,7 @@ import UserService from '../../../services/User.service';
 const api = handler();
 
 api.get(authMiddleware, async (req, res) => {
-  const result = await UserService.findOneByUsername(req.query.username as string);
+  const result = await UserService.findOneByUsername(req.query.username as string, true);
   res.send(result);
 });
 

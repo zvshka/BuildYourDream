@@ -23,12 +23,12 @@ import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { openConfirmModal } from '@mantine/modals';
 import { useToggle } from '@mantine/hooks';
+import { useForm } from '@mantine/form';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 import { Block } from '../../../general/Block/Block';
 import { User } from '../../../../../types/User';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
-import { useForm } from '@mantine/form';
 
 const useStyles = createStyles((theme) => ({
   body: {

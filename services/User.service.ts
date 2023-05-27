@@ -28,7 +28,7 @@ class UserService {
     });
   }
 
-  async findOneByUsername(username: string) {
+  async findOneByUsername(username: string, noPassword?: boolean) {
     const candidate = await prisma.user.findUnique({
       where: {
         username,
@@ -40,9 +40,15 @@ class UserService {
 
     if (!candidate) throw ApiError.BadRequest('Такого пользователя не существует');
 
-    const { hashedPassword, ...data } = candidate;
+    let result;
+    if (noPassword) {
+      const { hashedPassword, ...data } = candidate;
+      result = data;
+    } else {
+      result = candidate;
+    }
 
-    return data;
+    return result;
   }
 
   findOneById(id: string) {

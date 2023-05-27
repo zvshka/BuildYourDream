@@ -5,6 +5,7 @@ interface IDependency {
   template: string;
   field: string;
 }
+
 export interface IField {
   id: string;
   name: string;
@@ -14,6 +15,7 @@ export interface IField {
   required?: boolean;
   editable?: boolean;
   deletable?: boolean;
+  showInDetails?: boolean;
   options?: string[];
   depends_on?: IDependency;
 }
