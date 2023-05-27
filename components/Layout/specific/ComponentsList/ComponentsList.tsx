@@ -142,7 +142,12 @@ export const ComponentsList = ({
                       key={component.id}
                       component={NextLink}
                     >
-                      <ComponentRow component={component.data} templateId={component.templateId}/>
+                      <Block>
+                        <ComponentRow
+                          component={component.data}
+                          templateId={component.templateId}
+                        />
+                      </Block>
                     </Box>
                   ) : (
                     <Box
@@ -150,7 +155,12 @@ export const ComponentsList = ({
                       onClick={() => onChoose(categoryId, component)}
                       sx={{ cursor: 'pointer' }}
                     >
-                      <ComponentRow component={component.data} templateId={component.templateId} />
+                      <Block>
+                        <ComponentRow
+                          component={component.data}
+                          templateId={component.templateId}
+                        />
+                      </Block>
                     </Box>
                   )
                 )}

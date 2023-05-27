@@ -5,13 +5,12 @@ import {
   Card,
   Collapse,
   Container,
+  Divider,
   Grid,
   Group,
-  Image,
   MediaQuery,
   Paper,
   ScrollArea,
-  Skeleton,
   Stack,
   Tabs,
   Text,
@@ -41,8 +40,8 @@ import { ComponentsList } from '../components/Layout/specific/ComponentsList/Com
 import { IComponent, IComponentBody, ITemplate } from '../types/Template';
 import { useConstraintsList } from '../components/hooks/constraints';
 import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
-import { useComponentData } from '../components/hooks/components';
 import { configErrors, getCount, storage } from '../lib/utils';
+import { ComponentRow } from '../components/Layout/general/ComponentRow/ComponentRow';
 
 //TODO: Добавить помощник выбора в несколько шагов
 /**
@@ -51,67 +50,6 @@ import { configErrors, getCount, storage } from '../lib/utils';
  * Далее он заполняет форму в несколько этапов
  * После ему подбираются комплектующие по указанным критериям
  **/
-
-const ComponentRow = ({ componentId, onLoad }: { componentId: string; onLoad?: any }) => {
-  const { data: componentData, isSuccess, isFetched } = useComponentData(componentId);
-
-  useEffect(() => {
-    if (isFetched) {
-      onLoad && onLoad(componentData);
-    }
-  }, [isFetched]);
-
-  return (
-    <MediaQuery styles={{ flexWrap: 'wrap' }} smallerThan="sm">
-      <Group align="normal" sx={{ flexWrap: 'initial' }}>
-        <Image
-          withPlaceholder
-          radius="sm"
-          width={256 / 1.5}
-          height={256 / 1.5}
-          {...(isSuccess && componentData.data.imageUrl && componentData.data.imageUrl
-            ? {
-                src: `${componentData.data.imageUrl}?quality=60`,
-              }
-            : {})}
-        />
-        <Stack spacing={0}>
-          {isSuccess && <Title order={3}>{componentData.data['Название']}</Title>}
-          {!isSuccess && (
-            <Skeleton maw={400}>
-              <Title order={3}>Loading</Title>
-            </Skeleton>
-          )}
-          <Group spacing={4}>
-            <Text>Примерная цена:</Text>
-            {isSuccess && componentData.data['Цена'][0]}
-            {!isSuccess && (
-              <Skeleton maw={100}>
-                <Text>9999</Text>
-              </Skeleton>
-            )}
-            <Text>-</Text>
-            {isSuccess && componentData.data['Цена'][1]}
-            {!isSuccess && (
-              <Skeleton maw={100}>
-                <Text>9999</Text>
-              </Skeleton>
-            )}
-          </Group>
-          <Group spacing={4}>
-            <Text>Tier компонента:</Text>
-            {isSuccess && <Text>{componentData.data.tier.toUpperCase()}</Text>}
-            {!isSuccess && (
-              <Skeleton maw={150}>
-                <Text>LOADING</Text>
-              </Skeleton>
-            )}
-          </Group>
-        </Stack>
-      </Group>
-    </MediaQuery>
-  );
-};
 
 export default function HomePage() {
   const { data: templates, isSuccess, refetch } = useTemplatesList();
@@ -122,6 +60,7 @@ export default function HomePage() {
   const [opened, handlers] = useDisclosure(false);
   const viewport = useRef<HTMLDivElement>(null);
   const [checks, setChecks] = useState<any[]>([]);
+  const [tier, setTier] = useState('Low tier');
 
   const [templatesObject, setTemplatesObject] = useState<Record<string, Omit<ITemplate, 'id'>>>({});
 
@@ -156,47 +95,45 @@ export default function HomePage() {
   });
 
   useEffect(() => {
+    const configData = storage.getConfig();
     if (isSuccess) {
-      const ids = templates.map((t) => [t.id, []]);
+      const ids = templates.map((t) => [t.id, configData[t.id] || []]);
       const object = Object.fromEntries(ids);
       form.setFieldValue('components', object);
     }
   }, [isSuccess]);
 
-  const onLoad = (templateId: string, componentData: IComponent, index: number) => {
-    if (componentData) {
-      const alreadyExist = form.values.components[templateId][index]?.data;
-      if (!alreadyExist) {
-        form.setFieldValue(`components.${templateId}.${index}.data`, componentData);
-      }
-    } else {
-      // form.setFieldValue(`components.${templateId}`, null);
-      // storage.updateConfig(templateId, '');
-    }
-  };
-
-  // useEffect(() => {
-  //   const configData = storage.getConfig();
-  //   if (isSuccess) {
-  //     const entries = Object.entries(configData)
-  //       .filter(([_, value]) => (value as string).length > 0)
-  //       .map(([key, value]) => [key, { id: value, data: {} }]);
-  //     const result = Object.fromEntries(entries);
-  //     form.setFieldValue('components', result);
-  //   }
-  // }, [isSuccess]);
-
   useEffect(() => {
-    const price = Object.values(form.values.components)
-      .flat()
-      .reduce(
-        (prev, next) => [
-          prev[0] + (next && next.data['Цена'] ? next.data['Цена'][0] : 0),
-          prev[1] + (next && next.data['Цена'] ? next.data['Цена'][1] : 0),
-        ],
-        [0, 0]
-      );
+    const components = Object.values(form.values.components).flat();
+    const price = components.reduce(
+      (prev, next) => [
+        prev[0] + (next && next.data['Цена'] ? next.data['Цена'][0] : 0),
+        prev[1] + (next && next.data['Цена'] ? next.data['Цена'][1] : 0),
+      ],
+      [0, 0]
+    );
     setTotalPrice(price);
+    const componentsTierSummary =
+      components.reduce(
+        (prev, next) =>
+          // @ts-ignore
+          prev + next.data!.tier === 'low'
+            ? 1
+            : // @ts-ignore
+            next.data!.tier === 'medium'
+            ? 2
+            : 3,
+        0
+      ) / (components.length || 1);
+
+    const configTier =
+      componentsTierSummary >= 0 && componentsTierSummary < 1.5
+        ? 'Low tier'
+        : componentsTierSummary >= 1.5 && componentsTierSummary < 2.2
+        ? 'Medium tier'
+        : 'High tier';
+
+    setTier(configTier);
   }, [form.values.components]);
 
   useEffect(() => {
@@ -217,6 +154,12 @@ export default function HomePage() {
     } else {
       form.removeListItem(`components.${templateId}`, index);
     }
+    storage.updateConfig(
+      templateId,
+      form.values.components[templateId].filter(
+        (item, i) => i !== index && item.templateId === templateId
+      )
+    );
   };
 
   const onChoose = (
@@ -234,6 +177,10 @@ export default function HomePage() {
       if (currentCount === maxCount) {
         handlers.close();
       }
+      storage.updateConfig(
+        templateId,
+        currentState.filter((i) => i.templateId === templateId)
+      );
     }
   };
 
@@ -333,10 +280,7 @@ export default function HomePage() {
                   <Tabs.Panel value="info" pt="xs">
                     <Stack spacing="xs">
                       <Text>
-                        Категория сборки: <Text weight={600}>High end (High tier)</Text>
-                      </Text>
-                      <Text>
-                        Примерное потребление: <Text weight={600}>450w</Text>
+                        Категория сборки: <Text weight={600}>{tier}</Text>
                       </Text>
                       <Text>
                         <Text>Примерная цена:</Text>
@@ -427,21 +371,15 @@ export default function HomePage() {
                       {t.id in form.values.components &&
                         !!form.values.components[t.id] &&
                         form.values.components[t.id].map((component, index) => (
-                          <Group position="apart" align="normal" pt="md">
+                          <Stack pt="md">
                             <ComponentRow
-                              componentId={component.id}
-                              onLoad={(data) => onLoad(t.id, data, index)}
+                              component={component.data}
+                              templateId={component.templateId}
                             />
-                            {form.values.components[t.id].length > 1 && (
-                              <Button
-                                color="red"
-                                variant="outline"
-                                onClick={() => onRemove(t.id, index)}
-                              >
-                                Удалить
-                              </Button>
+                            {index !== form.values.components[t.id].length - 1 && (
+                              <Divider mb="md" />
                             )}
-                          </Group>
+                          </Stack>
                         ))}
                     </Card>
                     <Collapse in={categoryId === t.id && opened}>
@@ -485,10 +423,7 @@ export default function HomePage() {
                   <Stack spacing="xs">
                     <Title order={3}>Информация</Title>
                     <Text>
-                      Категория сборки: <Text weight={600}>High end (High tier)</Text>
-                    </Text>
-                    <Text>
-                      Примерное потребление: <Text weight={600}>450w</Text>
+                      Категория сборки: <Text weight={600}>{tier}</Text>
                     </Text>
                     <Text>
                       <Text>Примерная цена:</Text>

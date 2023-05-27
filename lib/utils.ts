@@ -15,12 +15,12 @@ export const storage = {
       : '',
   setConfig: (data: Record<string, string>) =>
     window.localStorage.setItem('config', JSON.stringify(data)),
-  updateConfig: (templateId: string, componentId: string) => {
+  updateConfig: (templateId: string, components: IComponent[]) => {
     const currentConfig = window.localStorage.getItem('config')
       ? JSON.parse(window.localStorage.getItem('config') || '{}')
       : {};
 
-    currentConfig[templateId] = componentId;
+    currentConfig[templateId] = components;
 
     window.localStorage.setItem('config', JSON.stringify(currentConfig));
   },

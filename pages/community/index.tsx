@@ -189,10 +189,12 @@ const ComponentsPanel = () => {
                         key={component.id}
                         component={NextLink}
                       >
-                        <ComponentRow
-                          component={component.data}
-                          templateId={component.templateId}
-                        />
+                        <Block>
+                          <ComponentRow
+                            component={component.data}
+                            templateId={component.templateId}
+                          />
+                        </Block>
                       </Box>
                     </Grid.Col>
                     {user && user.role === 'ADMIN' && (
@@ -214,7 +216,12 @@ const ComponentsPanel = () => {
                       key={component.id}
                       component={NextLink}
                     >
-                      <ComponentRow component={component.data} templateId={component.templateId} />
+                      <Block>
+                        <ComponentRow
+                          component={component.data}
+                          templateId={component.templateId}
+                        />
+                      </Block>
                     </Box>
                     {user && user.role === 'ADMIN' && (
                       <Block>
