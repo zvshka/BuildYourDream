@@ -116,7 +116,7 @@ class ConfigService {
     throw ApiError.BadRequest('Такой сборки не существует');
   }
 
-  async getList(filter: { [p: string]: string | string[] | undefined }) {
+  async getList(filter: { [p: string]: string | string[] | undefined }, user?: User) {
     const totalCount = await prisma.config.count({
       orderBy: {
         createdAt: 'desc',
@@ -158,15 +158,104 @@ class ConfigService {
       },
     });
 
+    let likedByUser;
+    if (user) {
+      const userData = await prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+        select: {
+          likedConfigs: true,
+        },
+      });
+      if (userData) likedByUser = userData.likedConfigs;
+    }
+
     return {
       result: result.map(({ _count, ...config }) => ({
         ...config,
         totalComments: _count.comments,
         totalLikes: _count.likedUsers,
+        liked: !likedByUser ? false : likedByUser.some((item) => item.id === config.id),
       })),
       currentPage,
       totalCount,
     };
+  }
+
+  async like(user: User, configId: string) {
+    const candidate = await prisma.config.findUnique({
+      where: {
+        id: configId,
+      },
+    });
+
+    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
+
+    if (candidate.authorId === user.id) throw ApiError.BadRequest('Самолайк - залог успеха');
+
+    const alreadyLiked = await prisma.config.findFirst({
+      where: {
+        id: configId,
+        likedUsers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+    if (alreadyLiked) throw ApiError.BadRequest('Вы не можете раз сделать это еще раз');
+
+    return prisma.config.update({
+      where: {
+        id: configId,
+      },
+      data: {
+        likedUsers: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+  }
+
+  async unlike(user: User, configId: string) {
+    const candidate = await prisma.config.findUnique({
+      where: {
+        id: configId,
+      },
+    });
+
+    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
+
+    if (candidate.authorId === user.id) throw ApiError.BadRequest('Самолайк - залог успеха');
+
+    const alreadyLiked = await prisma.config.findFirst({
+      where: {
+        id: configId,
+        likedUsers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    if (!alreadyLiked) throw ApiError.BadRequest('Вы не можете раз сделать это еще раз');
+
+    return prisma.config.update({
+      where: {
+        id: configId,
+      },
+      data: {
+        likedUsers: {
+          disconnect: {
+            id: user.id,
+          },
+        },
+      },
+    });
   }
 }
 

@@ -1,5 +1,5 @@
-import { handler } from '../../../lib/handler';
-import ConfigService from '../../../services/Config.service';
+import { handler } from '../../../../lib/handler';
+import ConfigService from '../../../../services/Config.service';
 
 const api = handler();
 

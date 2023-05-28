@@ -1,13 +1,11 @@
 import { handler } from '../../../lib/handler';
 import ConfigService from '../../../services/Config.service';
-import { authGuard } from '../../../lib/guards';
+import { authGuard, authMiddleware } from '../../../lib/guards';
 
 const api = handler();
 
-api.get(async (req, res) => {
-  const data = await ConfigService.getList(req.query);
-
-  // res.send({ totalCount: 0, currentPage: 1, result: [] });
+api.get(authMiddleware, async (req, res) => {
+  const data = await ConfigService.getList(req.query, req.user);
   res.send(data);
 });
 

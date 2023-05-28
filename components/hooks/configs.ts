@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { User } from '../../types/User';
 import { IComponent } from '../../types/Template';
+import { storage } from '../../lib/utils';
 
 interface IConfigsList {
   totalCount: number;
@@ -20,6 +21,9 @@ export function useConfigsList(filter?: any) {
     queryFn: async (ctx) => {
       const { data } = await axios.get('/api/configs', {
         params: filter,
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
       });
       return data;
     },

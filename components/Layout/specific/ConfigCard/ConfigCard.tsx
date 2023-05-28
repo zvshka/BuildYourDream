@@ -1,4 +1,11 @@
-import { IconDotsVertical, IconFlag, IconHeart, IconMessage, IconTrash } from '@tabler/icons-react';
+import {
+  IconDotsVertical,
+  IconFlag,
+  IconHeart,
+  IconHeartFilled,
+  IconMessage,
+  IconTrash,
+} from '@tabler/icons-react';
 import {
   ActionIcon,
   Avatar,
@@ -13,7 +20,15 @@ import {
   Title,
 } from '@mantine/core';
 import Link from 'next/link';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { showNotification } from '@mantine/notifications';
+import { openConfirmModal, openModal } from '@mantine/modals';
 import { NextLink } from '../../general/NextLink/NextLink';
+import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
+import { storage } from '../../../../lib/utils';
+import { queryClient } from '../../../Providers/QueryProvider/QueryProvider';
+import { ReportForm } from '../../forms/ReportForm/ReportForm';
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -34,13 +49,6 @@ const useStyles = createStyles((theme) => ({
     marginBottom: rem(5),
   },
 
-  action: {
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-    ...theme.fn.hover({
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
-    }),
-  },
-
   footer: {
     marginTop: theme.spacing.md,
   },
@@ -49,6 +57,80 @@ const useStyles = createStyles((theme) => ({
 export function ConfigCard({ link, configData }) {
   const { classes, theme } = useStyles();
   const linkProps = { href: link };
+  const { user } = useAuth();
+
+  const deleteConfigMutation = useMutation(
+    () =>
+      axios.delete(`/api/configs/${configData.id}`, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Вы успешно удалили сборку',
+          color: 'green',
+        });
+        queryClient.invalidateQueries(['configs', 'lsit']);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
+
+  const likeMutation = useMutation(
+    ({ configId, status }: { configId: string; status: 'like' | 'unlike' }) =>
+      axios.get(`/api/configs/${configId}/${status}`, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['configs', 'list']);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          color: 'red',
+          message: err.response.data.message || 'Что-то пошло не так',
+        });
+      },
+    }
+  );
+
+  const handleDelete = () => {
+    openConfirmModal({
+      title: 'Удаление сборки',
+      children: (
+        <Text>Вы собираетесь удалить сборку с названием {configData.title}, продолжить?</Text>
+      ),
+      labels: {
+        confirm: 'Да',
+        cancel: 'Нет',
+      },
+      onConfirm() {
+        deleteConfigMutation.mutate();
+      },
+    });
+  };
+  const handleReport = () => {
+    openModal({
+      title: 'Жалоба на сборку',
+      children: <ReportForm configId={configData?.id} />,
+    });
+  };
+
+  const handleLike = () => {
+    likeMutation.mutate({ configId: configData.id, status: configData.liked ? 'unlike' : 'like' });
+  };
 
   return (
     <Card withBorder radius="md" className={classes.card} component={NextLink} {...linkProps}>
@@ -62,23 +144,48 @@ export function ConfigCard({ link, configData }) {
           >
             {configData.title}
           </Title>
-          <Menu withinPortal>
-            <Menu.Target>
-              <ActionIcon
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                <IconDotsVertical />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item icon={<IconFlag size="1rem" />}>Пожаловаться</Menu.Item>
-              <Menu.Item icon={<IconTrash size="1rem" color="red" />}>Удалить</Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          {user && (
+            <Menu withinPortal>
+              <Menu.Target>
+                <ActionIcon
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  <IconDotsVertical />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {user.id !== configData.authorId && (
+                  <Menu.Item
+                    icon={<IconFlag size="1rem" />}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleReport();
+                    }}
+                  >
+                    Пожаловаться
+                  </Menu.Item>
+                )}
+                {(user.id === configData.authorId ||
+                  ['ADMIN', 'MODERATOR'].includes(user.role)) && (
+                  <Menu.Item
+                    icon={<IconTrash size="1rem" color="red" />}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleDelete();
+                    }}
+                  >
+                    Удалить
+                  </Menu.Item>
+                )}
+              </Menu.Dropdown>
+            </Menu>
+          )}
         </Group>
 
         <Text fz="sm" color="dimmed" lineClamp={4}>
@@ -96,23 +203,33 @@ export function ConfigCard({ link, configData }) {
           </Link>
 
           <Group spacing={8} mr={0}>
-            <Group spacing={8}>
+            <Group
+              spacing={8}
+              sx={() => ({ outline: '1px solid lightgrey', borderRadius: theme.radius.sm })}
+              pr="xs"
+            >
               <ActionIcon
-                className={classes.action}
                 size="md"
+                variant={configData.liked ? 'filled' : 'light'}
+                color="red"
                 onClick={(event) => {
                   event.stopPropagation();
                   event.preventDefault();
+                  handleLike();
                 }}
               >
-                <IconHeart size="1rem" color={theme.colors.red[6]} />
+                {!configData.liked && <IconHeart size="1rem" color={theme.colors.red[6]} />}
+                {configData.liked && <IconHeartFilled size="1rem" />}
               </ActionIcon>
-              <Text>{configData.totalLikes > 999 ? '999+' : configData.totalLikes}</Text>
+              <Text fz="xs">{configData.totalLikes > 999 ? '999+' : configData.totalLikes}</Text>
             </Group>
-            <Group spacing={8}>
+            <Group
+              spacing={8}
+              sx={() => ({ outline: '1px solid lightgrey', borderRadius: theme.radius.sm })}
+              pr="xs"
+            >
               <ActionIcon
                 size="md"
-                className={classes.action}
                 onClick={(event) => {
                   event.stopPropagation();
                   event.preventDefault();
@@ -120,7 +237,9 @@ export function ConfigCard({ link, configData }) {
               >
                 <IconMessage size="1rem" />
               </ActionIcon>
-              <Text>{configData.totalComments > 999 ? '999+' : configData.totalComments}</Text>
+              <Text fz="xs">
+                {configData.totalComments > 999 ? '999+' : configData.totalComments}
+              </Text>
             </Group>
           </Group>
         </Group>

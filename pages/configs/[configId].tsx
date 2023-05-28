@@ -112,14 +112,13 @@ export default function ConfigPage() {
             addBack
             rightSection={
               isSuccess &&
-              user &&
-              configData.author.id === user.id && (
+              user && (
                 <Box sx={{ height: '100%' }}>
                   <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
                     <Group>
                       {user.id !== configData.authorId && (
                         <Button color="red" leftIcon={<IconFlag />} onClick={handleReport}>
-                          Пожаловться
+                          Пожаловаться
                         </Button>
                       )}
                       {user.id === configData.authorId && (
