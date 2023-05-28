@@ -61,7 +61,7 @@ export default function Configs() {
                 ]}
               >
                 {configs.result.map((config) => (
-                  <Box sx={{ height: '100%' }}>
+                  <Box sx={{ height: '100%' }} key={config.id}>
                     <ConfigCard link={`/configs/${config.id}`} configData={config} />
                   </Box>
                 ))}

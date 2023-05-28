@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { Center, Container, Grid, Image, Stack, Tabs, Text, Textarea, Title } from '@mantine/core';
 import { useUserData } from '../../components/hooks/users';
-import { Block } from '../../components/Layout';
+import { Block, PageHeader } from '../../components/Layout';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -9,7 +9,8 @@ export default function UserProfile() {
 
   return (
     <Container size="xl" px={0}>
-      <Grid>
+      <PageHeader title="Профиль пользователя" addBack />
+      <Grid mt="md">
         <Grid.Col span="auto">
           <Stack>
             <Block>

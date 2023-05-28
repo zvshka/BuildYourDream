@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Box,
   Button,
   Center,
   Container,
@@ -10,15 +11,74 @@ import {
   Stack,
   Tabs,
   Text,
+  Textarea,
+  TextInput,
   Title,
 } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { IconPencil } from '@tabler/icons-react';
+import { IconCurrencyRubel, IconFlag, IconPencil } from '@tabler/icons-react';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { showNotification } from '@mantine/notifications';
+import { openModal } from '@mantine/modals';
+import { useForm } from '@mantine/form';
 import { Block, PageHeader } from '../../components/Layout';
 import { useConfigData } from '../../components/hooks/configs';
 import { ComponentRow } from '../../components/Layout/general/ComponentRow/ComponentRow';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { Comments } from '../../components/Layout/specific/Comments/Comments';
+import { storage } from '../../lib/utils';
+import { queryClient } from '../../components/Providers/QueryProvider/QueryProvider';
+import { ReportForm } from '../../components/Layout/forms/ReportForm/ReportForm';
+
+const UpdateConfigForm = ({ configData }: { configData: any }) => {
+  const form = useForm({
+    initialValues: {
+      title: configData.title || '',
+      description: configData.description || '',
+    },
+  });
+
+  const updateConfigMutation = useMutation(
+    (data: typeof form.values) =>
+      axios.patch(`/api/configs/${configData.id}`, data, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Вы успешно изменили сборку',
+          color: 'greem',
+        });
+        queryClient.invalidateQueries(['configs', 'list', configData.id]);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
+
+  const handleSubmit = (values: typeof form.values) => {
+    updateConfigMutation.mutate(values);
+  };
+
+  return (
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <Stack>
+        <TextInput label="Название сборки" required {...form.getInputProps('title')} />
+        <Textarea minRows={4} autosize required {...form.getInputProps('description')} />
+        <Button>Отправить</Button>
+      </Stack>
+    </form>
+  );
+};
 
 export default function ConfigPage() {
   const router = useRouter();
@@ -26,7 +86,21 @@ export default function ConfigPage() {
 
   const { user } = useAuth();
 
-  if (isSuccess && !configData) router.push('/configs')
+  if (isSuccess && !configData) router.push('/configs');
+
+  const handleUpdate = () => {
+    openModal({
+      title: 'Изменение сборки',
+      children: <UpdateConfigForm configData={configData} />,
+    });
+  };
+
+  const handleReport = () => {
+    openModal({
+      title: 'Жалоба на сборку',
+      children: <ReportForm configId={configData?.id} />,
+    });
+  };
 
   return (
     isSuccess &&
@@ -40,16 +114,36 @@ export default function ConfigPage() {
               isSuccess &&
               user &&
               configData.author.id === user.id && (
-                <Group sx={{ height: '100%' }}>
+                <Box sx={{ height: '100%' }}>
                   <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
-                    <Button leftIcon={<IconPencil />}>Изменить</Button>
+                    <Group>
+                      {user.id !== configData.authorId && (
+                        <Button color="red" leftIcon={<IconFlag />} onClick={handleReport}>
+                          Пожаловться
+                        </Button>
+                      )}
+                      {user.id === configData.authorId && (
+                        <Button leftIcon={<IconPencil />} onClick={handleUpdate}>
+                          Изменить
+                        </Button>
+                      )}
+                    </Group>
                   </MediaQuery>
                   <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-                    <ActionIcon color="blue" variant="filled">
-                      <IconPencil />
-                    </ActionIcon>
+                    <Group>
+                      {user.id !== configData.authorId && (
+                        <ActionIcon variant="filled" color="red" onClick={handleReport}>
+                          <IconFlag />
+                        </ActionIcon>
+                      )}
+                      {user.id === configData.authorId && (
+                        <ActionIcon color="blue" variant="filled" onClick={handleUpdate}>
+                          <IconPencil />
+                        </ActionIcon>
+                      )}
+                    </Group>
                   </MediaQuery>
-                </Group>
+                </Box>
               )
             }
           />
@@ -87,7 +181,10 @@ export default function ConfigPage() {
                     <Text weight={700} size={16}>
                       Примерная цена:
                     </Text>
-                    <Text size={20}>{configData.price.join(' - ')} Руб.</Text>
+                    <Group spacing={2}>
+                      <Text size={20}>{configData.price.join(' - ')}</Text>
+                      <IconCurrencyRubel size={18} />
+                    </Group>
                   </Stack>
                 </Block>
                 <Block>
@@ -116,11 +213,12 @@ export default function ConfigPage() {
                     <Stack>
                       {isSuccess &&
                         configData.components.map((c) => (
-                          <ComponentRow
-                            key={c.id}
-                            component={c.component.data}
-                            templateId={c.component.templateId}
-                          />
+                          <Block key={c.id}>
+                            <ComponentRow
+                              component={c.component.data}
+                              templateId={c.component.templateId}
+                            />
+                          </Block>
                         ))}
                     </Stack>
                   </Stack>

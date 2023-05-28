@@ -146,6 +146,7 @@ export const ComponentsList = ({
                         <ComponentRow
                           component={component.data}
                           templateId={component.templateId}
+                          totalComments={component.totalComments}
                         />
                       </Block>
                     </Box>

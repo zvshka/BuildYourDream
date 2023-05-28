@@ -220,6 +220,7 @@ const ComponentsPanel = () => {
                         <ComponentRow
                           component={component.data}
                           templateId={component.templateId}
+                          totalComments={component.totalComments}
                         />
                       </Block>
                     </Box>
@@ -410,7 +411,7 @@ const UpdateRow = ({
         </Block>
       ) : (
         <Stack spacing="xs">
-          {/*<ComponentRow*/}
+          {/*<ComponentRowById*/}
           {/*  component={updateData.componentToUpdate.data}*/}
           {/*  templateId={component.templateId}*/}
           {/*  rightSide={*/}

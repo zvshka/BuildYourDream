@@ -118,7 +118,6 @@ class ConfigService {
 
   async getList(filter: { [p: string]: string | string[] | undefined }) {
     const totalCount = await prisma.config.count({
-      //TODO: Add more filters
       orderBy: {
         createdAt: 'desc',
       },
@@ -150,10 +149,24 @@ class ConfigService {
       },
       include: {
         author: true,
+        _count: {
+          select: {
+            comments: true,
+            likedUsers: true,
+          },
+        },
       },
     });
 
-    return { result, currentPage, totalCount };
+    return {
+      result: result.map(({ _count, ...config }) => ({
+        ...config,
+        totalComments: _count.comments,
+        totalLikes: _count.likedUsers,
+      })),
+      currentPage,
+      totalCount,
+    };
   }
 }
 

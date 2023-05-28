@@ -5,7 +5,7 @@ import { IComponentBody } from '../../types/Template';
 interface IComponentsList {
   totalCount: number;
   currentPage: number;
-  result: { id: string; templateId: string; data: IComponentBody }[];
+  result: { id: string; templateId: string; data: IComponentBody, totalComments: number }[];
 }
 
 export function useComponentsList(templateId: string, filter?: any) {

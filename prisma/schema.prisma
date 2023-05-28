@@ -153,7 +153,7 @@ model Component {
 
 model ComponentInConfig {
   component Component @relation(fields: [componentId], references: [id])
-  config    Config    @relation(fields: [configId], references: [id])
+  config    Config    @relation(fields: [configId], references: [id], onDelete: Cascade)
 
   componentId String
   configId    String
@@ -168,9 +168,8 @@ model Config {
   title       String
   description String
 
-  author User @relation(fields: [userId], references: [id])
-
-  userId String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
 
   createdAt DateTime @default(now())
 
@@ -178,14 +177,6 @@ model Config {
   components ComponentInConfig[]
   likedUsers User[]              @relation(name: "liked")
   comments   Comment[]
-}
-
-enum FieldType {
-  BOOL
-  TEXT
-  NUMBER
-  LARGE_TEXT
-  RANGE
 }
 
 model Template {

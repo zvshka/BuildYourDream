@@ -21,10 +21,12 @@ export const ComponentRow = ({
   component,
   templateId,
   addToConfig,
+  totalComments,
 }: {
   component: IComponentBody;
   templateId: string;
   addToConfig?: boolean;
+  totalComments?: number;
 }) => {
   const { data: templateData, isSuccess } = useTemplateData(templateId);
 
@@ -64,7 +66,7 @@ export const ComponentRow = ({
                   templateData.fields
                     .filter((f, i) => f.showInDetails)
                     .map((f) => (
-                      <Text>
+                      <Text key={f.id}>
                         {f.name}:{' '}
                         {component[f.name] instanceof Array
                           ? component[f.name].join(' - ')
@@ -73,22 +75,26 @@ export const ComponentRow = ({
                     ))}
                 <Group mt="auto" position="apart">
                   <Rating size="lg" readOnly />
-                  <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-                    <Group>
-                      <Text fz={20}>999+</Text>
-                      <ActionIcon size="lg" variant="outline">
-                        <IconMessage />
-                      </ActionIcon>
-                    </Group>
-                  </MediaQuery>
-                  <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
-                    <Group>
-                      <ActionIcon size="lg" variant="outline">
-                        <IconMessage />
-                      </ActionIcon>
-                      <Text fz={20}>999+</Text>
-                    </Group>
-                  </MediaQuery>
+                  {totalComments && (
+                    <Box>
+                      <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+                        <Group>
+                          <Text fz={16}>999+</Text>
+                          <ActionIcon size="lg" variant="outline">
+                            <IconMessage />
+                          </ActionIcon>
+                        </Group>
+                      </MediaQuery>
+                      <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+                        <Group spacing={8}>
+                          <ActionIcon size="lg" variant="outline">
+                            <IconMessage />
+                          </ActionIcon>
+                          <Text fz={16}>999+</Text>
+                        </Group>
+                      </MediaQuery>
+                    </Box>
+                  )}
                 </Group>
               </Stack>
             </Grid.Col>
@@ -99,7 +105,7 @@ export const ComponentRow = ({
                     <IconBookmark />
                   </ActionIcon>
                   <Stack mt="auto" w={224}>
-                    <Text fz={26} align={addToConfig ? 'center' : 'right'}>
+                    <Text fz={24} align={addToConfig ? 'center' : 'right'}>
                       {component['Цена'][0]} - {component['Цена'][1]}
                     </Text>
                     {addToConfig && <Button>Добавить в сборку</Button>}

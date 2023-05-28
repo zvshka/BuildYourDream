@@ -2,9 +2,11 @@ import {
   ActionIcon,
   Avatar,
   Box,
+  Button,
   createStyles,
   Group,
   rem,
+  Stack,
   Text,
   Textarea,
   UnstyledButton,
@@ -21,7 +23,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { openConfirmModal } from '@mantine/modals';
+import { openConfirmModal, openModal } from '@mantine/modals';
 import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { storage } from '../../../../../lib/utils';
@@ -29,6 +31,8 @@ import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 import { Block } from '../../../general/Block/Block';
 import { User } from '../../../../../types/User';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
+import Link from 'next/link';
+import { ReportForm } from '../../../forms/ReportForm/ReportForm';
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -190,6 +194,13 @@ export function Comment({
     updateMutation.mutate(values);
   };
 
+  const handleReport = () => {
+    openModal({
+      title: 'Жалоба на комментарий',
+      children: <ReportForm commentId={commentData.id} />,
+    });
+  };
+
   return (
     <Block
       ml={commentData.replyCommentId ? '3rem' : 0}
@@ -198,20 +209,22 @@ export function Comment({
       })}
     >
       <Group position="apart">
-        <Group>
-          <Avatar
-            src={commentData.author.avatarUrl}
-            alt={commentData.author.username}
-            radius="xl"
-          />
-          <Box>
-            <Text size="sm">{commentData.author.username}</Text>
-            <Text size="xs" color="dimmed">
-              {dayjs(commentData.createdAt).toDate().toLocaleDateString()}{' '}
-              {commentData.isEdited ? '(Изменено)' : ''}
-            </Text>
-          </Box>
-        </Group>
+        <Link href={`/profile/${commentData.author.username}`}>
+          <Group sx={{ cursor: 'pointer' }}>
+            <Avatar
+              src={commentData.author.avatarUrl}
+              alt={commentData.author.username}
+              radius="xl"
+            />
+            <Box>
+              <Text size="md">{commentData.author.username}</Text>
+              <Text size="xs" color="dimmed">
+                {dayjs(commentData.createdAt).toDate().toLocaleDateString()}{' '}
+                {commentData.isEdited ? '(Изменено)' : ''}
+              </Text>
+            </Box>
+          </Group>
+        </Link>
         {!commentData.isDeleted && (
           <Group spacing="xs">
             {user && commentData.author.id === user.id && (
@@ -281,21 +294,30 @@ export function Comment({
           </Group>
         </form>
       )}
-      <Group mt="xs" spacing={4} align="center">
-        <UnstyledButton className={classes.answer} onClick={() => onChooseReply && onChooseReply()}>
-          <Text h={30} size="sm">
-            Ответить
-          </Text>
-        </UnstyledButton>
-        <Box h={30}>
-          <IconMinusVertical size={14} fill="gray" color="gray" />
-        </Box>
-        <UnstyledButton className={classes.button}>
-          <Text h={30} size="sm">
-            Пожаловаться
-          </Text>
-        </UnstyledButton>
-      </Group>
+      {user && (
+        <Group mt="xs" spacing={4} align="center">
+          <UnstyledButton
+            className={classes.answer}
+            onClick={() => onChooseReply && onChooseReply()}
+          >
+            <Text h={30} size="sm">
+              Ответить
+            </Text>
+          </UnstyledButton>
+          {user.id !== commentData.author.id && (
+            <>
+              <Box h={30}>
+                <IconMinusVertical size={14} fill="gray" color="gray" />
+              </Box>
+              <UnstyledButton className={classes.button} onClick={handleReport}>
+                <Text h={30} size="sm">
+                  Пожаловаться
+                </Text>
+              </UnstyledButton>
+            </>
+          )}
+        </Group>
+      )}
     </Block>
   );
 }

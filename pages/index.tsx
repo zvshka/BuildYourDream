@@ -37,7 +37,7 @@ import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
 import { Block } from '../components/Layout';
 import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
-import { IComponent, IComponentBody, ITemplate } from '../types/Template';
+import { IComponent, ITemplate } from '../types/Template';
 import { useConstraintsList } from '../components/hooks/constraints';
 import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
 import { configErrors, getCount, storage } from '../lib/utils';
@@ -64,14 +64,6 @@ export default function HomePage() {
 
   const [templatesObject, setTemplatesObject] = useState<Record<string, Omit<ITemplate, 'id'>>>({});
 
-  useEffect(() => {
-    if (isSuccess) {
-      const mapped = templates.map(({ id, ...data }) => [id, data]);
-      const object = Object.fromEntries(mapped);
-      setTemplatesObject(object);
-    }
-  }, [isSuccess]);
-
   const theme = useMantineTheme();
   const toggleComponentSearch = (c: string) => {
     !opened ? handlers.open() : c !== categoryId ? false : handlers.close();
@@ -97,9 +89,13 @@ export default function HomePage() {
   useEffect(() => {
     const configData = storage.getConfig();
     if (isSuccess) {
+      const mapped = templates.map(({ id, ...data }) => [id, data]);
+      const tObject = Object.fromEntries(mapped);
+      setTemplatesObject(tObject);
+
       const ids = templates.map((t) => [t.id, configData[t.id] || []]);
-      const object = Object.fromEntries(ids);
-      form.setFieldValue('components', object);
+      const formData = Object.fromEntries(ids);
+      form.setFieldValue('components', formData);
     }
   }, [isSuccess]);
 
@@ -162,10 +158,7 @@ export default function HomePage() {
     );
   };
 
-  const onChoose = (
-    templateId: string,
-    component: { id: string; templateId: string; data: IComponentBody }
-  ) => {
+  const onChoose = (templateId: string, component: IComponent) => {
     form.insertListItem(`components.${templateId}`, component);
     if (isSuccess) {
       const currentState = [...Object.values(form.values.components).flat(), component];
@@ -371,7 +364,7 @@ export default function HomePage() {
                       {t.id in form.values.components &&
                         !!form.values.components[t.id] &&
                         form.values.components[t.id].map((component, index) => (
-                          <Stack pt="md">
+                          <Stack pt={index === 0 ? 'md' : 0}>
                             <ComponentRow
                               component={component.data}
                               templateId={component.templateId}
@@ -401,6 +394,21 @@ export default function HomePage() {
             <Grid.Col md={14}>
               <Stack>
                 <Block>
+                  <Stack spacing="xs">
+                    <Title order={3}>Информация</Title>
+                    <Text>
+                      Категория сборки: <Text weight={600}>{tier}</Text>
+                    </Text>
+                    <Text>
+                      <Text>Примерная цена:</Text>
+                      <Group spacing={4}>
+                        <Text weight={600}>{totalPrice.join(' - ')}</Text>
+                        <IconCurrencyRubel size={15} />
+                      </Group>
+                    </Text>
+                  </Stack>
+                </Block>
+                <Block>
                   <Stack>
                     <TextInput
                       label="Название сборки"
@@ -417,21 +425,6 @@ export default function HomePage() {
                     <Button disabled={!user} type="submit">
                       Сохранить
                     </Button>
-                  </Stack>
-                </Block>
-                <Block>
-                  <Stack spacing="xs">
-                    <Title order={3}>Информация</Title>
-                    <Text>
-                      Категория сборки: <Text weight={600}>{tier}</Text>
-                    </Text>
-                    <Text>
-                      <Text>Примерная цена:</Text>
-                      <Group spacing={4}>
-                        <Text weight={600}>{totalPrice.join(' - ')}</Text>
-                        <IconCurrencyRubel size={15} />
-                      </Group>
-                    </Text>
                   </Stack>
                 </Block>
               </Stack>

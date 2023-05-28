@@ -163,9 +163,23 @@ class ComponentService {
           },
         ],
       },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
     });
 
-    return { result, currentPage, totalCount };
+    return {
+      result: result.map(({ _count, ...component }) => ({
+        ...component,
+        totalComments: _count.comments,
+      })),
+      currentPage,
+      totalCount,
+    };
   }
 
   async getComponentById(componentId: string) {

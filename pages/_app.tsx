@@ -102,11 +102,11 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
             <ContextMenuProvider>
-              <ModalsProvider>
-                <ReactQueryProvider>
-                  <AuthProvider>
-                    {/*<DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>*/}
-                    <NavigationProvider>
+              <ReactQueryProvider>
+                <AuthProvider>
+                  {/*<DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>*/}
+                  <NavigationProvider>
+                    <ModalsProvider>
                       <Notifications />
                       <RouterTransition />
                       {/*@ts-ignore*/}
@@ -117,11 +117,11 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
                           <Component {...pageProps} />
                         </Layout>
                       )}
-                    </NavigationProvider>
-                    {/*</DevSupport>*/}
-                  </AuthProvider>
-                </ReactQueryProvider>
-              </ModalsProvider>
+                    </ModalsProvider>
+                  </NavigationProvider>
+                  {/*</DevSupport>*/}
+                </AuthProvider>
+              </ReactQueryProvider>
             </ContextMenuProvider>
           </MantineProvider>
         </ColorSchemeProvider>
