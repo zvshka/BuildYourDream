@@ -56,7 +56,7 @@ export const authMiddleware = async (
   return next();
 };
 
-export const roleGuard = (role) => async (req, res, next) => {
+export const roleGuard = (roles) => async (req, res, next) => {
   let tokenData;
   try {
     tokenData = jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
@@ -64,6 +64,8 @@ export const roleGuard = (role) => async (req, res, next) => {
     throw ApiError.UnauthorizedError();
   }
   if (!tokenData.id) throw ApiError.UnauthorizedError();
-  if (tokenData.role !== role) throw ApiError.Forbidden();
+  if (roles instanceof Array && !roles.includes(tokenData.role)) {
+    throw ApiError.Forbidden();
+  } else if (tokenData.role !== roles) throw ApiError.Forbidden();
   await next();
 };

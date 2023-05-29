@@ -48,11 +48,19 @@ model User {
 model Report {
   id String @id @default(cuid())
 
-  author     User      @relation(fields: [authorId], references: [id], name: "myReports")
-  reason     String
+  author   User   @relation(fields: [authorId], references: [id], name: "myReports")
+  authorId String
+
+  reason String
+
   approved   Boolean   @default(false)
-  approvedAt DateTime
-  expiredAt  DateTime?
+  approvedAt DateTime?
+
+  rejected   Boolean   @default(false)
+  rejectedAt DateTime?
+
+  expiredAt DateTime?
+  warns     Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,7 +71,6 @@ model Report {
 
   configId  String?
   userId    String?
-  authorId  String
   commentId String?
 }
 

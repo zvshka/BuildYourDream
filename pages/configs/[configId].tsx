@@ -16,7 +16,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { IconCurrencyRubel, IconFlag, IconPencil } from '@tabler/icons-react';
+import { IconCurrencyRubel, IconFlag, IconPencil, IconTrash } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
@@ -126,6 +126,11 @@ export default function ConfigPage() {
                           Изменить
                         </Button>
                       )}
+                      {(user.id === configData.authorId || user.role !== 'USER') && (
+                        <Button leftIcon={<IconTrash />} color="red">
+                          Удалить
+                        </Button>
+                      )}
                     </Group>
                   </MediaQuery>
                   <MediaQuery styles={{ display: 'none' }} largerThan="sm">
@@ -138,6 +143,11 @@ export default function ConfigPage() {
                       {user.id === configData.authorId && (
                         <ActionIcon color="blue" variant="filled" onClick={handleUpdate}>
                           <IconPencil />
+                        </ActionIcon>
+                      )}
+                      {(user.id === configData.authorId || user.role !== 'USER') && (
+                        <ActionIcon color="red">
+                          <IconTrash />
                         </ActionIcon>
                       )}
                     </Group>

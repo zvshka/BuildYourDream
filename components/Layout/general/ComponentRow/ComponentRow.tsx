@@ -74,23 +74,46 @@ export const ComponentRow = ({
                       </Text>
                     ))}
                 <Group mt="auto" position="apart">
-                  <Rating size="lg" readOnly />
+                  <Rating
+                    size="lg"
+                    readOnly
+                    sx={(theme) => ({
+                      outline: '1px solid lightgrey',
+                      borderRadius: theme.radius.sm,
+                    })}
+                    px="xs"
+                    py={4}
+                  />
                   {totalComments && (
                     <Box>
                       <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-                        <Group>
-                          <Text fz={16}>999+</Text>
+                        <Group
+                          sx={(theme) => ({
+                            outline: '1px solid lightgrey',
+                            borderRadius: theme.radius.sm,
+                          })}
+                          spacing={8}
+                          pl="sm"
+                        >
+                          <Text fz={16}>{totalComments > 999 ? '999+' : totalComments}</Text>
                           <ActionIcon size="lg" variant="outline">
                             <IconMessage />
                           </ActionIcon>
                         </Group>
                       </MediaQuery>
                       <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
-                        <Group spacing={8}>
+                        <Group
+                          spacing={8}
+                          sx={(theme) => ({
+                            outline: '1px solid lightgrey',
+                            borderRadius: theme.radius.sm,
+                          })}
+                          pr="xs"
+                        >
                           <ActionIcon size="lg" variant="outline">
                             <IconMessage />
                           </ActionIcon>
-                          <Text fz={16}>999+</Text>
+                          <Text fz={16}>{totalComments > 999 ? '999+' : totalComments}</Text>
                         </Group>
                       </MediaQuery>
                     </Box>
