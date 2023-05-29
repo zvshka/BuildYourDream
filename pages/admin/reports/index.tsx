@@ -6,14 +6,16 @@ import {
   NumberInput,
   Pagination,
   SegmentedControl,
+  Select,
   SimpleGrid,
   Stack,
   Switch,
   Text,
+  TextInput,
   Title,
 } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { DatesProvider, DateTimePicker } from '@mantine/dates';
+import { DatePickerInput, DatesProvider, DateTimePicker } from '@mantine/dates';
 import { openModal } from '@mantine/modals';
 import dayjs from 'dayjs';
 import { useForm } from '@mantine/form';
@@ -51,6 +53,7 @@ const ReportModal = ({ reportData }) => {
           message: 'Вы успешно одобрили жалобу',
           color: 'green',
         });
+        queryClient.invalidateQueries(['reports', 'list']);
       },
       onError: (err: any) => {
         showNotification({
@@ -148,11 +151,12 @@ const ReportModal = ({ reportData }) => {
                 minDate={dayjs().add(5, 'minute').toDate()}
               />
             </DatesProvider>
-            <Switch
-              label="Удалить сборку/комментарий?"
-              {...approveForm.getInputProps('deleteSubject', { type: 'checkbox' })}
-              readOnly={reportData.approved || reportData.rejected}
-            />
+            {!(reportData.approved || reportData.rejected) && (
+              <Switch
+                label="Удалить сборку/комментарий?"
+                {...approveForm.getInputProps('deleteSubject', { type: 'checkbox' })}
+              />
+            )}
           </Stack>
         )}
         <Button type="submit" disabled={reportData.approved || reportData.rejected}>
@@ -207,6 +211,15 @@ const ReportCard = ({ reportData }) => {
 export default function ReportsPage() {
   const [activePage, setPage] = useState(1);
 
+  const filterForm = useForm({
+    initialValues: {
+      search: '',
+      status: 'all',
+      createdAt: [],
+      reviewAt: [],
+    },
+  });
+
   const {
     data: reportsData,
     isSuccess,
@@ -224,6 +237,49 @@ export default function ReportsPage() {
       <Stack>
         <PageHeader title="Жалобы пользователей" addBack />
         <Block>
+          <SimpleGrid
+            cols={1}
+            breakpoints={[
+              {
+                cols: 2,
+                minWidth: 'sm',
+              },
+              {
+                cols: 3,
+                minWidth: 'md',
+              },
+              {
+                cols: 4,
+                minWidth: 'lg',
+              },
+            ]}
+          >
+            <TextInput label="Поиск" {...filterForm.getInputProps('search')} />
+            <Select
+              data={[
+                { value: 'all', label: 'Все' },
+                { value: 'approved', label: 'Рассмотрено' },
+                { value: 'rejected', label: 'Отклонено' },
+                { value: 'waiting', label: 'Ожидает рассмотрения' },
+              ]}
+              label="Статус"
+              {...filterForm.getInputProps('status')}
+            />
+            <DatePickerInput
+              type="range"
+              label="Дата создания жалобы"
+              locale="ru"
+              {...filterForm.getInputProps('createdAt')}
+            />
+            <DatePickerInput
+              type="range"
+              label="Дата рассмотрения жалобы"
+              locale="ru"
+              {...filterForm.getInputProps('reviewAt')}
+            />
+          </SimpleGrid>
+        </Block>
+        <Block>
           <Pagination
             value={activePage}
             total={
@@ -234,7 +290,7 @@ export default function ReportsPage() {
         </Block>
         {isSuccess && reportsData.totalCount === 0 && (
           <Block h={200}>
-            <Center>
+            <Center h={170}>
               <Text>Здесь ничего нет...</Text>
             </Center>
           </Block>

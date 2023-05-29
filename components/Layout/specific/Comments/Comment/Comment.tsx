@@ -13,11 +13,13 @@ import dayjs from 'dayjs';
 import {
   IconArrowBack,
   IconFlag,
+  IconMessage,
   IconMinusVertical,
   IconPencil,
   IconPencilOff,
   IconSend,
   IconTrash,
+  IconTrashOff,
 } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -25,14 +27,15 @@ import { showNotification } from '@mantine/notifications';
 import { openConfirmModal, openModal } from '@mantine/modals';
 import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
+import { useContextMenu } from 'mantine-contextmenu';
+import Link from 'next/link';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 import { Block } from '../../../general/Block/Block';
 import { User } from '../../../../../types/User';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
-import Link from 'next/link';
 import { ReportForm } from '../../../forms/ReportForm/ReportForm';
-import { useContextMenu } from 'mantine-contextmenu';
+import { useEffect, useState } from 'react';
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -63,6 +66,7 @@ export function Comment({
     id: string;
     replyCommentId: string;
     author: User;
+    authorId: string;
     createdAt: Date;
     body: string;
     configId?: string;
@@ -78,6 +82,7 @@ export function Comment({
   const { user } = useAuth();
   const [isEditing, toggleEditing] = useToggle([false, true]);
   const showContextMenu = useContextMenu();
+  const [contextMenu, setContextMenu] = useState<any[]>([]);
 
   const form = useForm({
     initialValues: {
@@ -209,12 +214,69 @@ export function Comment({
     });
   };
 
+  useEffect(() => {
+    if (user) {
+      if (user.id !== commentData.authorId && user.role === 'USER') {
+        setContextMenu([
+          {
+            key: 'answer',
+            onClick: () => onChooseReply && onChooseReply(),
+            title: 'Ответить на комментарий',
+            icon: <IconMessage size="1rem" />,
+          },
+          {
+            key: 'report',
+            onClick: handleReport,
+            title: 'Пожаловаться на комментарий',
+            icon: <IconFlag size="1rem" />,
+            color: 'red',
+          },
+        ]);
+      } else if (user.id === commentData.authorId || user.role !== 'USER') {
+        setContextMenu(
+          [
+            {
+              key: 'answer',
+              onClick: () => onChooseReply && onChooseReply(),
+              title: 'Ответить на комментарий',
+              icon: <IconMessage size="1rem" />,
+            },
+            user.id === commentData.authorId && {
+              key: 'edit',
+              onClick: () => toggleEditing(),
+              title: 'Изменить комментарий',
+              icon: <IconPencil size="1rem" />,
+            },
+            !commentData.isDeleted && {
+              key: 'delete',
+              onClick: handleDelete,
+              title: 'Удалить комментарий',
+              icon: <IconTrash size="1rem" />,
+              color: 'red',
+            },
+            commentData.isDeleted && commentData.deletedBy &&
+              ((commentData.deletedBy.id === user.id) ||
+                (commentData.deletedBy.role === 'USER' && commentData.deletedBy.id === user.id) ||
+                (commentData.deletedBy.role !== 'USER' && user.role !== 'USER')) && {
+                key: 'undelete',
+                onClick: handleUndelete,
+                title: 'Восстановить комментарий',
+                icon: <IconTrashOff size="1rem" />,
+                color: 'blue',
+              },
+          ].filter((v) => v)
+        );
+      }
+    }
+  }, [user]);
+
   return (
     <Block
       ml={commentData.replyCommentId ? '3rem' : 0}
       sx={(theme) => ({
         outline: replyId === commentData.id ? `2px solid ${theme.colors.blue[6]}` : '',
       })}
+      onContextMenu={showContextMenu(contextMenu)}
     >
       <Group position="apart">
         <Link href={`/profile/${commentData.author.username}`}>
@@ -251,12 +313,11 @@ export function Comment({
                 {!isEditing ? <IconPencil /> : <IconPencilOff />}
               </ActionIcon>
             )}
-            {user &&
-              (commentData.author.id === user.id || ['ADMIN', 'MODERATOR'].includes(user.role)) && (
-                <ActionIcon color="red" size="lg" onClick={handleDelete}>
-                  <IconTrash />
-                </ActionIcon>
-              )}
+            {user && (commentData.author.id === user.id || user.role !== 'USER') && (
+              <ActionIcon color="red" size="lg" onClick={handleDelete}>
+                <IconTrash />
+              </ActionIcon>
+            )}
           </Group>
         )}
         {user &&

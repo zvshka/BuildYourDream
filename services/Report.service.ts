@@ -22,6 +22,7 @@ class ReportService {
         },
       });
     }
+
     let configCandidate;
     if (reportBody.configId && reportBody.configId.length > 0) {
       configCandidate = await prisma.config.findUnique({
@@ -30,6 +31,7 @@ class ReportService {
         },
       });
     }
+
     let userCandidate;
     if (reportBody.userId && reportBody.userId.length > 0) {
       userCandidate = await prisma.user.findUnique({
@@ -39,7 +41,7 @@ class ReportService {
       });
     }
 
-    if ([commentCandidate, configCandidate, userCandidate].filter((c) => !!c).length > 1) {
+    if ([commentCandidate, configCandidate].filter((c) => !!c).length > 1) {
       throw ApiError.BadRequest('Так делать нельзя');
     }
 
@@ -49,7 +51,7 @@ class ReportService {
         reason: reportBody.reason,
         configId: reportBody.configId,
         commentId: reportBody.commentId,
-        userId: reportBody.userId,
+        userId: configCandidate.authorId || commentCandidate.authorId || userCandidate.id,
       },
     });
   }
@@ -66,21 +68,14 @@ class ReportService {
       include: {
         config: true,
         comment: true,
+        user: true,
       },
     });
     if (!candidate || candidate.approved || candidate.rejected) {
       throw ApiError.BadRequest('Нельзя так сделать');
     }
 
-    if (candidate.configId && candidate.config && approveBody.deleteSubject) {
-      await ConfigService.deleteById(user, candidate.configId);
-    }
-
-    if (candidate.commentId && candidate.comment && approveBody.deleteSubject) {
-      await CommentService.delete(user, candidate.commentId);
-    }
-
-    return prisma.report.update({
+    const result = await prisma.report.update({
       where: {
         id: reportId,
       },
@@ -92,6 +87,45 @@ class ReportService {
         approvedAt: new Date(),
       },
     });
+
+    const userWarns = await prisma.report.findMany({
+      where: {
+        userId: candidate.userId,
+        expiredAt: {
+          gt: new Date(),
+        },
+        warns: {
+          gt: 0,
+          not: null,
+        },
+      },
+      select: {
+        warns: true,
+        expiredAt: true,
+      },
+    });
+
+    const totalWarns = userWarns.reduce((prev, next) => prev + next.warns!, 0);
+    if (totalWarns >= 20 && !candidate.user.isBanned) {
+      await prisma.user.update({
+        where: {
+          id: candidate.userId,
+        },
+        data: {
+          isBanned: true,
+        },
+      });
+    }
+
+    if (candidate.configId && candidate.config && approveBody.deleteSubject) {
+      await ConfigService.deleteById(user, candidate.configId);
+    }
+
+    if (candidate.commentId && candidate.comment && approveBody.deleteSubject) {
+      await CommentService.delete(user, candidate.commentId);
+    }
+
+    return result;
   }
 
   async reject(reportId: string) {

@@ -66,14 +66,6 @@ class ConfigService {
       where: {
         id: configId,
       },
-    });
-
-    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
-
-    const result = await prisma.config.findUnique({
-      where: {
-        id: configId,
-      },
       include: {
         author: true,
         components: {
@@ -84,8 +76,10 @@ class ConfigService {
       },
     });
 
-    if (result) {
-      const price = result.components.reduce(
+    if (!candidate || candidate.isDeleted) throw ApiError.BadRequest('Такой сборки не существует');
+
+    if (candidate) {
+      const price = candidate.components.reduce(
         (prev, next) => [
           prev[0] + next.component!.data!['Цена'][0],
           prev[1] + next.component!.data!['Цена'][1],
@@ -93,7 +87,7 @@ class ConfigService {
         [0, 0]
       );
       const componentsTierSummary =
-        result.components.reduce(
+        candidate.components.reduce(
           (prev, next) =>
             // @ts-ignore
             prev + next.component.data!.tier === 'low'
@@ -103,14 +97,14 @@ class ConfigService {
               ? 2
               : 3,
           0
-        ) / result.components.length;
+        ) / candidate.components.length;
       const configTier =
         componentsTierSummary > 1 && componentsTierSummary < 1.5
           ? 'Low tier'
           : componentsTierSummary >= 1.5 && componentsTierSummary < 2.2
           ? 'Medium tier'
           : 'High tier';
-      return { ...result, price, configTier };
+      return { ...candidate, price, configTier };
     }
 
     throw ApiError.BadRequest('Такой сборки не существует');
@@ -124,7 +118,9 @@ class ConfigService {
       where: {
         title: {
           contains: (filter?.search as string) || '',
+          mode: 'insensitive',
         },
+        isDeleted: false,
       },
     });
 
@@ -145,7 +141,9 @@ class ConfigService {
       where: {
         title: {
           contains: (filter?.search as string) || '',
+          mode: 'insensitive',
         },
+        isDeleted: false,
       },
       include: {
         author: true,
@@ -190,7 +188,7 @@ class ConfigService {
       },
     });
 
-    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
+    if (!candidate || candidate.isDeleted) throw ApiError.BadRequest('Такой сборки не существует');
 
     if (candidate.authorId === user.id) throw ApiError.BadRequest('Самолайк - залог успеха');
 
@@ -227,7 +225,7 @@ class ConfigService {
       },
     });
 
-    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
+    if (!candidate || candidate.isDeleted) throw ApiError.BadRequest('Такой сборки не существует');
 
     if (candidate.authorId === user.id) throw ApiError.BadRequest('Самолайк - залог успеха');
 
@@ -264,13 +262,16 @@ class ConfigService {
         id: configId,
       },
     });
-    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
+    if (!candidate || candidate.isDeleted) throw ApiError.BadRequest('Такой сборки не существует');
 
     if (user.role === 'USER' && user.id !== candidate.authorId) throw ApiError.Forbidden();
 
-    return prisma.config.delete({
+    return prisma.config.update({
       where: {
         id: configId,
+      },
+      data: {
+        isDeleted: true,
       },
     });
   }

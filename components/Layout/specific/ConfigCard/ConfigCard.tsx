@@ -142,7 +142,42 @@ export function ConfigCard({ link, configData }) {
   };
 
   return (
-    <Card withBorder radius="md" className={classes.card} component={NextLink} {...linkProps}>
+    <Card
+      withBorder
+      radius="md"
+      className={classes.card}
+      component={NextLink}
+      {...linkProps}
+      onContextMenu={showContextMenu(
+        user
+          ? user.id !== configData.authorId && user.role === 'USER'
+            ? [
+                {
+                  key: 'report',
+                  onClick: handleReport,
+                  title: 'Пожаловаться на сборку',
+                  icon: <IconFlag size="1rem" />,
+                  color: 'red',
+                },
+              ]
+            : [
+                {
+                  key: 'report',
+                  onClick: handleReport,
+                  title: 'Пожаловаться на сборку',
+                  icon: <IconFlag size="1rem" />,
+                },
+                {
+                  key: 'delete',
+                  onClick: handleDelete,
+                  title: 'Удалить сборку',
+                  icon: <IconTrash size="1rem" />,
+                  color: 'red',
+                },
+              ]
+          : []
+      )}
+    >
       <Stack h="100%" spacing={0}>
         <Group position="apart">
           <Title
@@ -208,7 +243,7 @@ export function ConfigCard({ link, configData }) {
                   key: 'report',
                   icon: <IconFlag size="1rem" />,
                   onClick: handleReportUser,
-                  title: 'Пожаловаться',
+                  title: 'Пожаловаться на пользователя',
                   color: 'red',
                 },
               ])}

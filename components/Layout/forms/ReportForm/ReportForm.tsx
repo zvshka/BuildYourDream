@@ -15,9 +15,8 @@ export const ReportForm = ({
 }: {
   commentId?: string;
   configId?: string;
-  userId?: string;
+  userId?: string
 }) => {
-  const [reason, setReason] = useState('');
 
   const form = useForm({
     initialValues: {

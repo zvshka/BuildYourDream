@@ -66,7 +66,7 @@ model Report {
   updatedAt DateTime @updatedAt
 
   user    User     @relation(fields: [userId], references: [id], name: "suspiciousUser")
-  config  Config?  @relation(fields: [configId], references: [id], onDelete: Cascade)
+  config  Config?  @relation(fields: [configId], references: [id], onDelete: SetNull)
   comment Comment? @relation(fields: [commentId], references: [id])
 
   userId    String
@@ -179,6 +179,8 @@ model Config {
   authorId String
 
   createdAt DateTime @default(now())
+
+  isDeleted Boolean? @default(false)
 
   reports    Report[]
   components ComponentInConfig[]

@@ -197,10 +197,10 @@ export default function HomePage() {
         });
         refetch();
       },
-      onError: () => {
+      onError: (err: any) => {
         showNotification({
           title: 'Ошибка',
-          message: 'Что-то пошло не так',
+          message: err.response.data.message || 'Что-то пошло не так',
           color: 'red',
         });
       },
