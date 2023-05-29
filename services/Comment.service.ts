@@ -138,7 +138,7 @@ class CommentService {
     if (candidate.isDeleted) {
       throw ApiError.BadRequest('Вы не можете изменить удаленный комментарий');
     }
-    if (user.id !== candidate.authorId) throw ApiError.UnauthorizedError();
+    if (user.id !== candidate.authorId) throw ApiError.Forbidden();
     if (body.length === 0) throw ApiError.BadRequest('Комментарий не может быть пустым');
 
     return prisma.comment.update({
@@ -161,8 +161,8 @@ class CommentService {
 
     if (!candidate) throw ApiError.BadRequest('Такого комментария не существует');
     if (candidate.isDeleted) throw ApiError.BadRequest('Нельзя такое сделать');
-    if (user.id !== candidate.authorId && !['ADMIN', 'MODERATOR'].includes(user.role)) {
-      throw ApiError.UnauthorizedError();
+    if (user.id !== candidate.authorId && user.role === 'USER') {
+      throw ApiError.Forbidden();
     }
 
     return prisma.comment.update({
@@ -188,12 +188,12 @@ class CommentService {
 
     if (!candidate) throw ApiError.BadRequest('Такого комментария не существует');
     if (!candidate.isDeleted) throw ApiError.BadRequest('Вы не можете этого сделать');
-    if (!['ADMIN', 'MODERATOR'].includes(candidate.deletedBy!.role) && user.role !== 'USER') {
-      throw ApiError.UnauthorizedError();
+    if (candidate.deletedBy && candidate.deletedBy.role === 'USER' && user.role !== 'USER') {
+      throw ApiError.Forbidden();
     }
 
-    if (['ADMIN', 'MODERATOR'].includes(candidate.deletedBy!.role) && user.role === 'USER') {
-      throw ApiError.UnauthorizedError();
+    if (candidate.deletedBy && candidate.deletedBy.role !== 'USER' && user.role === 'USER') {
+      throw ApiError.Forbidden();
     }
 
     return prisma.comment.update({

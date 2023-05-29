@@ -66,6 +66,6 @@ export const roleGuard = (roles) => async (req, res, next) => {
   if (!tokenData.id) throw ApiError.UnauthorizedError();
   if (roles instanceof Array && !roles.includes(tokenData.role)) {
     throw ApiError.Forbidden();
-  } else if (tokenData.role !== roles) throw ApiError.Forbidden();
+  } else if (!(roles instanceof Array) && tokenData.role !== roles) throw ApiError.Forbidden();
   await next();
 };

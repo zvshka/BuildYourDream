@@ -24,6 +24,7 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { openConfirmModal, openModal } from '@mantine/modals';
+import { useContextMenu } from 'mantine-contextmenu';
 import { NextLink } from '../../general/NextLink/NextLink';
 import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
 import { storage } from '../../../../lib/utils';
@@ -58,6 +59,7 @@ export function ConfigCard({ link, configData }) {
   const { classes, theme } = useStyles();
   const linkProps = { href: link };
   const { user } = useAuth();
+  const showContextMenu = useContextMenu();
 
   const deleteConfigMutation = useMutation(
     () =>
@@ -128,6 +130,13 @@ export function ConfigCard({ link, configData }) {
     });
   };
 
+  const handleReportUser = () => {
+    openModal({
+      title: 'Жалоба на пользователя',
+      children: <ReportForm userId={configData.authorId} />,
+    });
+  };
+
   const handleLike = () => {
     likeMutation.mutate({ configId: configData.id, status: configData.liked ? 'unlike' : 'like' });
   };
@@ -170,8 +179,7 @@ export function ConfigCard({ link, configData }) {
                     Пожаловаться
                   </Menu.Item>
                 )}
-                {(user.id === configData.authorId ||
-                  ['ADMIN', 'MODERATOR'].includes(user.role)) && (
+                {(user.id === configData.authorId || user.role !== 'USER') && (
                   <Menu.Item
                     icon={<IconTrash size="1rem" color="red" />}
                     onClick={(event) => {
@@ -194,7 +202,17 @@ export function ConfigCard({ link, configData }) {
 
         <Group position="apart" className={classes.footer} align="end" mt="auto">
           <Link href={`/profile/${configData.author.username}`}>
-            <Center>
+            <Center
+              onContextMenu={showContextMenu([
+                {
+                  key: 'report',
+                  icon: <IconFlag size="1rem" />,
+                  onClick: handleReportUser,
+                  title: 'Пожаловаться',
+                  color: 'red',
+                },
+              ])}
+            >
               <Avatar src={configData.author.avatarUrl} size={24} radius="xl" mr="xs" />
               <Text fz="sm" inline>
                 {configData.author.username}

@@ -68,31 +68,33 @@ export default function Parts() {
         <PageHeader
           title="Комплектующие"
           rightSection={
-            <Menu>
-              <Menu.Target>
-                <ActionIcon>
-                  <IconDotsVertical />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  component={NextLink}
-                  href="/components/create"
-                  icon={<IconCircleSquare size={18} />}
-                >
-                  Добавить деталь
-                </Menu.Item>
-                {user && user.role === 'ADMIN' && (
+            user && (
+              <Menu>
+                <Menu.Target>
+                  <ActionIcon>
+                    <IconDotsVertical />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
                   <Menu.Item
                     component={NextLink}
-                    href="/templates/create"
-                    icon={<IconPackage size={18} />}
+                    href="/components/create"
+                    icon={<IconCircleSquare size={18} />}
                   >
-                    Добавить группу
+                    Добавить деталь
                   </Menu.Item>
-                )}
-              </Menu.Dropdown>
-            </Menu>
+                  {user.role === 'ADMIN' && (
+                    <Menu.Item
+                      component={NextLink}
+                      href="/templates/create"
+                      icon={<IconPackage size={18} />}
+                    >
+                      Добавить группу
+                    </Menu.Item>
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+            )
           }
         />
         <SimpleGrid

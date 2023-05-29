@@ -257,6 +257,23 @@ class ConfigService {
       },
     });
   }
+
+  async deleteById(user: User, configId: string) {
+    const candidate = await prisma.config.findUnique({
+      where: {
+        id: configId,
+      },
+    });
+    if (!candidate) throw ApiError.BadRequest('Такой сборки не существует');
+
+    if (user.role === 'USER' && user.id !== candidate.authorId) throw ApiError.Forbidden();
+
+    return prisma.config.delete({
+      where: {
+        id: configId,
+      },
+    });
+  }
 }
 
 export default new ConfigService();

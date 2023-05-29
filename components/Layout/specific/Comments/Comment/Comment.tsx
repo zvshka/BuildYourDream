@@ -2,11 +2,9 @@ import {
   ActionIcon,
   Avatar,
   Box,
-  Button,
   createStyles,
   Group,
   rem,
-  Stack,
   Text,
   Textarea,
   UnstyledButton,
@@ -14,6 +12,7 @@ import {
 import dayjs from 'dayjs';
 import {
   IconArrowBack,
+  IconFlag,
   IconMinusVertical,
   IconPencil,
   IconPencilOff,
@@ -33,6 +32,7 @@ import { User } from '../../../../../types/User';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
 import Link from 'next/link';
 import { ReportForm } from '../../../forms/ReportForm/ReportForm';
+import { useContextMenu } from 'mantine-contextmenu';
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -77,6 +77,7 @@ export function Comment({
   const { classes } = useStyles();
   const { user } = useAuth();
   const [isEditing, toggleEditing] = useToggle([false, true]);
+  const showContextMenu = useContextMenu();
 
   const form = useForm({
     initialValues: {
@@ -201,6 +202,13 @@ export function Comment({
     });
   };
 
+  const handleReportUser = () => {
+    openModal({
+      title: 'Жалоба на пользователя',
+      children: <ReportForm userId={commentData.author.id} />,
+    });
+  };
+
   return (
     <Block
       ml={commentData.replyCommentId ? '3rem' : 0}
@@ -210,7 +218,18 @@ export function Comment({
     >
       <Group position="apart">
         <Link href={`/profile/${commentData.author.username}`}>
-          <Group sx={{ cursor: 'pointer' }}>
+          <Group
+            sx={{ cursor: 'pointer' }}
+            onContextMenu={showContextMenu([
+              {
+                key: 'report',
+                icon: <IconFlag size="1rem" />,
+                onClick: handleReportUser,
+                title: 'Пожаловаться',
+                color: 'red',
+              },
+            ])}
+          >
             <Avatar
               src={commentData.author.avatarUrl}
               alt={commentData.author.username}
@@ -250,8 +269,8 @@ export function Comment({
           )}
         {user &&
           commentData.isDeleted &&
-          ['ADMIN', 'MODERATOR'].includes(commentData.deletedBy.role) &&
-          ['ADMIN', 'MODERATOR'].includes(user.role) && (
+          commentData.deletedBy.role !== 'USER' &&
+          user.role !== 'USER' && (
             <ActionIcon onClick={handleUndelete}>
               <IconArrowBack />
             </ActionIcon>
@@ -264,14 +283,12 @@ export function Comment({
           color={commentData.isDeleted ? 'gray' : 'black'}
           italic={commentData.isDeleted}
         >
-          {commentData.isDeleted ? (
-            <>
+          {commentData.isDeleted && user?.role === 'USER' && user.id !== commentData.author.id ? (
+            <Box>
               <Text>
-                {' '}
-                {'<'}Сообщение удалено{'>'}{' '}
+                {'<'}Сообщение удалено{'>'}
               </Text>
-              <Text>{commentData.body}</Text>
-            </>
+            </Box>
           ) : (
             commentData.body
           )}

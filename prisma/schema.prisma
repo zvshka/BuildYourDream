@@ -65,12 +65,12 @@ model Report {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  user    User     @relation(fields: [userId], references: [id], name: "suspiciousUser")
   config  Config?  @relation(fields: [configId], references: [id], onDelete: Cascade)
-  user    User?    @relation(fields: [userId], references: [id], name: "suspiciousUser")
   comment Comment? @relation(fields: [commentId], references: [id])
 
+  userId    String
   configId  String?
-  userId    String?
   commentId String?
 }
 

@@ -14,7 +14,7 @@ api.post(authGuard, roleGuard('ADMIN'), async (req, res) => {
   res.send(template);
 });
 
-api.patch(async (req, res) => {
+api.patch(authGuard, roleGuard('ADMIN'), async (req, res) => {
   const result = await TemplateService.updateMany(req.body);
   res.send(result);
 });

@@ -30,7 +30,7 @@ dayjs.extend(isToday);
 dayjs.extend(duration);
 dayjs.extend(calendar);
 
-dayjs.locale('ru');
+// dayjs.locale('ru');
 
 export default function App(props: AppProps & { colorScheme: ColorScheme; primaryColor: string }) {
   const { Component, pageProps } = props;

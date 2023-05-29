@@ -20,7 +20,7 @@ import { IconCurrencyRubel, IconFlag, IconPencil, IconTrash } from '@tabler/icon
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { openModal } from '@mantine/modals';
+import { openConfirmModal, openModal } from '@mantine/modals';
 import { useForm } from '@mantine/form';
 import { Block, PageHeader } from '../../components/Layout';
 import { useConfigData } from '../../components/hooks/configs';
@@ -88,6 +88,32 @@ export default function ConfigPage() {
 
   if (isSuccess && !configData) router.push('/configs');
 
+  const deleteConfigMutation = useMutation(
+    () =>
+      axios.delete(`/api/configs/${router.query.configId}`, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Вы успешно удалили сборку',
+          color: 'green',
+        });
+        queryClient.invalidateQueries(['configs', 'lsit']);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
+
   const handleUpdate = () => {
     openModal({
       title: 'Изменение сборки',
@@ -99,6 +125,22 @@ export default function ConfigPage() {
     openModal({
       title: 'Жалоба на сборку',
       children: <ReportForm configId={configData?.id} />,
+    });
+  };
+
+  const handleDelete = () => {
+    openConfirmModal({
+      title: 'Удаление сборки',
+      children: (
+        <Text>Вы собираетесь удалить сборку с названием {configData?.title}, продолжить?</Text>
+      ),
+      labels: {
+        confirm: 'Да',
+        cancel: 'Нет',
+      },
+      onConfirm() {
+        deleteConfigMutation.mutate();
+      },
     });
   };
 
@@ -127,7 +169,7 @@ export default function ConfigPage() {
                         </Button>
                       )}
                       {(user.id === configData.authorId || user.role !== 'USER') && (
-                        <Button leftIcon={<IconTrash />} color="red">
+                        <Button leftIcon={<IconTrash />} color="red" onClick={handleDelete}>
                           Удалить
                         </Button>
                       )}
@@ -146,7 +188,7 @@ export default function ConfigPage() {
                         </ActionIcon>
                       )}
                       {(user.id === configData.authorId || user.role !== 'USER') && (
-                        <ActionIcon color="red">
+                        <ActionIcon color="red" onClick={handleDelete}>
                           <IconTrash />
                         </ActionIcon>
                       )}

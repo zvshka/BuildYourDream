@@ -16,7 +16,7 @@ import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
-import { Block } from '../../components/Layout';
+import { Block, PageHeader } from '../../components/Layout';
 import { uploadImageMutation } from '../../components/hooks/images';
 import { storage } from '../../lib/utils';
 import { useUserConfigsList } from '../../components/hooks/profile';
@@ -88,7 +88,8 @@ export default function ProfilePage() {
 
   return (
     <Container size="xl" px={0}>
-      <Grid>
+      <PageHeader title="Ваш профиль" addBack />
+      <Grid mt="md">
         <Grid.Col span="auto">
           <Stack>
             <Block>
@@ -126,7 +127,13 @@ export default function ProfilePage() {
             </Block>
             <Block>
               <Center>
-                <Text>{user?.role}</Text>
+                <Text>
+                  {user?.role === 'ADMIN'
+                    ? 'Администратор'
+                    : user?.role === 'MODERATOR'
+                    ? 'Модератор'
+                    : 'Пользователь'}
+                </Text>
               </Center>
             </Block>
           </Stack>

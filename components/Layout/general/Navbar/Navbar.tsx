@@ -242,17 +242,19 @@ export function NavbarSimpleColored() {
           lockScroll={false}
         >
           <Stack>
-            <SegmentedControl
-              value={section}
-              onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
-              transitionTimingFunction="ease"
-              fullWidth
-              data={[
-                { label: 'User', value: 'userPages' },
-                { label: 'Admin', value: 'adminPages' },
-              ]}
-              mb="lg"
-            />
+            {user?.role !== 'USER' && (
+              <SegmentedControl
+                value={section}
+                onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
+                transitionTimingFunction="ease"
+                fullWidth
+                data={[
+                  { label: 'User', value: 'userPages' },
+                  { label: 'Admin', value: 'adminPages' },
+                ]}
+                mb="lg"
+              />
+            )}
             <SimpleGrid cols={4}>
               {tabs[section].map((item) => (
                 <Box
