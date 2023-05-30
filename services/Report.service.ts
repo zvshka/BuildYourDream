@@ -177,13 +177,7 @@ class ReportService {
     });
   }
 
-  async getList(filter: {
-    search: string;
-    page: string;
-    status: 'all' | 'approved' | 'rejected' | 'waiting';
-    createdAt: string;
-    reviewAt: string;
-  }) {
+  async getList(filter: Partial<{ [p: string]: string | string[] }>) {
     let currentPage = 1;
     if (filter.page) {
       if (!Number.isNaN(filter.page)) {
@@ -205,7 +199,7 @@ class ReportService {
 
     let createdAtFilter = {};
     if (filter.createdAt) {
-      const params = new URLSearchParams(filter.createdAt);
+      const params = new URLSearchParams(filter.createdAt as string);
       const gt = params.get('gt');
       const lt = params.get('lt');
       if (gt && lt && isDate(new Date(gt)) && isDate(new Date(lt))) {
@@ -219,8 +213,8 @@ class ReportService {
     }
 
     let reviewAtFilter = {};
-    if (filter.createdAt) {
-      const params = new URLSearchParams(filter.reviewAt);
+    if (filter.reviewAt) {
+      const params = new URLSearchParams(filter.reviewAt as string);
       const gt = params.get('gt');
       const lt = params.get('lt');
       if (gt && lt && isDate(new Date(gt)) && isDate(new Date(lt))) {
@@ -244,7 +238,7 @@ class ReportService {
     }
 
     let searchFilter = {};
-    if (filter.search.length > 0) {
+    if (filter.search && filter.search.length > 0) {
       searchFilter = Object.assign(searchFilter, {
         OR: [
           {
