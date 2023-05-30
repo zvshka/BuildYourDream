@@ -578,12 +578,14 @@ export default function Community() {
   return (
     <Container size="xl" px={0}>
       <Tabs defaultValue="components">
-        <Tabs.List>
-          <Tabs.Tab value="components">Запросы на добавление</Tabs.Tab>
-          <Tabs.Tab value="updateRequests">Запросы на изменение</Tabs.Tab>
-          <Tabs.Tab value="guides">Гайды</Tabs.Tab>
-          <Tabs.Tab value="posts">Статьи</Tabs.Tab>
-        </Tabs.List>
+        <Block>
+          <Tabs.List>
+            <Tabs.Tab value="components">Запросы на добавление</Tabs.Tab>
+            <Tabs.Tab value="updateRequests">Запросы на изменение</Tabs.Tab>
+            <Tabs.Tab value="guides">Гайды</Tabs.Tab>
+            <Tabs.Tab value="posts">Статьи</Tabs.Tab>
+          </Tabs.List>
+        </Block>
         <Tabs.Panel value="components">
           <ComponentsPanel />
         </Tabs.Panel>

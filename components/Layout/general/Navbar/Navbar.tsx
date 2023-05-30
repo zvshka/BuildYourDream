@@ -12,7 +12,6 @@ import {
   SimpleGrid,
   Stack,
   Text,
-  Title,
   Tooltip,
   Transition,
   UnstyledButton,
@@ -179,7 +178,6 @@ const tabs = {
   ],
   adminPages: [
     { link: '/admin/users', label: 'Пользователи', Icon: IconUser },
-    { link: '/admin/configs', label: 'Сборки', Icon: Icon3dCubeSphere },
     { link: '/admin/configurator', label: 'Конфигуратор', Icon: Icon3dCubeSphere },
     { link: '/admin/reports', label: 'Жалобы', Icon: IconFlag },
   ],

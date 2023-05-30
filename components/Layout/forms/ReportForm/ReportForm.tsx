@@ -3,8 +3,9 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { Button, Select, Stack, Textarea } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { storage } from '../../../../lib/utils';
+import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
 
 const reasons = ['Оскорбление', 'Троллинг', 'Багоюз', 'Злоупотребление полномочиями', 'Другое'];
 
@@ -15,8 +16,9 @@ export const ReportForm = ({
 }: {
   commentId?: string;
   configId?: string;
-  userId?: string
+  userId?: string;
 }) => {
+  const { user } = useAuth();
 
   const form = useForm({
     initialValues: {

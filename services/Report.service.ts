@@ -1,3 +1,4 @@
+import { isDate } from 'is-what';
 import { User } from '../types/User';
 import { prisma } from '../lib/prisma';
 import { ApiError } from '../lib/ApiError';
@@ -49,9 +50,17 @@ class ReportService {
       data: {
         authorId: author.id,
         reason: reportBody.reason,
+
         configId: reportBody.configId,
+        configTitle: configCandidate ? configCandidate.title : null,
+        configDescription: configCandidate ? configCandidate.description : null,
+
         commentId: reportBody.commentId,
-        userId: configCandidate.authorId || commentCandidate.authorId || userCandidate.id,
+        commentBody: commentCandidate ? commentCandidate.body : null,
+
+        userId: configCandidate?.authorId || commentCandidate?.authorId || userCandidate.id,
+        userBio: userCandidate ? userCandidate.bio : null,
+        userAvatarUrl: userCandidate ? userCandidate.avatarUrl : null,
       },
     });
   }
@@ -168,7 +177,13 @@ class ReportService {
     });
   }
 
-  async getList(filter: any) {
+  async getList(filter: {
+    search: string;
+    page: string;
+    status: 'all' | 'approved' | 'rejected' | 'waiting';
+    createdAt: string;
+    reviewAt: string;
+  }) {
     let currentPage = 1;
     if (filter.page) {
       if (!Number.isNaN(filter.page)) {
@@ -177,8 +192,110 @@ class ReportService {
       }
     }
 
+    let statusFilter = {};
+    if (filter.status !== 'all') {
+      if (filter.status === 'approved') {
+        statusFilter = Object.assign(statusFilter, { approved: true, rejected: false });
+      } else if (filter.status === 'rejected') {
+        statusFilter = Object.assign(statusFilter, { approved: false, rejected: true });
+      } else if (filter.status === 'waiting') {
+        statusFilter = Object.assign(statusFilter, { approved: false, rejected: false });
+      }
+    }
+
+    let createdAtFilter = {};
+    if (filter.createdAt) {
+      const params = new URLSearchParams(filter.createdAt);
+      const gt = params.get('gt');
+      const lt = params.get('lt');
+      if (gt && lt && isDate(new Date(gt)) && isDate(new Date(lt))) {
+        createdAtFilter = Object.assign(createdAtFilter, {
+          createdAt: {
+            gte: gt,
+            lte: lt,
+          },
+        });
+      }
+    }
+
+    let reviewAtFilter = {};
+    if (filter.createdAt) {
+      const params = new URLSearchParams(filter.reviewAt);
+      const gt = params.get('gt');
+      const lt = params.get('lt');
+      if (gt && lt && isDate(new Date(gt)) && isDate(new Date(lt))) {
+        reviewAtFilter = Object.assign(reviewAtFilter, {
+          OR: [
+            {
+              approvedAt: {
+                gte: gt,
+                lte: lt,
+              },
+            },
+            {
+              rejectedAt: {
+                gte: gt,
+                lte: lt,
+              },
+            },
+          ],
+        });
+      }
+    }
+
+    let searchFilter = {};
+    if (filter.search.length > 0) {
+      searchFilter = Object.assign(searchFilter, {
+        OR: [
+          {
+            author: {
+              username: {
+                contains: filter.search,
+                mode: 'insensitive',
+              },
+            },
+          },
+          {
+            configTitle: {
+              contains: filter.search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            configDescription: {
+              contains: filter.search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            commentBody: {
+              contains: filter.search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            userBio: {
+              contains: filter.search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            reason: {
+              contains: filter.search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      });
+    }
+
     const totalCount = await prisma.report.count({
-      where: {},
+      where: {
+        ...statusFilter,
+        ...createdAtFilter,
+        ...reviewAtFilter,
+        ...searchFilter,
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -187,12 +304,25 @@ class ReportService {
     const result = await prisma.report.findMany({
       skip: (currentPage - 1) * 10,
       take: 10,
-      where: {},
+      where: {
+        ...statusFilter,
+        ...createdAtFilter,
+        ...reviewAtFilter,
+        ...searchFilter,
+      },
       include: {
         author: true,
         user: true,
-        config: true,
-        comment: true,
+        config: {
+          include: {
+            author: true,
+          },
+        },
+        comment: {
+          include: {
+            author: true,
+          },
+        },
       },
     });
 

@@ -29,7 +29,7 @@ export default function UserProfile() {
                 }}
                 width="100%"
                 height="100%"
-                src={isSuccess && userData.avatarUrl}
+                src={isSuccess && userData.avatarUrl ? userData.avatarUrl : undefined}
                 alt="avatar"
                 withPlaceholder
               />

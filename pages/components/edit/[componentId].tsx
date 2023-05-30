@@ -25,6 +25,7 @@ import {
 import { storage } from '../../../lib/utils';
 import { useTemplateData } from '../../../components/hooks/templates';
 import { useComponentData } from '../../../components/hooks/components';
+import { queryClient } from '../../../components/Providers/QueryProvider/QueryProvider';
 
 export default function EditComponentPage() {
   const router = useRouter();
@@ -46,7 +47,6 @@ export default function EditComponentPage() {
   });
 
   useEffect(() => {
-    // toggleLoading();
     if (isComponentLoaded && isTemplateLoaded) {
       templateData.fields.forEach((field: IField) => {
         switch (field.type) {
@@ -76,7 +76,6 @@ export default function EditComponentPage() {
       form.setFieldValue('imageUrl', componentData.data.imageUrl);
 
       setTemplateIsReady(true);
-      // toggleLoading();
     }
   }, [templateData]);
 
@@ -100,12 +99,12 @@ export default function EditComponentPage() {
           message: 'Компонент успешно сохранен',
           color: 'green',
         });
-        // toggleLoading();
+        queryClient.invalidateQueries(['components', componentData?.id]);
       },
-      onError: () => {
+      onError: (err: any) => {
         showNotification({
           title: 'Ошибка',
-          message: 'Что-то пошло не так',
+          message: err.response.data.message || 'Что-то пошло не так',
           color: 'red',
         });
         // toggleLoading();

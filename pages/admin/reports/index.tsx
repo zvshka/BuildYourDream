@@ -1,8 +1,11 @@
 import {
+  Anchor,
+  Box,
   Button,
   Center,
   Container,
   Divider,
+  Modal,
   NumberInput,
   Pagination,
   SegmentedControl,
@@ -16,12 +19,14 @@ import {
 } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { DatePickerInput, DatesProvider, DateTimePicker } from '@mantine/dates';
-import { openModal } from '@mantine/modals';
 import dayjs from 'dayjs';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { showNotification } from '@mantine/notifications';
+import Link from 'next/link';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
+import { useRouter } from 'next/router';
 import { Block, PageHeader } from '../../../components/Layout';
 import { useReportsList } from '../../../components/hooks/reports';
 import { storage } from '../../../lib/utils';
@@ -107,6 +112,12 @@ const ReportModal = ({ reportData }) => {
         </Text>
         <Text>
           <Text span weight={600}>
+            Виновник:{' '}
+          </Text>
+          {reportData.user.username}
+        </Text>
+        <Text>
+          <Text span weight={600}>
             Причина:{' '}
           </Text>
           {reportData.reason}
@@ -115,15 +126,35 @@ const ReportModal = ({ reportData }) => {
         {reportData.comment && (
           <Stack spacing={0}>
             <Text weight={600}>Содержание комментария:</Text>
-            <Text>{reportData.comment.body}</Text>
+            <Text>{reportData.commentBody}</Text>
           </Stack>
         )}
         {reportData.config && (
           <Stack spacing={0}>
             <Text weight={600}>Название сборки:</Text>
-            <Text>{reportData.config.title}</Text>
+            <Text>{reportData.configTitle}</Text>
             <Text weight={600}>Описание сборки:</Text>
-            <Text>{reportData.config.description}</Text>
+            <Text>{reportData.configDescription}</Text>
+            <Link href={`/configs/${reportData.config.id}`}>
+              <Anchor>Ссылка на сборку</Anchor>
+            </Link>
+          </Stack>
+        )}
+        {reportData.user && !reportData.config && !reportData.comment && (
+          <Stack spacing={0}>
+            <Text weight={600}>Биография пользователя:</Text>
+            <Text>{reportData.userBio || 'Нет биографии'}</Text>
+            <Text weight={600}>Ссылка на аватар пользователя:</Text>
+            {reportData.userAvatarUrl ? (
+              <Link href={reportData.userAvatarUrl || ''}>
+                <Anchor>Ссылка на аватар</Anchor>
+              </Link>
+            ) : (
+              <Text>Нет аватара</Text>
+            )}
+            <Link href={`/profile/${reportData.user.username}`}>
+              <Anchor>Ссылка на пользователя</Anchor>
+            </Link>
           </Stack>
         )}
         <Divider />
@@ -155,6 +186,7 @@ const ReportModal = ({ reportData }) => {
               <Switch
                 label="Удалить сборку/комментарий?"
                 {...approveForm.getInputProps('deleteSubject', { type: 'checkbox' })}
+                disabled={!reportData.config && !reportData.comment}
               />
             )}
           </Stack>
@@ -168,57 +200,81 @@ const ReportModal = ({ reportData }) => {
 };
 
 const ReportCard = ({ reportData }) => {
-  const handleShowReport = () => {
-    openModal({
-      title: (
-        <Text>
-          Жалоба на{' '}
-          {reportData.config ? 'сборку' : reportData.comment ? 'комментарий' : 'пользователя'}
-        </Text>
-      ),
-      children: <ReportModal reportData={reportData} />,
-    });
+  const router = useRouter();
+  const [showModal, { toggle }] = useDisclosure(false);
+
+  const handleToggle = () => {
+    toggle();
+    if (showModal) router.back();
+    else router.push(`/admin/reports?showReport=${reportData.id}`);
   };
 
+  useEffect(() => {
+    if (router.query.showReport === reportData.id) {
+      handleToggle();
+    }
+  }, []);
+
   return (
-    <Block sx={{ cursor: 'pointer' }} onClick={handleShowReport}>
-      <Stack spacing={8}>
-        <Title order={4}>
-          Жалоба на{' '}
-          {reportData.config ? 'сборку' : reportData.comment ? 'комментарий' : 'пользователя'}
-        </Title>
-        <Text>
-          <Text span weight={600}>
-            Автор:
-          </Text>{' '}
-          {reportData.author.username}
-        </Text>
-        <Text color={reportData.rejected ? 'red' : reportData.approved ? 'green' : 'blue'}>
-          <Text span color="black" weight={600}>
-            Статус:{' '}
+    <Box>
+      <Modal
+        opened={showModal}
+        onClose={handleToggle}
+        title={
+          <Text>
+            Жалоба на{' '}
+            {reportData.config ? 'сборку' : reportData.comment ? 'комментарий' : 'пользователя'}
           </Text>
-          {reportData.approved
-            ? 'Рассмотрена'
-            : reportData.rejected
-            ? 'Отклонена'
-            : 'В ожидании рассмотрения'}
-        </Text>
-      </Stack>
-    </Block>
+        }
+      >
+        <ReportModal reportData={reportData} />
+      </Modal>
+      <Block sx={{ cursor: 'pointer' }} onClick={handleToggle}>
+        <Stack spacing={8}>
+          <Title order={4}>
+            Жалоба на{' '}
+            {reportData.config ? 'сборку' : reportData.comment ? 'комментарий' : 'пользователя'}
+          </Title>
+          <Text>
+            <Text span weight={600}>
+              Автор:
+            </Text>{' '}
+            {reportData.author.username}
+          </Text>
+          <Text color={reportData.rejected ? 'red' : reportData.approved ? 'green' : 'blue'}>
+            <Text span color="black" weight={600}>
+              Статус:{' '}
+            </Text>
+            {reportData.approved
+              ? 'Рассмотрена'
+              : reportData.rejected
+              ? 'Отклонена'
+              : 'В ожидании рассмотрения'}
+          </Text>
+        </Stack>
+      </Block>
+    </Box>
   );
 };
 
 export default function ReportsPage() {
   const [activePage, setPage] = useState(1);
 
-  const filterForm = useForm({
+  const filterForm = useForm<{
+    search: string;
+    status: 'all' | 'approved' | 'rejected' | 'waiting';
+    createdAt: [Date | null, Date | null];
+    reviewAt: [Date | null, Date | null];
+  }>({
     initialValues: {
       search: '',
       status: 'all',
-      createdAt: [],
-      reviewAt: [],
+      createdAt: [null, null],
+      reviewAt: [null, null],
     },
   });
+
+  const [debouncedSearch] = useDebouncedValue(filterForm.values.search, 300);
 
   const {
     data: reportsData,
@@ -226,11 +282,21 @@ export default function ReportsPage() {
     refetch,
   } = useReportsList({
     page: activePage,
+    search: debouncedSearch,
+    createdAt: filterForm.values.createdAt,
+    reviewAt: filterForm.values.reviewAt,
+    status: filterForm.values.status,
   });
 
   useEffect(() => {
     refetch();
-  }, [activePage]);
+  }, [
+    activePage,
+    debouncedSearch,
+    filterForm.values.status,
+    filterForm.values.createdAt,
+    filterForm.values.reviewAt,
+  ]);
 
   return (
     <Container size="xl" px={0}>

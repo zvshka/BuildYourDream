@@ -65,13 +65,19 @@ model Report {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User     @relation(fields: [userId], references: [id], name: "suspiciousUser")
-  config  Config?  @relation(fields: [configId], references: [id], onDelete: SetNull)
-  comment Comment? @relation(fields: [commentId], references: [id])
+  user          User    @relation(fields: [userId], references: [id], name: "suspiciousUser")
+  userId        String
+  userBio       String?
+  userAvatarUrl String?
 
-  userId    String
-  configId  String?
-  commentId String?
+  config            Config? @relation(fields: [configId], references: [id])
+  configId          String?
+  configTitle       String?
+  configDescription String?
+
+  comment     Comment? @relation(fields: [commentId], references: [id])
+  commentId   String?
+  commentBody String?
 }
 
 model Comment {

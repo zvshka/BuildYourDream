@@ -25,6 +25,7 @@ import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { openConfirmModal, openModal } from '@mantine/modals';
 import { useContextMenu } from 'mantine-contextmenu';
+import { useEffect, useState } from 'react';
 import { NextLink } from '../../general/NextLink/NextLink';
 import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
 import { storage } from '../../../../lib/utils';
@@ -60,6 +61,7 @@ export function ConfigCard({ link, configData }) {
   const linkProps = { href: link };
   const { user } = useAuth();
   const showContextMenu = useContextMenu();
+  const [contextMenu, setContextMenu] = useState<any[]>([]);
 
   const deleteConfigMutation = useMutation(
     () =>
@@ -123,7 +125,7 @@ export function ConfigCard({ link, configData }) {
       },
     });
   };
-  const handleReport = () => {
+  const handleReportConfig = () => {
     openModal({
       title: 'Жалоба на сборку',
       children: <ReportForm configId={configData?.id} />,
@@ -141,6 +143,49 @@ export function ConfigCard({ link, configData }) {
     likeMutation.mutate({ configId: configData.id, status: configData.liked ? 'unlike' : 'like' });
   };
 
+  useEffect(() => {
+    if (user) {
+      if (user.id !== configData.authorId && user.role === 'USER') {
+        setContextMenu([
+          {
+            key: 'report',
+            onClick: handleReportConfig,
+            title: 'Пожаловаться на сборку',
+            icon: <IconFlag size="1rem" />,
+            color: 'red',
+          },
+        ]);
+      } else if (user.id === configData.authorId) {
+        setContextMenu([
+          {
+            key: 'delete',
+            onClick: handleDelete,
+            title: 'Удалить сборку',
+            icon: <IconTrash size="1rem" />,
+            color: 'red',
+          },
+        ]);
+      } else if (user.id !== configData.authorId && user.role !== 'USER') {
+        setContextMenu([
+          {
+            key: 'report',
+            onClick: handleReportConfig,
+            title: 'Пожаловаться на сборку',
+            icon: <IconFlag size="1rem" />,
+            color: 'red',
+          },
+          {
+            key: 'delete',
+            onClick: handleDelete,
+            title: 'Удалить сборку',
+            icon: <IconTrash size="1rem" />,
+            color: 'red',
+          },
+        ]);
+      }
+    }
+  }, [user]);
+
   return (
     <Card
       withBorder
@@ -148,35 +193,7 @@ export function ConfigCard({ link, configData }) {
       className={classes.card}
       component={NextLink}
       {...linkProps}
-      onContextMenu={showContextMenu(
-        user
-          ? user.id !== configData.authorId && user.role === 'USER'
-            ? [
-                {
-                  key: 'report',
-                  onClick: handleReport,
-                  title: 'Пожаловаться на сборку',
-                  icon: <IconFlag size="1rem" />,
-                  color: 'red',
-                },
-              ]
-            : [
-                {
-                  key: 'report',
-                  onClick: handleReport,
-                  title: 'Пожаловаться на сборку',
-                  icon: <IconFlag size="1rem" />,
-                },
-                {
-                  key: 'delete',
-                  onClick: handleDelete,
-                  title: 'Удалить сборку',
-                  icon: <IconTrash size="1rem" />,
-                  color: 'red',
-                },
-              ]
-          : []
-      )}
+      onContextMenu={showContextMenu(contextMenu)}
     >
       <Stack h="100%" spacing={0}>
         <Group position="apart">
@@ -208,7 +225,7 @@ export function ConfigCard({ link, configData }) {
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      handleReport();
+                      handleReportConfig();
                     }}
                   >
                     Пожаловаться
@@ -238,15 +255,19 @@ export function ConfigCard({ link, configData }) {
         <Group position="apart" className={classes.footer} align="end" mt="auto">
           <Link href={`/profile/${configData.author.username}`}>
             <Center
-              onContextMenu={showContextMenu([
-                {
-                  key: 'report',
-                  icon: <IconFlag size="1rem" />,
-                  onClick: handleReportUser,
-                  title: 'Пожаловаться на пользователя',
-                  color: 'red',
-                },
-              ])}
+              onContextMenu={showContextMenu(
+                user && user.id !== configData.authorId
+                  ? [
+                      {
+                        key: 'report',
+                        icon: <IconFlag size="1rem" />,
+                        onClick: handleReportUser,
+                        title: 'Пожаловаться на пользователя',
+                        color: 'red',
+                      },
+                    ]
+                  : []
+              )}
             >
               <Avatar src={configData.author.avatarUrl} size={24} radius="xl" mr="xs" />
               <Text fz="sm" inline>

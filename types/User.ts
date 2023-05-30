@@ -3,9 +3,10 @@ export interface User {
   id: string;
   email: string;
   emailVerified?: any;
-  avatarUrl?: string
-  username?: string;
+  avatarUrl?: string;
+  username: string;
   role: string;
+  isBanned: boolean;
   createdAt: any;
   updatedAt: any;
 }

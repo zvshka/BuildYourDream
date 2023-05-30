@@ -18,6 +18,9 @@
     "storybook": "start-storybook -p 7001 -h localhost",
     "storybook:build": "build-storybook"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/modifiers": "^6.0.1",
@@ -99,6 +102,7 @@
     "storybook-addon-turbo-build": "^1.1.0",
     "storybook-dark-mode": "^1.1.2",
     "ts-jest": "^29.0.3",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "ts-node": "^10.9.1"
   }
 }

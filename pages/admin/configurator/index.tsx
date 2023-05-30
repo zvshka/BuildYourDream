@@ -313,8 +313,10 @@ const ConstraintsForm = () => {
 
   return (
     <Box>
+      <PageHeader title="Настройка ограничений" />
+
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Stack>
+        <Stack mt="md">
           <Group>
             <Button onClick={() => form.insertListItem('constraints', { id: cuid(), data: {} })}>
               Добавить
@@ -369,17 +371,18 @@ export default function AdminConfigurator() {
   return (
     <Container size="xl" px={0}>
       <Tabs defaultValue="configurator" variant="pills">
-        <Tabs.List>
-          <Tabs.Tab value="constraints">Настройки ограничений</Tabs.Tab>
-          <Tabs.Tab value="components">Настройки компонентов</Tabs.Tab>
-          <Tabs.Tab value="configurator">Настройки конфигуратора</Tabs.Tab>
-        </Tabs.List>
+        <Block>
+          <Tabs.List>
+            <Tabs.Tab value="constraints">Настройки ограничений</Tabs.Tab>
+            <Tabs.Tab value="configurator">Настройки конфигуратора</Tabs.Tab>
+          </Tabs.List>
+        </Block>
 
-        <Tabs.Panel value="constraints" pt="xs">
+        <Tabs.Panel value="constraints" pt="md">
           <ConstraintsForm />
         </Tabs.Panel>
 
-        <Tabs.Panel value="configurator" pt="xs">
+        <Tabs.Panel value="configurator" pt="md">
           <ConfiguratorForm />
         </Tabs.Panel>
       </Tabs>

@@ -1,6 +1,6 @@
-import { handler } from '../../../lib/handler';
-import { authMiddleware } from '../../../lib/guards';
-import UserService from '../../../services/User.service';
+import { handler } from '../../../../lib/handler';
+import { authMiddleware } from '../../../../lib/guards';
+import UserService from '../../../../services/User.service';
 
 const api = handler();
 

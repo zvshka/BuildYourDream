@@ -2,6 +2,9 @@ import { internalsSymbol, Position } from 'reactflow';
 import { IConstraint } from '../types/Constraints';
 import { IComponent, ITemplate } from '../types/Template';
 
+// export const isDate = (value: string) =>
+//   new Date(value).toString() !== 'Invalid Date' && !Number.isNaN(new Date(value).getTime());
+
 export const storage = {
   getToken: () =>
     window.localStorage.getItem('accessToken')
