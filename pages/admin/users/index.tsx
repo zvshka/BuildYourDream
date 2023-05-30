@@ -7,13 +7,13 @@ import { IconBan } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
+import { useDebouncedValue } from '@mantine/hooks';
 import { storage } from '../../../lib/utils';
 import { User } from '../../../types/User';
 import { useAuth } from '../../../components/Providers/AuthContext/AuthWrapper';
 import { Block, PageHeader } from '../../../components/Layout';
 import { useUsersList } from '../../../components/hooks/users';
 import { queryClient } from '../../../components/Providers/QueryProvider/QueryProvider';
-import { useDebouncedValue } from '@mantine/hooks';
 
 export default function AdminUsers() {
   const { user, isLoggingIn } = useAuth();
@@ -121,6 +121,7 @@ export default function AdminUsers() {
                   <Text>{dayjs(record.createdAt).format('DD.MM.YYYY hh:mm')}</Text>
                 ),
               },
+              { accessor: 'role', title: 'Роль' },
               {
                 accessor: 'isBanned',
                 title: 'Забанен',
