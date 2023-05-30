@@ -107,7 +107,13 @@ class CommentService {
         },
         thread: {
           include: {
-            author: true,
+            author: {
+              select: {
+                id: true,
+                username: true,
+                avatarUrl: true,
+              },
+            },
             deletedBy: {
               select: {
                 role: true,
@@ -124,7 +130,10 @@ class CommentService {
 
     return result.map((c) => ({
       ...c,
-      body: c.isDeleted && (!user || (user && user.role === 'USER')) ? '' : c.body,
+      body:
+        c.isDeleted && (!user || (user && user.role === 'USER' && user.id !== c.authorId))
+          ? ''
+          : c.body,
     }));
   }
 

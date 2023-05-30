@@ -8,6 +8,7 @@ import {
   MediaQuery,
   Modal,
   Pagination,
+  SimpleGrid,
   Stack,
   Tabs,
   Text,
@@ -31,6 +32,7 @@ import { ApiError } from '../../lib/ApiError';
 import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 import { useUpdatesList } from '../../components/hooks/updates';
 import { DEPENDS_ON, RANGE, SELECT } from '../../types/FieldTypes';
+import { queryClient } from '../../components/Providers/QueryProvider/QueryProvider';
 
 const ReactDiffViewer = dynamic(() => import('react-diff-viewer'), {
   ssr: false,
@@ -183,7 +185,7 @@ const ComponentsPanel = () => {
                 </Modal>
                 <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
                   <Grid>
-                    <Grid.Col span="auto">
+                    <Grid.Col span={8}>
                       <Box
                         href={`/components/${component.templateId}/${component.id}`}
                         key={component.id}
@@ -262,15 +264,7 @@ const ComponentsPanel = () => {
   );
 };
 
-const UpdateRow = ({
-  updateData,
-  onApprove,
-  onReject,
-}: {
-  updateData: any;
-  onApprove: any;
-  onReject: any;
-}) => {
+const UpdateRow = ({ updateData }: { updateData: any }) => {
   const [oldDataText, setOldDataText] = useState('');
   const [newDataText, setNewDataText] = useState('');
   const theme = useMantineTheme();
@@ -364,130 +358,10 @@ const UpdateRow = ({
 
   const isSmall = useMediaQuery(theme.fn.smallerThan('sm').replace('@media', ''));
 
-  const [opened, toggle] = useToggle();
+  const [diffOpened, toggleDiff] = useToggle();
+  const [rejectOpened, toggleReject] = useToggle();
 
-  return (
-    <Box>
-      <Modal opened={opened} onClose={toggle} size={1200} centered title="Изменения">
-        <Box sx={{ height: '100%', width: '100%', overflowX: 'auto', display: 'flex' }}>
-          <Box sx={{ flex: '1 0 auto', maxWidth: 1800 }}>
-            <ReactDiffViewer
-              oldValue={oldDataText}
-              newValue={newDataText}
-              showDiffOnly
-              splitView={!isSmall}
-            />
-          </Box>
-        </Box>
-      </Modal>
-      {updateData.templateToUpdate ? (
-        <Block>
-          <Grid sx={{ height: '100%' }}>
-            <Grid.Col span="auto">
-              <Stack>
-                <Title mb="sm" order={3}>
-                  {updateData.templateToUpdate.name}
-                </Title>
-                <Text>Изменение категории</Text>
-                <Text>Подробности в диалоговом окне по кнопке Изменения</Text>
-              </Stack>
-            </Grid.Col>
-            <Grid.Col span={12} md="content">
-              <Stack justify="center" sx={{ height: '100%' }}>
-                <Button onClick={() => toggle()}>Изменения</Button>
-                {user && user.role === 'ADMIN' && (
-                  <>
-                    <Button onClick={() => onApprove(updateData.id)} color="green">
-                      Одобрить
-                    </Button>
-                    <Button onClick={() => onReject(updateData.id)} color="red">
-                      Отклонить
-                    </Button>
-                  </>
-                )}
-              </Stack>
-            </Grid.Col>
-          </Grid>
-        </Block>
-      ) : (
-        <Stack spacing="xs">
-          {/*<ComponentRowById*/}
-          {/*  component={updateData.componentToUpdate.data}*/}
-          {/*  templateId={component.templateId}*/}
-          {/*  rightSide={*/}
-          {/*    <Stack justify="center" sx={{ height: '100%' }}>*/}
-          {/*      <Button onClick={() => toggle()}>Изменения</Button>*/}
-          {/*      {user && user.role === 'ADMIN' && (*/}
-          {/*        <>*/}
-          {/*          <Button onClick={() => onApprove(updateData.id)} color="green">*/}
-          {/*            Одобрить*/}
-          {/*          </Button>*/}
-          {/*          <Button onClick={() => onReject(updateData.id)} color="red">*/}
-          {/*            Отклонить*/}
-          {/*          </Button>*/}
-          {/*        </>*/}
-          {/*      )}*/}
-          {/*    </Stack>*/}
-          {/*  }*/}
-          {/*/>*/}
-        </Stack>
-      )}
-    </Box>
-  );
-};
-
-const UpdatesPanel = () => {
-  const { user } = useAuth();
-  const [activePage, setPage] = useState(1);
-  const [filters, setFilters] = useState({
-    page: activePage,
-  });
-
-  const [showReject, toggle] = useToggle();
-
-  const { data: updatesData, isSuccess, refetch } = useUpdatesList(filters);
-
-  useEffect(() => {
-    setFilters((currentFilter) => ({ ...currentFilter, page: activePage }));
-  }, [activePage]);
-
-  useEffect(() => {
-    refetch();
-  }, [filters]);
-
-  const approveUpdate = useMutation(
-    (id: string) =>
-      axios.post(
-        '/api/updates/approve',
-        {
-          updateId: id,
-        },
-        {
-          headers: {
-            authorization: `Bearer ${storage.getToken()}`,
-          },
-        }
-      ),
-    {
-      onSuccess: () => {
-        showNotification({
-          title: 'Успех',
-          message: 'Вы успешно одобрили изменения',
-          color: 'green',
-        });
-        refetch();
-      },
-      onError: (err: ApiError) => {
-        showNotification({
-          title: 'Ошибка',
-          message: err.stack,
-          color: 'red',
-        });
-      },
-    }
-  );
-
-  const rejectUpdate = useMutation(
+  const rejectUpdateMutation = useMutation(
     ({ id, reason }: { id: string; reason: string }) =>
       axios.post(
         '/api/updates/reject',
@@ -508,24 +382,143 @@ const UpdatesPanel = () => {
           message: 'Вы успешно отклонили изменения',
           color: 'green',
         });
-        refetch();
+        queryClient.invalidateQueries(['updates', 'list']);
       },
-      onError: (err: ApiError) => {
+      onError: (err: any) => {
         showNotification({
           title: 'Ошибка',
-          message: err.stack,
+          message: err.response.data.message || 'Что-то пошло не так',
           color: 'red',
         });
       },
     }
   );
 
-  const handleApprove = (id: string) => {
-    approveUpdate.mutate(id);
+  const approveUpdateMutation = useMutation(
+    (id: string) =>
+      axios.post(
+        '/api/updates/approve',
+        {
+          updateId: id,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${storage.getToken()}`,
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Вы успешно одобрили изменения',
+          color: 'green',
+        });
+        queryClient.invalidateQueries(['updates', 'list']);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
+
+  const handleApprove = () => {
+    approveUpdateMutation.mutate(updateData.id);
   };
-  const handleReject = () => {
-    toggle();
-  };
+
+  return (
+    <Box>
+      <Modal opened={diffOpened} onClose={toggleDiff} size={1200} centered title="Изменения">
+        <Box sx={{ height: '100%', width: '100%', overflowX: 'auto', display: 'flex' }}>
+          <Box sx={{ flex: '1 0 auto', maxWidth: 1800 }}>
+            <ReactDiffViewer
+              oldValue={oldDataText}
+              newValue={newDataText}
+              showDiffOnly
+              splitView={!isSmall}
+            />
+          </Box>
+        </Box>
+      </Modal>
+      <Modal opened={rejectOpened} onClose={toggleReject} title="Форма отказа изменений">
+        <RejectForm id={updateData.id} onSubmit={rejectUpdateMutation.mutate} />
+      </Modal>
+      <Block onClick={() => toggleDiff()} sx={{ cursor: 'pointer' }}>
+        <Stack spacing={4}>
+          <Title order={3}>
+            Изменения {updateData.templateToUpdate ? 'категории' : 'компонента'}
+          </Title>
+          <Text>Автор: {updateData.author.username}</Text>
+          {updateData.templateToUpdate && (
+            <Text>Категория: {updateData.templateToUpdate.title}</Text>
+          )}
+          {updateData.componentToUpdate && (
+            <Text>Компонент: {updateData.componentToUpdate.data['Название']}</Text>
+          )}
+          <Text weight={600}>
+            Статус:{' '}
+            <Text
+              span
+              weight={500}
+              color={updateData.approved ? 'green' : updateData.rejected ? 'red' : 'blue'}
+            >
+              {updateData.approved
+                ? 'Одобрено'
+                : updateData.rejected
+                ? 'Отклонено'
+                : 'Ожидает рассмотрения'}
+            </Text>
+          </Text>
+          {updateData.rejected && <Text>Причина отказа: {updateData.rejectReason}</Text>}
+          {user && user.role === 'ADMIN' && !updateData.approved && !updateData.rejected && (
+            <Stack spacing={4}>
+              <Button
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  handleApprove();
+                }}
+                color="green"
+              >
+                Одобрить
+              </Button>
+              <Button
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  toggleReject();
+                }}
+                color="red"
+              >
+                Отклонить
+              </Button>
+            </Stack>
+          )}
+        </Stack>
+      </Block>
+    </Box>
+  );
+};
+
+const UpdatesPanel = () => {
+  const [activePage, setPage] = useState(1);
+  const [filters, setFilters] = useState({
+    page: activePage,
+  });
+
+  const { data: updatesData, isSuccess, refetch } = useUpdatesList(filters);
+
+  useEffect(() => {
+    setFilters((currentFilter) => ({ ...currentFilter, page: activePage }));
+  }, [activePage]);
+
+  useEffect(() => {
+    refetch();
+  }, [filters]);
 
   return (
     <Box sx={{ width: '100%' }} py="xs">
@@ -539,28 +532,31 @@ const UpdatesPanel = () => {
             onChange={setPage}
           />
         </Block>
-        <Stack spacing="xl">
-          {isSuccess &&
-            updatesData.totalCount > 0 &&
-            updatesData.result.map((r) => (
-              <Box>
-                <Modal opened={showReject} onClose={toggle} title="Форма отказа изменений">
-                  <RejectForm id={r.id} onSubmit={rejectUpdate.mutate} />
-                </Modal>
-                <UpdateRow updateData={r} onApprove={handleApprove} onReject={handleReject} />
+        {isSuccess && updatesData.totalCount === 0 && (
+          <Block h={150}>
+            <Flex justify="center" h="100%">
+              <Center>
+                <Text>Упс... здесь ничего нет</Text>
+              </Center>
+            </Flex>
+          </Block>
+        )}
+        {isSuccess && updatesData.totalCount > 0 && (
+          <SimpleGrid
+            cols={1}
+            breakpoints={[
+              { minWidth: 'sm', cols: 2 },
+              { minWidth: 'md', cols: 3 },
+              { minWidth: 'lg', cols: 4 },
+            ]}
+          >
+            {updatesData.result.map((request) => (
+              <Box key={request.id}>
+                <UpdateRow updateData={request} />
               </Box>
             ))}
-          {isSuccess && updatesData.totalCount === 0 && (
-            <Block h={150}>
-              <Flex justify="center" h="100%">
-                <Center>
-                  <Text>Упс... здесь ничего нет</Text>
-                </Center>
-              </Flex>
-            </Block>
-          )}
-        </Stack>
-
+          </SimpleGrid>
+        )}
         <Block mt="md" shadow={0}>
           <Pagination
             value={activePage}

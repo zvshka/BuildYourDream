@@ -254,8 +254,9 @@ export function Comment({
               icon: <IconTrash size="1rem" />,
               color: 'red',
             },
-            commentData.isDeleted && commentData.deletedBy &&
-              ((commentData.deletedBy.id === user.id) ||
+            commentData.isDeleted &&
+              commentData.deletedBy &&
+              (commentData.deletedBy.id === user.id ||
                 (commentData.deletedBy.role === 'USER' && commentData.deletedBy.id === user.id) ||
                 (commentData.deletedBy.role !== 'USER' && user.role !== 'USER')) && {
                 key: 'undelete',
@@ -269,6 +270,8 @@ export function Comment({
       }
     }
   }, [user]);
+
+  console.log(commentData);
 
   return (
     <Block
@@ -344,14 +347,15 @@ export function Comment({
           color={commentData.isDeleted ? 'gray' : 'black'}
           italic={commentData.isDeleted}
         >
-          {commentData.isDeleted && user?.role === 'USER' && user.id !== commentData.author.id ? (
-            <Box>
-              <Text>
-                {'<'}Сообщение удалено{'>'}
-              </Text>
-            </Box>
-          ) : (
+          {!commentData.isDeleted ||
+          (commentData.isDeleted &&
+            user &&
+            (user.role !== 'USER' || user.id === commentData.authorId)) ? (
             commentData.body
+          ) : (
+            <Text span>
+              {'<'}Сообщение удалено{'>'}
+            </Text>
           )}
         </Text>
       )}

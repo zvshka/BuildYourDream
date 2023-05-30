@@ -206,6 +206,7 @@ export default function HomePage() {
       },
     }
   );
+
   const handleSubmit = (values: typeof form.values) => {
     const entries = Object.entries(values.components);
     const notAddedButRequired = templates

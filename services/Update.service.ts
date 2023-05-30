@@ -77,10 +77,6 @@ class UpdateService {
           createdAt: 'desc',
         },
       ],
-      where: {
-        approved: false,
-        rejected: false,
-      },
     });
 
     let currentPage = 1;
@@ -99,14 +95,17 @@ class UpdateService {
           createdAt: 'desc',
         },
       ],
-      where: {
-        approved: false,
-        rejected: false,
-      },
       include: {
         componentToUpdate: {
           include: {
             template: true,
+          },
+        },
+        author: {
+          select: {
+            username: true,
+            avatarUrl: true,
+            id: true,
           },
         },
         templateToUpdate: true,
