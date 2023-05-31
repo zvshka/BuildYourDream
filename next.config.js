@@ -1,21 +1,19 @@
-const production = process.env.NODE_ENV === 'production';
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+// const withBundleAnalyzer = require('@next/bundle-analyzer')({
+//   enabled: process.env.ANALYZE === 'true',
+// });
 
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: !production,
+  disable: process.env.NODE_ENV === 'development',
+  publicExcludes: ['!uploads/*.*'],
 });
 
-module.exports = {
-  ...withPWA(),
-  ...withBundleAnalyzer(),
+module.exports = withPWA({
   swcMinify: true,
-  reactStrictMode: !production,
+  reactStrictMode: process.env.NODE_ENV === 'development',
   eslint: {
     ignoreDuringBuilds: true,
   },
-};
+});
