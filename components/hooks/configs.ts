@@ -1,19 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { User } from '../../types/User';
-import { IComponent } from '../../types/Template';
 import { storage } from '../../lib/utils';
-
-interface IConfigsList {
-  totalCount: number;
-  currentPage: number;
-  result: {
-    id: string;
-    title: string;
-    description: string;
-    author: User;
-  }[];
-}
+import { IConfig, IConfigsList } from '../../types/Config';
 
 export function useConfigsList(filter?: any) {
   return useQuery<IConfigsList>({
@@ -31,25 +19,35 @@ export function useConfigsList(filter?: any) {
 }
 
 export function useConfigData(configId: string) {
-  return useQuery<{
-    id: string;
-    title: string;
-    description: string;
-    author: User;
-    authorId: string;
-    price: [number, number];
-    configTier: string;
-    components: {
-      id: string;
-      templateId: string;
-      componentId: string;
-      component: IComponent;
-    }[];
-  }>({
+  return useQuery<IConfig>({
     queryKey: ['configs', 'list', configId],
     queryFn: async (ctx) => {
       const { data } = await axios.get(`/api/configs/${configId}`);
       return data;
     },
+  });
+}
+
+export function useUserConfigsList(
+  filter: {
+    page: number;
+  },
+  username: string
+) {
+  return useQuery({
+    queryFn: async () => {
+      const { data } = await axios.get('/api/configs/my', {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+        params: new URLSearchParams({
+          page: filter.page.toString(),
+          username,
+        }),
+      });
+      return data;
+    },
+    queryKey: ['configs', 'list', username],
+    enabled: !!username,
   });
 }

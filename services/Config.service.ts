@@ -111,6 +111,23 @@ class ConfigService {
   }
 
   async getList(filter: { [p: string]: string | string[] | undefined }, user?: User) {
+    let userFilter = {};
+    if (filter.username && filter.username.length > 0) {
+      userFilter = Object.assign(userFilter, {
+        author: {
+          username: filter.username,
+        },
+      });
+    }
+
+    let currentPage = 1;
+    if (filter.page) {
+      if (!Number.isNaN(filter.page)) {
+        currentPage = parseInt(filter.page as string, 10);
+        if (currentPage <= 0) currentPage = 1;
+      }
+    }
+
     const totalCount = await prisma.config.count({
       orderBy: {
         createdAt: 'desc',
@@ -121,16 +138,9 @@ class ConfigService {
           mode: 'insensitive',
         },
         isDeleted: false,
+        ...userFilter,
       },
     });
-
-    let currentPage = 1;
-    if (filter.page) {
-      if (!Number.isNaN(filter.page)) {
-        currentPage = parseInt(filter.page as string, 10);
-        if (currentPage <= 0) currentPage = 1;
-      }
-    }
 
     const result = await prisma.config.findMany({
       skip: (currentPage - 1) * 15,
@@ -144,6 +154,7 @@ class ConfigService {
           mode: 'insensitive',
         },
         isDeleted: false,
+        ...userFilter,
       },
       include: {
         author: true,

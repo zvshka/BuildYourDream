@@ -5,6 +5,7 @@ import {
   Container,
   Flex,
   Grid,
+  Group,
   MediaQuery,
   Modal,
   Pagination,
@@ -454,7 +455,7 @@ const UpdateRow = ({ updateData }: { updateData: any }) => {
           </Title>
           <Text>Автор: {updateData.author.username}</Text>
           {updateData.templateToUpdate && (
-            <Text>Категория: {updateData.templateToUpdate.title}</Text>
+            <Text>Категория: {updateData.templateToUpdate.name}</Text>
           )}
           {updateData.componentToUpdate && (
             <Text>Компонент: {updateData.componentToUpdate.data['Название']}</Text>
@@ -475,7 +476,7 @@ const UpdateRow = ({ updateData }: { updateData: any }) => {
           </Text>
           {updateData.rejected && <Text>Причина отказа: {updateData.rejectReason}</Text>}
           {user && user.role === 'ADMIN' && !updateData.approved && !updateData.rejected && (
-            <Stack spacing={4}>
+            <Group grow spacing={4} mt="md">
               <Button
                 onClick={(event) => {
                   event.preventDefault();
@@ -496,7 +497,7 @@ const UpdateRow = ({ updateData }: { updateData: any }) => {
               >
                 Отклонить
               </Button>
-            </Stack>
+            </Group>
           )}
         </Stack>
       </Block>

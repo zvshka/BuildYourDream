@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { Center, Container, Grid, Image, Stack, Tabs, Text, Textarea, Title } from '@mantine/core';
 import { useUserData } from '../../components/hooks/users';
 import { Block, PageHeader } from '../../components/Layout';
+import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfiigsList';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -71,6 +72,9 @@ export default function UserProfile() {
                   </Center>
                 </Block>
               </Stack>
+            </Tabs.Panel>
+            <Tabs.Panel value="configs" mt="md">
+              <ConfigsList username={router.query.username as string} />
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>

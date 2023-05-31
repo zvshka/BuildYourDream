@@ -1,13 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-export function useUserConfigsList(username?: string) {
-  return useQuery({
-    queryFn: async () => {},
-    queryKey: ['user-configs', username],
-    enabled: !!username,
-  });
-}
-
 export function useUserComponentsList(username?: string) {
   return useQuery({
     queryFn: async () => {},

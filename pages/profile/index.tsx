@@ -19,12 +19,10 @@ import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { Block, PageHeader } from '../../components/Layout';
 import { uploadImageMutation } from '../../components/hooks/images';
 import { storage } from '../../lib/utils';
-import { useUserConfigsList } from '../../components/hooks/profile';
+import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfiigsList';
 
 export default function ProfilePage() {
   const { user, refetch } = useAuth();
-
-  const { data: userConfigs, isSuccess: isUserConfigsFetched } = useUserConfigsList(user?.username);
 
   const [bio, setBio] = useState('');
 
@@ -173,6 +171,9 @@ export default function ProfilePage() {
                   </Center>
                 </Block>
               </Stack>
+            </Tabs.Panel>
+            <Tabs.Panel value="configs" mt="md">
+              {user && <ConfigsList username={user.username} />}
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>
