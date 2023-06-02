@@ -1,7 +1,7 @@
 import { prisma } from '../lib/prisma';
 
 class ImagesService {
-  async upload({ filename, filepath, mimetype, size }) {
+  async upload({ filename, mimetype }) {
     const candidate = await prisma.image.findUnique({
       where: {
         filename,
@@ -11,10 +11,8 @@ class ImagesService {
     return prisma.image
       .create({
         data: {
-          filepath,
           filename,
           mimetype,
-          size,
         },
       })
       .catch((e) => {

@@ -18,8 +18,7 @@ import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Providers/AuthContext/AuthWrapper';
 
-// import 'reactflow/dist/style.css';
-import 'react-querybuilder/dist/query-builder.css';
+// import 'react-querybuilder/dist/query-builder.css';
 import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
 // eslint-disable-next-line import/order
 import { ContextMenuProvider } from 'mantine-contextmenu';
@@ -96,6 +95,7 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
         <link rel="shortcut icon" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
+        <meta name="yandex-verification" content="2e9aaf631b46fef3" />
       </Head>
 
       <ColorProvider value={primaryColor} setValue={changePrimaryColor}>

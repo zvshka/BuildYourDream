@@ -2,10 +2,12 @@ import fs from 'fs';
 import sharp from 'sharp';
 import { NextApiRequest } from 'next';
 import { MIME_TYPES } from '@mantine/dropzone';
+import path from 'path';
 import { handler } from '../../../lib/handler';
 import ImagesService from '../../../services/Images.service';
 
 const apiRoute = handler();
+const outputFolderName = path.resolve('./uploads');
 
 apiRoute.get(async (req: NextApiRequest & { query: { width: string; quality: string } }, res) => {
   const { name } = req.query;
@@ -19,7 +21,7 @@ apiRoute.get(async (req: NextApiRequest & { query: { width: string; quality: str
   const result = await ImagesService.getImage(name);
   if (result) {
     try {
-      const imageBuffer = fs.readFileSync(result.filepath);
+      const imageBuffer = fs.readFileSync(`${outputFolderName}/${result.filename}`);
       const sharped = await sharp(imageBuffer).resize({
         width: widthNumber > 0 ? widthNumber : undefined,
       });
