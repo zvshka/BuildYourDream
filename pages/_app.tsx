@@ -96,6 +96,7 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
         <link rel="shortcut icon" href="/favicon.svg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
+        <meta name="yandex-verification" content="2e9aaf631b46fef3" />
       </Head>
 
       <ColorProvider value={primaryColor} setValue={changePrimaryColor}>
