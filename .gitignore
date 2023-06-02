@@ -40,6 +40,7 @@ yarn-error.log*
 storybook-static
 
 public/uploads
+uploads/*
 public/sw.js*
 public/workbox-*.js*
 public/worker-*.js*

@@ -216,7 +216,7 @@ model Constraint {
 
 model Image {
   filename String @unique
-  filepath String
+  // filepath String
   mimetype String
-  size     Int
+  // size     Int
 }
