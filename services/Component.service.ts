@@ -113,6 +113,52 @@ class ComponentService {
     templateId: string,
     filter: { [p: string]: string | string[] | undefined }
   ) {
+    const candidate = await prisma.template.findUnique({
+      where: {
+        id: templateId,
+      },
+    });
+
+    if (!candidate) throw ApiError.BadRequest('Такой категории не существует');
+
+    let currentPage = 1;
+    if (filter.page) {
+      if (!Number.isNaN(filter.page)) {
+        currentPage = parseInt(filter.page as string, 10);
+        if (currentPage <= 0) currentPage = 1;
+      }
+    }
+
+    let searchFilter = {};
+    if (filter.search && filter.search.length > 0) {
+      searchFilter = Object.assign(searchFilter, {
+        data: {
+          path: ['Название'],
+          string_contains: filter.search,
+        },
+      });
+    }
+
+    let tiersFilter = {};
+    if (filter.tiers && filter.tiers.length > 0) {
+      const separated = (filter.tiers as string).split(' ');
+      const filtered = separated.filter((item) => ['low', 'medium', 'high'].includes(item));
+      const toAdd: string[] = [];
+      if (filtered.some((i) => i === 'low')) toAdd.push('low');
+      if (filtered.some((i) => i === 'medium')) toAdd.push('medium');
+      if (filtered.some((i) => i === 'high')) toAdd.push('high');
+      if (filtered.length > 0) {
+        tiersFilter = Object.assign(tiersFilter, {
+          OR: toAdd.map((item) => ({
+            data: {
+              path: 'tier',
+              string_contains: item,
+            },
+          })),
+        });
+      }
+    }
+
     const totalCount = await prisma.component.count({
       orderBy: [
         {
@@ -123,24 +169,9 @@ class ComponentService {
         approved: true,
         rejected: false,
         templateId,
-        AND: [
-          {
-            data: {
-              path: ['Название'],
-              string_contains: (filter?.search as string) || '',
-            },
-          },
-        ],
+        AND: [searchFilter, tiersFilter],
       },
     });
-
-    let currentPage = 1;
-    if (filter.page) {
-      if (!Number.isNaN(filter.page)) {
-        currentPage = parseInt(filter.page as string, 10);
-        if (currentPage <= 0) currentPage = 1;
-      }
-    }
 
     const result = await prisma.component.findMany({
       skip: (currentPage - 1) * 10,
@@ -154,14 +185,7 @@ class ComponentService {
         approved: true,
         rejected: false,
         templateId,
-        AND: [
-          {
-            data: {
-              path: ['Название'],
-              string_contains: (filter?.search as string) || '',
-            },
-          },
-        ],
+        AND: [searchFilter, tiersFilter],
       },
       include: {
         _count: {

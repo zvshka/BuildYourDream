@@ -5,10 +5,17 @@ import { IComponentBody } from '../../types/Template';
 interface IComponentsList {
   totalCount: number;
   currentPage: number;
-  result: { id: string; templateId: string; data: IComponentBody, totalComments: number }[];
+  result: { id: string; templateId: string; data: IComponentBody; totalComments: number }[];
 }
 
-export function useComponentsList(templateId: string, filter?: any) {
+export function useComponentsList(
+  templateId: string,
+  filter: {
+    page: number;
+    search: string;
+    tiers: string[];
+  }
+) {
   return useQuery<IComponentsList>({
     queryKey: ['components', 'list', templateId],
     queryFn: async () => {

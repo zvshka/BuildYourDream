@@ -76,12 +76,18 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
 
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
+  const [tiers, setTiers] = useState<string[]>([]);
 
   useEffect(() => {
     router.replace({
-      query: { ...router.query, search: debouncedSearch },
+      // query: { ...router.query, search: debouncedSearch, tiers },
+      query: new URLSearchParams({
+        ...router.query,
+        search: debouncedSearch,
+        tiers: tiers.join(' '),
+      }).toString(),
     });
-  }, [debouncedSearch]);
+  }, [debouncedSearch, tiers]);
 
   return (
     <Stack sx={{ width: '100%' }}>
@@ -93,10 +99,12 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
           <Accordion.Item value="tier">
             <Accordion.Control>Тир компонента</Accordion.Control>
             <Accordion.Panel>
-              <Checkbox.Group>
-                <Checkbox label="Low Tier" />
-                <Checkbox label="Medium Tier" />
-                <Checkbox label="High Tier" />
+              <Checkbox.Group value={tiers} onChange={setTiers}>
+                <Stack spacing="xs">
+                  <Checkbox label="Low Tier" value="low" />
+                  <Checkbox label="Medium Tier" value="medium" />
+                  <Checkbox label="High Tier" value="high" />
+                </Stack>
               </Checkbox.Group>
             </Accordion.Panel>
           </Accordion.Item>
@@ -109,13 +117,15 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
                   <Accordion.Panel>
                     {field.type === SELECT && (
                       <Checkbox.Group>
-                        {field.options.map((option: string, key: number) => (
-                          <Checkbox
-                            label={option}
-                            value={option}
-                            key={`${field.name}_option_${key}`}
-                          />
-                        ))}
+                        <Stack spacing="xs">
+                          {field.options.map((option: string, key: number) => (
+                            <Checkbox
+                              label={option}
+                              value={option}
+                              key={`${field.name}_option_${key}`}
+                            />
+                          ))}
+                        </Stack>
                       </Checkbox.Group>
                     )}
                     {(field.type === RANGE || field.type === NUMBER) && (
@@ -127,13 +137,15 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
                     {field.type === BOOL && <Select data={boolValues} defaultValue="all" />}
                     {field.type === DEPENDS_ON && (
                       <Checkbox.Group>
-                        {getValues(field).map((option: string, key: number) => (
-                          <Checkbox
-                            label={option}
-                            value={option}
-                            key={`${field.name}_option_${key}`}
-                          />
-                        ))}
+                        <Stack spacing="xs">
+                          {getValues(field).map((option: string, key: number) => (
+                            <Checkbox
+                              label={option}
+                              value={option}
+                              key={`${field.name}_option_${key}`}
+                            />
+                          ))}
+                        </Stack>
                       </Checkbox.Group>
                     )}
                   </Accordion.Panel>

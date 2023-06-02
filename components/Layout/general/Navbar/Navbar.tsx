@@ -240,7 +240,7 @@ export function NavbarSimpleColored() {
           lockScroll={false}
         >
           <Stack>
-            {user?.role !== 'USER' && (
+            {user && user?.role !== 'USER' && (
               <SegmentedControl
                 value={section}
                 onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
@@ -288,7 +288,7 @@ export function NavbarSimpleColored() {
                     <Overlay
                       opacity={0.6}
                       color="#000"
-                      zIndex={1}
+                      zIndex={4}
                       onClick={() => navigationContext.setClosed()}
                       sx={{ position: 'fixed' }}
                     />
@@ -365,7 +365,7 @@ export function NavbarSimpleColored() {
                         href="/auth/signin"
                       >
                         <IconLogout className={classes.linkIcon} stroke={1.5} />
-                        <span>Вход</span>
+                        <Text span>Вход</Text>
                       </UnstyledButton>
                     )}
                   </Navbar.Section>

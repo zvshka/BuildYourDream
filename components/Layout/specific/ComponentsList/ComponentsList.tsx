@@ -22,6 +22,7 @@ import { Filters } from '../../inputs/Filters/Filters';
 import { NextLink } from '../../general/NextLink/NextLink';
 import { ComponentRow } from '../../general/ComponentRow/ComponentRow';
 import { Block } from '../../general/Block/Block';
+import { useRouter } from 'next/router';
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -61,10 +62,17 @@ export const ComponentsList = ({
   onChoose?: any;
   viewport?: any;
 }) => {
+  const router = useRouter();
   const [activePage, setPage] = useState(1);
   const { classes } = useStyles();
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    page: number;
+    search: string;
+    tiers: string[];
+  }>({
     page: activePage,
+    search: '',
+    tiers: [],
   });
   const [showFilters, toggleFilters] = useToggle();
   const { data: templateData, isSuccess } = useTemplateData(categoryId);
@@ -84,6 +92,14 @@ export const ComponentsList = ({
     }
     setFilters((currentFilter) => ({ ...currentFilter, page: activePage }));
   }, [activePage]);
+
+  useEffect(() => {
+    setFilters((currentFilter) => ({
+      ...currentFilter,
+      search: (router.query.search as string) || '',
+      tiers: (router.query.tiers as string[]) || [],
+    }));
+  }, [router.query]);
 
   useEffect(() => {
     refetch();
