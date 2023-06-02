@@ -1,8 +1,8 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import { AppShell, useMantineTheme } from '@mantine/core';
+import { useHotkeys } from '@mantine/hooks';
 import { NavbarSimpleColored } from './general/Navbar/Navbar';
 import { HeaderWithLogo } from './general/Header/HeaderWithLogo';
-import { useHotkeys } from '@mantine/hooks';
 import { useNavigationContext } from '../Providers/NavigationContext/NavigationContext';
 
 export default function Layout({
@@ -16,7 +16,7 @@ export default function Layout({
   useHotkeys([
     [
       'Escape',
-      (event) => {
+      () => {
         if (navigationContext.opened) navigationContext.setClosed();
         else navigationContext.setOpened();
       },

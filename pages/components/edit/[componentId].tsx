@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Button, Container, Group, LoadingOverlay, Stack } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
+import { useMutation } from '@tanstack/react-query';
 import {
   ComponentFormProvider,
   useComponentForm,
@@ -11,13 +12,29 @@ import {
 import { ComponentForm } from '../../../components/Layout/forms/ComponentForm/ComponentForm';
 import { Block, PageHeader } from '../../../components/Layout';
 import { IField } from '../../../types/Field';
-import { IComponent, ITemplate } from '../../../types/Template';
-import { BOOL, LARGE_TEXT, NUMBER, RANGE, SELECT, TEXT } from '../../../types/FieldTypes';
+import { IComponentBody } from '../../../types/Template';
+import {
+  BOOL,
+  DEPENDS_ON,
+  LARGE_TEXT,
+  NUMBER,
+  RANGE,
+  SELECT,
+  TEXT,
+} from '../../../types/FieldTypes';
+import { storage } from '../../../lib/utils';
+import { useTemplateData } from '../../../components/hooks/templates';
+import { useComponentData } from '../../../components/hooks/components';
+import { queryClient } from '../../../components/Providers/QueryProvider/QueryProvider';
 
-export default function editComponentPage() {
+export default function EditComponentPage() {
   const router = useRouter();
-  const [componentData, setComponentData] = useState<IComponent>();
-  const [templateData, setTemplateData] = useState<ITemplate>();
+  const { data: componentData, isSuccess: isComponentLoaded } = useComponentData(
+    router.query.componentId as string
+  );
+  const { data: templateData, isSuccess: isTemplateLoaded } = useTemplateData(
+    componentData?.templateId
+  );
   const [templateIsReady, setTemplateIsReady] = useState<boolean>(false);
   const [loading, toggleLoading] = useToggle();
   const form = useComponentForm({
@@ -25,110 +42,89 @@ export default function editComponentPage() {
       tier: 'low',
       pros: [],
       cons: [],
-      image: {
-        base64: '',
-        file: null,
-      },
+      imageUrl: '',
     },
   });
 
   useEffect(() => {
-    toggleLoading();
-    axios
-      .get(`/api/components/${router.query.componentId}`)
-      .then((res) => setComponentData(res.data));
-  }, []);
-
-  useEffect(() => {
-    if (componentData?.templateId) {
-      axios
-        .get(`/api/templates/${componentData.templateId}`)
-        .then((res) => setTemplateData(res.data));
-    }
-  }, [componentData]);
-
-  useEffect(() => {
-    if (templateData) {
+    if (isComponentLoaded && isTemplateLoaded) {
       templateData.fields.forEach((field: IField) => {
         switch (field.type) {
           case TEXT:
           case LARGE_TEXT:
-            form.setFieldValue(field.name, componentData?.data[field.name] || '');
+            form.setFieldValue(field.name, componentData.data[field.name] || '');
             break;
           case NUMBER:
-            form.setFieldValue(field.name, componentData?.data[field.name] || 0);
+            form.setFieldValue(field.name, componentData.data[field.name] || 0);
             break;
           case BOOL:
-            form.setFieldValue(field.name, componentData?.data[field.name] || false);
+            form.setFieldValue(field.name, componentData.data[field.name] || false);
             break;
           case RANGE:
-            form.setFieldValue(field.name, componentData?.data[field.name] || [0, 0]);
+            form.setFieldValue(field.name, componentData.data[field.name] || [0, 0]);
             break;
           case SELECT:
-            form.setFieldValue(field.name, componentData?.data[field.name] || '');
+          case DEPENDS_ON:
+            form.setFieldValue(field.name, componentData.data[field.name] || '');
             break;
         }
       });
 
-      form.setFieldValue('pros', componentData?.data.pros || []);
-      form.setFieldValue('cons', componentData?.data.cons || []);
-      form.setFieldValue('image', { base64: componentData?.data?.image?.url, file: null });
+      form.setFieldValue('tier', componentData.data.tier);
+      form.setFieldValue('pros', componentData.data.pros || []);
+      form.setFieldValue('cons', componentData.data.cons || []);
+      form.setFieldValue('imageUrl', componentData.data.imageUrl);
 
       setTemplateIsReady(true);
-      toggleLoading();
     }
   }, [templateData]);
 
-  const uploadImage = (file: File) => {
-    const fd = new FormData();
-    fd.append('upload', file);
-    return axios.post('/api/images', fd, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  };
-
-  const saveData = (data: typeof form.values, image: null | Record<string, string>) =>
-    axios.patch(`/api/components/${componentData?.id}`, {
-      data: {
-        ...data,
-        image,
-      },
-      formId: componentData?.formId,
-    });
-
-  const handleSubmit = (data: typeof form.values) => {
-    toggleLoading();
-    if (data.image?.file) {
-      uploadImage(data.image.file)
-        .then((res) => saveData(data, res.data))
-        .then(() => {
-          showNotification({
-            title: 'Успех',
-            message: 'Компонент успешно сохранен',
-            color: 'green',
-          });
-          toggleLoading();
-        });
-    } else {
-      saveData(data, { url: form.values.image?.base64 as string }).then(() => {
+  const updateComponent = useMutation(
+    (newComponentData: IComponentBody) =>
+      axios.patch(
+        `/api/components/${componentData?.id}`,
+        {
+          data: newComponentData,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${storage.getToken()}`,
+          },
+        }
+      ),
+    {
+      onSuccess: () => {
         showNotification({
           title: 'Успех',
           message: 'Компонент успешно сохранен',
           color: 'green',
         });
-        toggleLoading();
-      });
+        queryClient.invalidateQueries(['components', componentData?.id]);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+        // toggleLoading();
+      },
     }
+  );
+
+  const handleSubmit = (data: typeof form.values) => {
+    updateComponent.mutate(data);
   };
 
   return (
     <ComponentFormProvider form={form}>
-      <Container size="sm">
+      <Container size="sm" px={0}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack>
-            <PageHeader title={`Изменение компонента: ${componentData?.data['Название']}`} />
+            <PageHeader
+              addBack
+              title={`Изменение компонента: ${componentData?.data['Название']}`}
+            />
             <Block sx={{ position: 'relative' }}>
               <LoadingOverlay visible={loading} overlayBlur={2} />
               {templateData && templateIsReady && <ComponentForm fields={templateData.fields} />}

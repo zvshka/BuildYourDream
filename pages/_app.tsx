@@ -17,19 +17,20 @@ import { ColorProvider } from '../components/Layout/general/ColorControl/ColorCo
 import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Providers/AuthContext/AuthWrapper';
-import Layout from '../components/Layout/Layout';
 
-import 'reactflow/dist/style.css';
+// import 'reactflow/dist/style.css';
 import 'react-querybuilder/dist/query-builder.css';
 import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
+// eslint-disable-next-line import/order
 import { ContextMenuProvider } from 'mantine-contextmenu';
+import Layout from '../components/Layout/Layout';
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);
 dayjs.extend(duration);
 dayjs.extend(calendar);
 
-dayjs.locale('ru');
+// dayjs.locale('ru');
 
 export default function App(props: AppProps & { colorScheme: ColorScheme; primaryColor: string }) {
   const { Component, pageProps } = props;
@@ -101,10 +102,11 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
           <MantineProvider theme={{ colorScheme, primaryColor }} withGlobalStyles withNormalizeCSS>
             <ContextMenuProvider>
-              <ModalsProvider>
-                <ReactQueryProvider>
-                  <AuthProvider>
-                    <NavigationProvider>
+              <ReactQueryProvider>
+                <AuthProvider>
+                  {/*<DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>*/}
+                  <NavigationProvider>
+                    <ModalsProvider>
                       <Notifications />
                       <RouterTransition />
                       {/*@ts-ignore*/}
@@ -115,10 +117,11 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
                           <Component {...pageProps} />
                         </Layout>
                       )}
-                    </NavigationProvider>
-                  </AuthProvider>
-                </ReactQueryProvider>
-              </ModalsProvider>
+                    </ModalsProvider>
+                  </NavigationProvider>
+                  {/*</DevSupport>*/}
+                </AuthProvider>
+              </ReactQueryProvider>
             </ContextMenuProvider>
           </MantineProvider>
         </ColorSchemeProvider>

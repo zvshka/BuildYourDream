@@ -14,7 +14,7 @@ apiRoute.get(async (req: NextApiRequest & { query: { width: string; quality: str
   let qualityNumber = Number(quality);
   if (Number.isNaN(widthNumber)) widthNumber = 0;
   if (Number.isNaN(qualityNumber) || qualityNumber > 100 || qualityNumber < 0) {
-    qualityNumber = 100;
+    qualityNumber = 60;
   }
   const result = await ImagesService.getImage(name);
   if (result) {

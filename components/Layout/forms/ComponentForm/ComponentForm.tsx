@@ -1,7 +1,6 @@
 import {
   ActionIcon,
   Button,
-  FileButton,
   Grid,
   Group,
   Image,
@@ -11,11 +10,15 @@ import {
   Select,
   Stack,
   Switch,
+  Tabs,
   Textarea,
   TextInput,
+  useMantineTheme,
 } from '@mantine/core';
-import { IconTrashX } from '@tabler/icons-react';
-import { useEffect, useRef } from 'react';
+import { IconCircleMinus, IconCirclePlus, IconTrashX } from '@tabler/icons-react';
+import { useMediaQuery } from '@mantine/hooks';
+import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { useMutation } from '@tanstack/react-query';
 import { RangeInput } from '../../index';
 import { useComponentFormContext } from '../TemplateForm/TemplateContext';
 import { IField } from '../../../../types/Field';
@@ -29,6 +32,7 @@ import {
   TEXT,
 } from '../../../../types/FieldTypes';
 import { useTemplatesList } from '../../../hooks/templates';
+import { uploadImageMutation } from '../../../hooks/images';
 
 const getColSpan = (type: string): number => {
   let toReturn = 0;
@@ -51,15 +55,11 @@ const getColSpan = (type: string): number => {
 };
 
 export const ComponentForm = ({ fields }: { fields: IField[] }) => {
+  const theme = useMantineTheme();
   const template = useComponentFormContext();
-  const resetRef = useRef<() => void>(null);
   const { data: templates, isFetched, isSuccess } = useTemplatesList();
 
-  const clearFile = () => {
-    resetRef.current?.();
-    template.setFieldValue('image.base64', '');
-    template.setFieldValue('image.file', null);
-  };
+  const media = useMediaQuery(theme.fn.largerThan('md').replace('@media', ''));
 
   const handleAddCons = () => {
     template.insertListItem('cons', '');
@@ -69,37 +69,35 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
     template.insertListItem('pros', '');
   };
 
-  useEffect(() => {
-    if (!template.values.image?.file) return;
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(template.values.image.file);
-    fileReader.onload = () => {
-      template.setFieldValue('image.base64', fileReader.result);
-    };
-  }, [template.values.image]);
+  const imageUpload = useMutation(uploadImageMutation);
+
+  const handleImageUpload = async (files: FileWithPath[]) => {
+    const formData = new FormData();
+    formData.append('upload', files[0]);
+    const response = await imageUpload.mutateAsync(formData);
+    if (response) {
+      template.setFieldValue('imageUrl', response.data.url);
+    }
+  };
 
   return (
     <Stack spacing="md">
       <Grid columns={6}>
         <Grid.Col span={6}>
           <Stack align="center">
-            <Image withPlaceholder width={256} height={256} src={template.values?.image?.base64} />
-            <Group spacing="xs">
-              <FileButton
-                resetRef={resetRef}
-                onChange={(file) => template.setFieldValue('image.file', file)}
-                accept="image/png,image/jpeg"
-              >
-                {(props) => <Button {...props}>Загрузить изображение</Button>}
-              </FileButton>
-              <Button disabled={!template.values?.image?.file} color="red" onClick={clearFile}>
-                Сбросить
-              </Button>
-            </Group>
+            <Dropzone maxFiles={1} onDrop={handleImageUpload} accept={IMAGE_MIME_TYPE} p={0}>
+              <Image height={200} width={300} withPlaceholder src={template.values.imageUrl} />
+            </Dropzone>
+            <Button
+              disabled={!template.values.imageUrl || template.values.imageUrl.length < 1}
+              onClick={() => template.setFieldValue('imageUrl', '')}
+            >
+              Сбросить
+            </Button>
           </Stack>
         </Grid.Col>
         {fields.map((field, index) => (
-          <Grid.Col key={`field_${index}`} span={getColSpan(field.type)}>
+          <Grid.Col key={`field_${index}`} {...(media ? { span: getColSpan(field.type) } : {})}>
             {field.type === TEXT && (
               <TextInput
                 label={field.name}
@@ -172,59 +170,119 @@ export const ComponentForm = ({ fields }: { fields: IField[] }) => {
             required
             {...(template ? template.getInputProps('tier') : {})}
           >
-            <Radio value="low" label="Low" />
-            <Radio value="medium" label="Medium" />
-            <Radio value="high" label="High" />
+            <Group spacing="xs" mt="xs">
+              <Radio value="low" label="Low" />
+              <Radio value="medium" label="Medium" />
+              <Radio value="high" label="High" />
+            </Group>
           </Radio.Group>
         </Grid.Col>
         <Grid.Col span={6} mb="md">
           <Input.Wrapper label="Плюсы и минусы">
-            <Group grow align="normal">
-              <Stack>
-                {template.values &&
-                  template.values.pros &&
-                  template.values.pros.map((value: string, index: number) => (
-                    <TextInput
-                      key={`pros_${index}`}
-                      required
-                      {...template.getInputProps(`pros.${index}`)}
-                      rightSection={
-                        <ActionIcon
-                          style={{ maxWidth: 28 }}
-                          color="red"
-                          variant="filled"
-                          onClick={() => template.removeListItem('pros', index)}
-                        >
-                          <IconTrashX />
-                        </ActionIcon>
-                      }
-                    />
-                  ))}
-                <Button onClick={handleAddPros}>Добавить плюс</Button>
-              </Stack>
-              <Stack>
-                {template.values &&
-                  template.values.cons &&
-                  template.values.cons.map((value: string, index: number) => (
-                    <TextInput
-                      key={`cons_${index}`}
-                      required
-                      {...template.getInputProps(`cons.${index}`)}
-                      rightSection={
-                        <ActionIcon
-                          style={{ maxWidth: 28 }}
-                          color="red"
-                          variant="filled"
-                          onClick={() => template.removeListItem('cons', index)}
-                        >
-                          <IconTrashX />
-                        </ActionIcon>
-                      }
-                    />
-                  ))}
-                <Button onClick={handleAddCons}>Добавить минус</Button>
-              </Stack>
-            </Group>
+            <Tabs defaultValue="pros">
+              <Tabs.List>
+                <Tabs.Tab icon={<IconCirclePlus size={20} color="green" />} value="pros">
+                  Плюсы
+                </Tabs.Tab>
+                <Tabs.Tab icon={<IconCircleMinus size={20} color="red" />} value="cons">
+                  Минусы
+                </Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panel value="pros" mt="xs">
+                <Stack>
+                  {template.values &&
+                    template.values.pros &&
+                    template.values.pros.map((value: string, index: number) => (
+                      <TextInput
+                        key={`pros_${index}`}
+                        required
+                        {...template.getInputProps(`pros.${index}`)}
+                        rightSection={
+                          <ActionIcon
+                            style={{ maxWidth: 28 }}
+                            color="red"
+                            variant="filled"
+                            onClick={() => template.removeListItem('pros', index)}
+                          >
+                            <IconTrashX />
+                          </ActionIcon>
+                        }
+                      />
+                    ))}
+                  <Button onClick={handleAddPros}>Добавить плюс</Button>
+                </Stack>
+              </Tabs.Panel>
+              <Tabs.Panel value="cons" mt="xs">
+                <Stack>
+                  {template.values &&
+                    template.values.cons &&
+                    template.values.cons.map((value: string, index: number) => (
+                      <TextInput
+                        key={`cons_${index}`}
+                        required
+                        {...template.getInputProps(`cons.${index}`)}
+                        rightSection={
+                          <ActionIcon
+                            style={{ maxWidth: 28 }}
+                            color="red"
+                            variant="filled"
+                            onClick={() => template.removeListItem('cons', index)}
+                          >
+                            <IconTrashX />
+                          </ActionIcon>
+                        }
+                      />
+                    ))}
+                  <Button onClick={handleAddCons}>Добавить минус</Button>
+                </Stack>
+              </Tabs.Panel>
+            </Tabs>
+            {/*<Group grow align="normal" display="none">*/}
+            {/*  <Stack>*/}
+            {/*    {template.values &&*/}
+            {/*      template.values.pros &&*/}
+            {/*      template.values.pros.map((value: string, index: number) => (*/}
+            {/*        <TextInput*/}
+            {/*          key={`pros_${index}`}*/}
+            {/*          required*/}
+            {/*          {...template.getInputProps(`pros.${index}`)}*/}
+            {/*          rightSection={*/}
+            {/*            <ActionIcon*/}
+            {/*              style={{ maxWidth: 28 }}*/}
+            {/*              color="red"*/}
+            {/*              variant="filled"*/}
+            {/*              onClick={() => template.removeListItem('pros', index)}*/}
+            {/*            >*/}
+            {/*              <IconTrashX />*/}
+            {/*            </ActionIcon>*/}
+            {/*          }*/}
+            {/*        />*/}
+            {/*      ))}*/}
+            {/*    <Button onClick={handleAddPros}>Добавить плюс</Button>*/}
+            {/*  </Stack>*/}
+            {/*  <Stack>*/}
+            {/*    {template.values &&*/}
+            {/*      template.values.cons &&*/}
+            {/*      template.values.cons.map((value: string, index: number) => (*/}
+            {/*        <TextInput*/}
+            {/*          key={`cons_${index}`}*/}
+            {/*          required*/}
+            {/*          {...template.getInputProps(`cons.${index}`)}*/}
+            {/*          rightSection={*/}
+            {/*            <ActionIcon*/}
+            {/*              style={{ maxWidth: 28 }}*/}
+            {/*              color="red"*/}
+            {/*              variant="filled"*/}
+            {/*              onClick={() => template.removeListItem('cons', index)}*/}
+            {/*            >*/}
+            {/*              <IconTrashX />*/}
+            {/*            </ActionIcon>*/}
+            {/*          }*/}
+            {/*        />*/}
+            {/*      ))}*/}
+            {/*    <Button onClick={handleAddCons}>Добавить минус</Button>*/}
+            {/*  </Stack>*/}
+            {/*</Group>*/}
           </Input.Wrapper>
         </Grid.Col>
       </Grid>

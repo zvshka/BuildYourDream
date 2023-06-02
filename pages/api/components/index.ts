@@ -1,11 +1,11 @@
 import { handler } from '../../../lib/handler';
-import PartService from '../../../services/Component.service';
-import { authGuard, roleGuard } from '../../../lib/guards';
+import ComponentService from '../../../services/Component.service';
+import { authGuard } from '../../../lib/guards';
 
 const api = handler();
 
-api.post(authGuard, roleGuard('ADMIN'), async (req, res) => {
-  const partData = await PartService.create(req.body);
+api.post(authGuard, async (req, res) => {
+  const partData = await ComponentService.create(req.user, req.body);
   res.send(partData);
 });
 

@@ -9,4 +9,9 @@ api.get(authGuard, async (req, res) => {
   res.status(200).json(body);
 });
 
+api.patch(authGuard, async (req, res) => {
+  const result = await AuthService.updateProfile(req.user, req.body);
+  res.send(result);
+});
+
 export default api;

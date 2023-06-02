@@ -2,7 +2,6 @@ import {
   Avatar,
   Burger,
   Button,
-  Code,
   Container,
   createStyles,
   Flex,
@@ -11,6 +10,7 @@ import {
   Header,
   MediaQuery,
   Menu,
+  px,
   Stack,
   Text,
   Title,
@@ -23,6 +23,7 @@ import { useModals } from '@mantine/modals';
 import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
 import { useNavigationContext } from '../../../Providers/NavigationContext/NavigationContext';
 import { NextLink } from '../NextLink/NextLink';
+import Link from 'next/link';
 
 const useStyles = createStyles((theme) => ({
   version: {
@@ -34,8 +35,12 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 700,
   },
   logo: {
+    cursor: 'pointer',
     [theme.fn.smallerThan('md')]: {
-      fontSize: theme.fontSizes.xl,
+      fontSize: `${px(theme.fontSizes.xl) * 1.1}px`,
+    },
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: `${px(theme.fontSizes.xl) * 1.3}px`,
     },
   },
   header: {
@@ -74,44 +79,46 @@ export function HeaderWithLogo() {
 
   return (
     <Header height={80} p="md" className={classes.header}>
-      <Container size="xl" sx={{ width: '100%' }}>
-        <Grid sx={{ width: '100%' }}>
-          <Grid.Col span="auto">
+      <Container size="xl" sx={{ width: '100%' }} px={0}>
+        <Grid sx={{ width: '100%' }} m={0}>
+          <Grid.Col span="auto" pl={0}>
             <Flex sx={{ height: '100%' }} align="center">
-              <MediaQuery styles={{ display: 'none' }}>
-                <Burger
-                  opened={navigationContext.opened}
-                  onClick={() =>
-                    navigationContext.opened
-                      ? navigationContext.setClosed()
-                      : navigationContext.setOpened()
-                  }
-                  size="md"
-                  color={theme.colors.gray[6]}
-                />
-              </MediaQuery>
+              <Burger
+                opened={navigationContext.opened}
+                onClick={() =>
+                  navigationContext.opened
+                    ? navigationContext.setClosed()
+                    : navigationContext.setOpened()
+                }
+                size="md"
+                color={theme.colors.gray[6]}
+              />
             </Flex>
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col span="content">
             <Flex justify="center" sx={{ height: '100%' }} align="center">
-              <Title order={1} className={classes.logo}>
-                <Text
-                  color={theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]}
-                >
-                  Build Your Dream
-                </Text>
-              </Title>
+              <Link href="/">
+                <Title order={1} className={classes.logo}>
+                  <Text
+                    color={
+                      theme.colorScheme === 'dark' ? theme.colors.gray[0] : theme.colors.gray[9]
+                    }
+                  >
+                    Build Your Dream
+                  </Text>
+                </Title>
+              </Link>
             </Flex>
           </Grid.Col>
           <Grid.Col span="auto">
-            <MediaQuery styles={{ display: 'none' }} smallerThan="lg">
+            <MediaQuery styles={{ display: 'none' }} smallerThan="md">
               <Flex sx={{ height: '100%' }} align="center" justify="flex-end">
                 {user ? (
                   <Menu trigger="hover" openDelay={100} closeDelay={400}>
                     <Menu.Target>
                       <UnstyledButton>
                         <Group>
-                          <Avatar size="md" />
+                          <Avatar size="md" src={user.avatarUrl} />
                           <Stack spacing={0}>
                             <Text size={18}>{user?.username}</Text>
                             <Text size={12} color="dimmed">

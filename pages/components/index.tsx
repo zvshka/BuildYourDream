@@ -1,20 +1,20 @@
 import {
+  ActionIcon,
   Box,
-  Button,
   Container,
   createStyles,
-  Group,
+  Menu,
   Paper,
   SimpleGrid,
   Stack,
   Text,
 } from '@mantine/core';
 import React from 'react';
+import { IconCircleSquare, IconDotsVertical, IconPackage } from '@tabler/icons-react';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { PageHeader } from '../../components/Layout';
 import { ITemplate } from '../../types/Template';
 import { useTemplatesList } from '../../components/hooks/templates';
-import Link from 'next/link';
 import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
 
 const useStyles = createStyles((theme) => ({
@@ -63,26 +63,48 @@ export default function Parts() {
   const { data: templates, isLoading, isError } = useTemplatesList();
 
   return (
-    <Container size="xl">
+    <Container size="xl" px={0}>
       <Stack>
         <PageHeader
           title="Комплектующие"
           rightSection={
-            <Group>
-              {user && user.role === 'ADMIN' && (
-                <Button component={NextLink} href="/components/create">
-                  Добавить деталь
-                </Button>
-              )}
-              {user && user.role === 'ADMIN' && (
-                <Button component={NextLink} href="/templates/create">
-                  Добавить группу/форму
-                </Button>
-              )}
-            </Group>
+            user && (
+              <Menu>
+                <Menu.Target>
+                  <ActionIcon>
+                    <IconDotsVertical />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    component={NextLink}
+                    href="/components/create"
+                    icon={<IconCircleSquare size={18} />}
+                  >
+                    Добавить деталь
+                  </Menu.Item>
+                  {user.role === 'ADMIN' && (
+                    <Menu.Item
+                      component={NextLink}
+                      href="/templates/create"
+                      icon={<IconPackage size={18} />}
+                    >
+                      Добавить группу
+                    </Menu.Item>
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+            )
           }
         />
-        <SimpleGrid cols={2} breakpoints={[{ minWidth: 'md', cols: 6 }]}>
+        <SimpleGrid
+          cols={1}
+          breakpoints={[
+            { minWidth: 'lg', cols: 5 },
+            { minWidth: 'md', cols: 4 },
+            { minWidth: 'sm', cols: 2 },
+          ]}
+        >
           {!isLoading &&
             !isError &&
             templates.map((template: ITemplate & { id: string }) => (

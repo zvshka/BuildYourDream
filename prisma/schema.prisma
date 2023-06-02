@@ -21,23 +21,119 @@ model User {
   email          String    @unique
   emailVerified  DateTime?
   username       String    @unique
-  avatarURL      String?
+  avatarUrl      String?
+  bio            String?
   hashedPassword String
+
+  isBanned Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role     Role      @default(USER)
-  messages Message[]
-  configs  Config[]
+  role         Role      @default(USER)
+  comments     Comment[]
+  configs      Config[]
+  likedConfigs Config[]  @relation(name: "liked")
+
+  reports      Report[]    @relation(name: "suspiciousUser")
+  myReports    Report[]    @relation(name: "myReports")
+  myComponents Component[] @relation(name: "myComponents")
+
+  updateRequests    UpdateRequest[]
+  proceedRequests   UpdateRequest[] @relation(name: "requestInspector")
+  proceedComponents Component[]     @relation(name: "componentInspector")
+  deletedComments   Comment[]       @relation(name: "deletedBy")
 }
 
-model Message {
-  id       String  @id @default(cuid())
-  author   User?   @relation(fields: [authorId], references: [id])
-  authorId String?
-  username String
-  body     String
+model Report {
+  id String @id @default(cuid())
+
+  author   User   @relation(fields: [authorId], references: [id], name: "myReports")
+  authorId String
+
+  reason String
+
+  approved   Boolean   @default(false)
+  approvedAt DateTime?
+
+  rejected   Boolean   @default(false)
+  rejectedAt DateTime?
+
+  expiredAt DateTime?
+  warns     Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User    @relation(fields: [userId], references: [id], name: "suspiciousUser")
+  userId        String
+  userBio       String?
+  userAvatarUrl String?
+
+  config            Config? @relation(fields: [configId], references: [id])
+  configId          String?
+  configTitle       String?
+  configDescription String?
+
+  comment     Comment? @relation(fields: [commentId], references: [id])
+  commentId   String?
+  commentBody String?
+}
+
+model Comment {
+  id       String @id @default(cuid())
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  body String
+
+  isDeleted Boolean @default(false)
+  isEdited  Boolean @default(false)
+
+  deletedBy   User?   @relation(name: "deletedBy", fields: [deletedById], references: [id])
+  deletedById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  component   Component? @relation(fields: [componentId], references: [id])
+  componentId String?
+
+  config   Config? @relation(fields: [configId], references: [id])
+  configId String?
+
+  replyComment   Comment? @relation(fields: [replyCommentId], references: [id], name: "reply")
+  replyCommentId String?
+
+  threadComment   Comment? @relation(name: "thread", fields: [threadCommentId], references: [id])
+  threadCommentId String?
+
+  thread  Comment[] @relation(name: "thread")
+  answers Comment[] @relation(name: "reply")
+  reports Report[]
+}
+
+model UpdateRequest {
+  id String @id @default(cuid())
+
+  author User  @relation(fields: [userId], references: [id])
+  admin  User? @relation(fields: [adminId], references: [id], name: "requestInspector")
+
+  approved Boolean @default(false)
+  rejected Boolean @default(false)
+
+  rejectReason String?
+
+  data Json
+
+  componentToUpdate Component? @relation(fields: [componentId], references: [id])
+  templateToUpdate  Template?  @relation(fields: [templateId], references: [id])
+
+  componentId String?
+  templateId  String?
+
+  userId  String
+  adminId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -50,7 +146,34 @@ model Component {
   template   Template @relation(fields: [templateId], references: [id])
   templateId String
 
-  configs Config[]
+  admin   User?   @relation(fields: [adminId], references: [id], name: "componentInspector")
+  adminId String?
+
+  creator   User?   @relation(fields: [creatorId], references: [id], name: "myComponents")
+  creatorId String?
+
+  approved Boolean @default(false)
+  rejected Boolean @default(false)
+
+  rejectReason String?
+
+  createdAt DateTime @default(now())
+
+  configs        ComponentInConfig[]
+  updateRequests UpdateRequest[]
+  comments       Comment[]
+}
+
+model ComponentInConfig {
+  component Component @relation(fields: [componentId], references: [id])
+  config    Config    @relation(fields: [configId], references: [id], onDelete: Cascade)
+
+  componentId String
+  configId    String
+
+  count Int @default(1)
+
+  @@id([configId, componentId])
 }
 
 model Config {
@@ -58,33 +181,37 @@ model Config {
   title       String
   description String
 
-  author User @relation(fields: [userId], references: [id])
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
 
-  components Component[]
-  userId     String
-}
+  createdAt DateTime @default(now())
 
-enum FieldType {
-  BOOL
-  TEXT
-  NUMBER
-  LARGE_TEXT
-  RANGE
+  isDeleted Boolean? @default(false)
+
+  reports    Report[]
+  components ComponentInConfig[]
+  likedUsers User[]              @relation(name: "liked")
+  comments   Comment[]
 }
 
 model Template {
   id       String  @id @default(cuid())
   name     String  @unique
   required Boolean @default(false)
-  maxCount Int     @default(1)
   position Int     @default(autoincrement())
 
   showInConfigurator Boolean @default(false)
 
-  components Component[]
-  fields     Json
-  slots      Json?
-  constraits Json?
+  components     Component[]
+  updateRequests UpdateRequest[]
+
+  maxCount Json? @default("{\"type\": \"number\", \"count\": 1}")
+  fields   Json
+}
+
+model Constraint {
+  id   String @id @default(cuid())
+  data Json
 }
 
 model Image {

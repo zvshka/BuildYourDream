@@ -12,7 +12,6 @@ import {
   SimpleGrid,
   Stack,
   Text,
-  Title,
   Tooltip,
   Transition,
   UnstyledButton,
@@ -21,8 +20,10 @@ import {
   Icon3dCubeSphere,
   IconCpu,
   IconDeviceDesktop,
+  IconFlag,
   IconLogout,
   IconUser,
+  IconUsersGroup,
 } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
@@ -171,13 +172,14 @@ function NavbarLink({ item, style }: { item: any; style?: any }) {
 const tabs = {
   userPages: [
     { link: '/', label: 'Конфигуратор', Icon: IconCpu },
-    { link: '/configs', label: 'Пользовательские сборки', Icon: IconDeviceDesktop },
+    { link: '/configs', label: 'Конфигурации', Icon: IconDeviceDesktop },
     { link: '/components', label: 'Комплектующие', Icon: Icon3dCubeSphere },
+    { link: '/community', label: 'Комьюнити', Icon: IconUsersGroup },
   ],
   adminPages: [
     { link: '/admin/users', label: 'Пользователи', Icon: IconUser },
-    { link: '/admin/configs', label: 'Сборки', Icon: Icon3dCubeSphere },
-    { link: '/admin/configurator', label: 'Настройка конфигуратора', Icon: Icon3dCubeSphere },
+    { link: '/admin/configurator', label: 'Конфигуратор', Icon: Icon3dCubeSphere },
+    { link: '/admin/reports', label: 'Жалобы', Icon: IconFlag },
   ],
 };
 
@@ -226,28 +228,31 @@ export function NavbarSimpleColored() {
 
   return (
     <Box>
-      <MediaQuery styles={{ display: 'none' }} smallerThan="md">
+      <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
         <Modal
-          title={<Title order={3}>Навигация</Title>}
+          title={<Text size="xl">Навигация</Text>}
           opened={navigationContext.opened}
           onClose={() => navigationContext.setClosed()}
           closeOnEscape={false}
           size="xl"
           centered
           transitionProps={{ transition: 'fade', duration: 100, timingFunction: 'linear' }}
+          lockScroll={false}
         >
           <Stack>
-            <SegmentedControl
-              value={section}
-              onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
-              transitionTimingFunction="ease"
-              fullWidth
-              data={[
-                { label: 'User', value: 'userPages' },
-                { label: 'Admin', value: 'adminPages' },
-              ]}
-              mb="lg"
-            />
+            {user?.role !== 'USER' && (
+              <SegmentedControl
+                value={section}
+                onChange={(value: 'userPages' | 'adminPages') => setSection(value)}
+                transitionTimingFunction="ease"
+                fullWidth
+                data={[
+                  { label: 'User', value: 'userPages' },
+                  { label: 'Admin', value: 'adminPages' },
+                ]}
+                mb="lg"
+              />
+            )}
             <SimpleGrid cols={4}>
               {tabs[section].map((item) => (
                 <Box
@@ -345,7 +350,7 @@ export function NavbarSimpleColored() {
                           </UnstyledButton>
                         </Collapse>
                         <UserButton
-                          image=""
+                          image={user.avatarUrl || ''}
                           name={user.username as string}
                           email={user.email}
                           onClick={() => toggle()}
