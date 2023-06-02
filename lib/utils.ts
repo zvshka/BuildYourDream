@@ -200,11 +200,15 @@ export const getCount = (
       (f) => f.id === (template.maxCount.multiplierId as string)
     );
 
-    currentCount = components.reduce(
-      (previousValue, currentValue) =>
-        previousValue + 1 * (template.maxCount.multiplierId ? currentValue.data[field!.name] : 1),
-      0
-    );
+    if (field) {
+      currentCount = components.reduce(
+        (previousValue, currentValue) =>
+          previousValue + 1 * (template.maxCount.multiplierId ? currentValue.data[field!.name] : 1),
+        0
+      );
+    } else {
+      currentCount = 1;
+    }
   }
 
   let maxCount = template.maxCount.count;

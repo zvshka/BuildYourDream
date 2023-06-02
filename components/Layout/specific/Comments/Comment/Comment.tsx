@@ -4,6 +4,7 @@ import {
   Box,
   createStyles,
   Group,
+  Input,
   rem,
   Text,
   Textarea,
@@ -271,8 +272,6 @@ export function Comment({
     }
   }, [user]);
 
-  console.log(commentData);
-
   return (
     <Block
       ml={commentData.replyCommentId ? '3rem' : 0}
@@ -361,19 +360,22 @@ export function Comment({
       )}
       {isEditing && (
         <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Group mt="xs">
-            <Textarea
-              sx={{ flex: '1' }}
-              minRows={1}
-              maxRows={3}
-              autosize
-              ml={rem(54)}
-              {...form.getInputProps('body')}
-            />
-            <ActionIcon color="blue" variant="outline" size="lg" type="submit" disabled={!user}>
-              <IconSend />
-            </ActionIcon>
-          </Group>
+          <Input.Wrapper pl={rem(54)} description={`${form.values.body.length} / 150`}>
+            <Group mt="xs">
+              <Textarea
+                sx={{ flex: '1' }}
+                minRows={1}
+                maxRows={3}
+                autosize
+                maxLength={150}
+                ml="auto"
+                {...form.getInputProps('body')}
+              />
+              <ActionIcon color="blue" variant="outline" size="lg" type="submit" disabled={!user}>
+                <IconSend />
+              </ActionIcon>
+            </Group>
+          </Input.Wrapper>
         </form>
       )}
       {user && (

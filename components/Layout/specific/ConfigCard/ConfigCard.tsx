@@ -12,6 +12,7 @@ import {
   Card,
   Center,
   createStyles,
+  Grid,
   Group,
   Menu,
   rem,
@@ -36,14 +37,8 @@ const useStyles = createStyles((theme) => ({
   card: {
     position: 'relative',
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
-    height: '12rem',
-  },
-
-  rating: {
-    position: 'absolute',
-    top: theme.spacing.xs,
-    right: rem(12),
-    pointerEvents: 'none',
+    minHeight: '12rem',
+    height: '100%',
   },
 
   title: {
@@ -52,7 +47,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   footer: {
-    marginTop: theme.spacing.md,
+    marginTop: 'auto',
+    paddingTop: theme.spacing.sm,
   },
 }));
 
@@ -195,64 +191,68 @@ export function ConfigCard({ link, configData }) {
       {...linkProps}
       onContextMenu={showContextMenu(contextMenu)}
     >
-      <Stack h="100%" spacing={0}>
-        <Group position="apart">
-          <Title
-            order={4}
-            className={classes.title}
-            fw={500}
-            sx={{ maxWidth: 300, wordWrap: 'break-word' }}
-          >
-            {configData.title}
-          </Title>
+      <Stack h="100%" spacing={0} justify="space-around">
+        <Grid>
+          <Grid.Col span="auto">
+            <Title
+              order={4}
+              className={classes.title}
+              fw={500}
+              // sx={{ maxWidth: 250, wordWrap: 'break-word' }}
+            >
+              {configData.title}
+            </Title>
+          </Grid.Col>
           {user && (
-            <Menu withinPortal>
-              <Menu.Target>
-                <ActionIcon
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  <IconDotsVertical />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {user.id !== configData.authorId && (
-                  <Menu.Item
-                    icon={<IconFlag size="1rem" />}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      handleReportConfig();
+            <Grid.Col span="content">
+              <Menu withinPortal>
+                <Menu.Target>
+                  <ActionIcon
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                     }}
                   >
-                    Пожаловаться
-                  </Menu.Item>
-                )}
-                {(user.id === configData.authorId || user.role !== 'USER') && (
-                  <Menu.Item
-                    icon={<IconTrash size="1rem" color="red" />}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      handleDelete();
-                    }}
-                  >
-                    Удалить
-                  </Menu.Item>
-                )}
-              </Menu.Dropdown>
-            </Menu>
+                    <IconDotsVertical />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {user.id !== configData.authorId && (
+                    <Menu.Item
+                      icon={<IconFlag size="1rem" />}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        handleReportConfig();
+                      }}
+                    >
+                      Пожаловаться
+                    </Menu.Item>
+                  )}
+                  {(user.id === configData.authorId || user.role !== 'USER') && (
+                    <Menu.Item
+                      icon={<IconTrash size="1rem" color="red" />}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        handleDelete();
+                      }}
+                    >
+                      Удалить
+                    </Menu.Item>
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+            </Grid.Col>
           )}
-        </Group>
+        </Grid>
 
         <Text fz="sm" color="dimmed" lineClamp={4}>
           {configData.description}
         </Text>
 
-        <Group position="apart" className={classes.footer} align="end" mt="auto">
+        <Group position="apart" className={classes.footer} align="end">
           <Link href={`/profile/${configData.author.username}`}>
             <Center
               onContextMenu={showContextMenu(

@@ -14,4 +14,9 @@ api.delete(authGuard, async (req, res) => {
   res.send(result);
 });
 
+api.patch(authGuard, async (req, res) => {
+  const result = await ConfigService.updateConfigById(req.user, req.query.id as string, req.body);
+  res.send(result);
+});
+
 export default api;

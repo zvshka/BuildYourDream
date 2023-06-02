@@ -4,7 +4,6 @@ import { ApiError } from '../lib/ApiError';
 
 class CommentService {
   async create(author: User, query: any, data: any) {
-    console.log(data);
     let componentCandidate;
     if (query.componentId && query.componentId.length > 0) {
       componentCandidate = await prisma.component.findUnique({
@@ -73,6 +72,10 @@ class CommentService {
 
     if (data.body.trim().length === 0) {
       throw ApiError.BadRequest('Комментарий не может быть пустым');
+    }
+
+    if (data.body.trim().length > 150) {
+      throw ApiError.BadRequest('Не больше 150 символов');
     }
 
     return prisma.comment.create({
@@ -149,6 +152,10 @@ class CommentService {
     }
     if (user.id !== candidate.authorId) throw ApiError.Forbidden();
     if (body.length === 0) throw ApiError.BadRequest('Комментарий не может быть пустым');
+
+    if (body.length > 150) {
+      throw ApiError.BadRequest('Комментарий не может превышать длину в 150 символов');
+    }
 
     return prisma.comment.update({
       where: {

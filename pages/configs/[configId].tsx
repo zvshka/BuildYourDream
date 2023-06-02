@@ -51,7 +51,7 @@ const UpdateConfigForm = ({ configData }: { configData: any }) => {
         showNotification({
           title: 'Успех',
           message: 'Вы успешно изменили сборку',
-          color: 'greem',
+          color: 'green',
         });
         queryClient.invalidateQueries(['configs', 'list', configData.id]);
       },
@@ -72,9 +72,22 @@ const UpdateConfigForm = ({ configData }: { configData: any }) => {
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
-        <TextInput label="Название сборки" required {...form.getInputProps('title')} />
-        <Textarea minRows={4} autosize required {...form.getInputProps('description')} />
-        <Button>Отправить</Button>
+        <TextInput
+          label="Название сборки"
+          maxLength={50}
+          required
+          {...form.getInputProps('title')}
+          description={`${form.values.title.length} / 50`}
+        />
+        <Textarea
+          minRows={4}
+          autosize
+          maxLength={500}
+          required
+          {...form.getInputProps('description')}
+          description={`${form.values.description.length} / 500`}
+        />
+        <Button type="submit">Отправить</Button>
       </Stack>
     </form>
   );

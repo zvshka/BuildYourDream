@@ -32,7 +32,7 @@ export const Comments = ({
         />
       </Block>
       {commentsFetched &&
-        comments.map((comment, index) => (
+        comments.map((comment) => (
           <Stack key={comment.id}>
             <Stack>
               <Comment
@@ -58,12 +58,10 @@ export const Comments = ({
             {threadCommentId === comment.id && (
               <Block ml="3rem">
                 <Stack spacing={0}>
-                  <Group spacing={4}>
-                    <Center>
-                      <Text h={30} color="dimmed">
-                        Ответ
-                      </Text>
-                    </Center>
+                  <Group spacing={4} mb="sm">
+                    <Text fz="sm" color="dimmed">
+                      Ответ
+                    </Text>
                     <UnstyledButton
                       sx={(theme) => ({
                         color: theme.colors.blue[6],
@@ -72,18 +70,16 @@ export const Comments = ({
                         },
                       })}
                     >
-                      <Center>
-                        <Text h={30}>admin</Text>
-                      </Center>
+                      <Text fz="sm">{comment.author.username}</Text>
                     </UnstyledButton>
                     <UnstyledButton
-                      h={30}
                       onClick={() => {
                         setThreadCommentId('');
                         setReplyCommentId('');
                       }}
+                      h="100%"
                     >
-                      <IconX size={18} color="gray" />
+                      <IconX style={{ verticalAlign: 'bottom' }} size="1rem" color="gray" />
                     </UnstyledButton>
                   </Group>
                   <CommentInput

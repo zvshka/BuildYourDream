@@ -110,6 +110,43 @@ class ConfigService {
     throw ApiError.BadRequest('Такой сборки не существует');
   }
 
+  async updateConfigById(
+    user: User,
+    configId: string,
+    data: {
+      title?: string;
+      description?: string;
+    }
+  ) {
+    const candidate = await prisma.config.findUnique({
+      where: {
+        id: configId,
+      },
+    });
+
+    if (!candidate || candidate.isDeleted) throw ApiError.BadRequest('Такой сборки не существует');
+    if (candidate.authorId !== user.id) throw ApiError.Forbidden();
+    if (data.title && (data.title.length < 5 || data.title.length > 50)) {
+      throw ApiError.BadRequest('Заголовок должен быть от 5 до 50 символов');
+    }
+
+    if (data.description && (data.description.length < 10 || data.description.length > 500)) {
+      throw ApiError.BadRequest('Описание должно быть от 10 до 500 символов');
+    }
+
+    if (!data.title && !data.description) throw ApiError.BadRequest('Необходимы изменения');
+
+    return prisma.config.update({
+      where: {
+        id: configId,
+      },
+      data: {
+        title: data.title,
+        description: data.description,
+      },
+    });
+  }
+
   async getList(filter: { [p: string]: string | string[] | undefined }, user?: User) {
     let userFilter = {};
     if (filter.username && filter.username.length > 0) {
