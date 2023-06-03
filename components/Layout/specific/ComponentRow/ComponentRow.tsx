@@ -13,20 +13,26 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import React from 'react';
-import { IconBookmark, IconCurrencyRubel, IconMessage, IconStarFilled } from '@tabler/icons-react';
+import {
+  IconBookmark,
+  IconCurrencyRubel,
+  IconMessage,
+  IconStarFilled,
+  IconTrash,
+} from '@tabler/icons-react';
 import { IComponentBody } from '../../../../types/Template';
 import { useTemplateData } from '../../../hooks/templates';
 
 export const ComponentRow = ({
   component,
   templateId,
-  addToConfig,
   totalComments,
+  onRemove,
 }: {
   component: IComponentBody;
   templateId: string;
-  addToConfig?: boolean;
   totalComments?: number;
+  onRemove?: any;
 }) => {
   const { data: templateData, isSuccess } = useTemplateData(templateId);
   const theme = useMantineTheme();
@@ -98,9 +104,16 @@ export const ComponentRow = ({
               </Stack>
             </Grid.Col>
             <Grid.Col span="content">
-              <ActionIcon variant="outline" color="yellow" size="lg">
-                <IconBookmark />
-              </ActionIcon>
+              <Group>
+                <ActionIcon variant="outline" color="yellow" size="lg">
+                  <IconBookmark />
+                </ActionIcon>
+                {onRemove && (
+                  <ActionIcon variant="outline" color="red" size="lg" onClick={onRemove}>
+                    <IconTrash />
+                  </ActionIcon>
+                )}
+              </Group>
             </Grid.Col>
             <Grid.Col span={12} mt="auto">
               <Group position="apart" align="end">

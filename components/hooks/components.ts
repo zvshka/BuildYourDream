@@ -28,6 +28,29 @@ export function useComponentsList(
   });
 }
 
+export function useUserComponentsList(
+  username: string,
+  filter: {
+    page: number;
+    search: string;
+    tiers: string[];
+  }
+) {
+  return useQuery<IComponentsList>({
+    queryKey: ['components', 'list', 'my'],
+    queryFn: async () => {
+      const { data } = await axios.get('/api/components/my', {
+        params: {
+          ...filter,
+          username,
+        },
+      });
+      return data;
+    },
+    enabled: !!username,
+  });
+}
+
 export function useUnapprovedList(filter?: any) {
   return useQuery<IComponentsList>({
     queryKey: ['components', 'list', 'unapproved'],

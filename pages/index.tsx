@@ -41,7 +41,7 @@ import { IComponent, ITemplate } from '../types/Template';
 import { useConstraintsList } from '../components/hooks/constraints';
 import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
 import { configErrors, getCount, storage } from '../lib/utils';
-import { ComponentRow } from '../components/Layout/general/ComponentRow/ComponentRow';
+import { ComponentRow } from '../components/Layout/specific/ComponentRow/ComponentRow';
 
 //TODO: Добавить помощник выбора в несколько шагов
 /**
@@ -369,6 +369,11 @@ export default function HomePage() {
                             <ComponentRow
                               component={component.data}
                               templateId={component.templateId}
+                              onRemove={
+                                form.values.components[t.id].length > 1
+                                  ? () => onRemove(t.id, index)
+                                  : undefined
+                              }
                             />
                             {index !== form.values.components[t.id].length - 1 && (
                               <Divider mb="md" />

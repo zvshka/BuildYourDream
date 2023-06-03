@@ -26,7 +26,7 @@ import { useMediaQuery, useToggle } from '@mantine/hooks';
 import dynamic from 'next/dynamic';
 import { useUnapprovedList } from '../../components/hooks/components';
 import { Block } from '../../components/Layout';
-import { ComponentRow } from '../../components/Layout/general/ComponentRow/ComponentRow';
+import { ComponentRow } from '../../components/Layout/specific/ComponentRow/ComponentRow';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { storage } from '../../lib/utils';
 import { ApiError } from '../../lib/ApiError';

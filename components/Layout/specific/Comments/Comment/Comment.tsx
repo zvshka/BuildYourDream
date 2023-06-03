@@ -255,6 +255,13 @@ export function Comment({
               icon: <IconTrash size="1rem" />,
               color: 'red',
             },
+            user.id !== commentData.authorId && {
+              key: 'report',
+              onClick: handleReport,
+              title: 'Пожаловаться на комментарий',
+              icon: <IconFlag size="1rem" />,
+              color: 'red',
+            },
             commentData.isDeleted &&
               commentData.deletedBy &&
               (commentData.deletedBy.id === user.id ||
@@ -370,6 +377,7 @@ export function Comment({
                 maxLength={150}
                 ml="auto"
                 {...form.getInputProps('body')}
+                pt={4}
               />
               <ActionIcon color="blue" variant="outline" size="lg" type="submit" disabled={!user}>
                 <IconSend />

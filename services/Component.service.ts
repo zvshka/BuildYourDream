@@ -206,6 +206,107 @@ class ComponentService {
     };
   }
 
+  async getListByUsername(
+    username: string,
+    filter: { [p: string]: string | string[] | undefined }
+  ) {
+    const candidate = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (!candidate) throw ApiError.BadRequest('Такого пользователя не существует');
+
+    let currentPage = 1;
+    if (filter.page) {
+      if (!Number.isNaN(filter.page)) {
+        currentPage = parseInt(filter.page as string, 10);
+        if (currentPage <= 0) currentPage = 1;
+      }
+    }
+
+    let searchFilter = {};
+    if (filter.search && filter.search.length > 0) {
+      searchFilter = Object.assign(searchFilter, {
+        data: {
+          path: ['Название'],
+          string_contains: filter.search,
+        },
+      });
+    }
+
+    let tiersFilter = {};
+    if (filter.tiers && filter.tiers.length > 0) {
+      const separated = (filter.tiers as string).split(' ');
+      const filtered = separated.filter((item) => ['low', 'medium', 'high'].includes(item));
+      const toAdd: string[] = [];
+      if (filtered.some((i) => i === 'low')) toAdd.push('low');
+      if (filtered.some((i) => i === 'medium')) toAdd.push('medium');
+      if (filtered.some((i) => i === 'high')) toAdd.push('high');
+      if (filtered.length > 0) {
+        tiersFilter = Object.assign(tiersFilter, {
+          OR: toAdd.map((item) => ({
+            data: {
+              path: 'tier',
+              string_contains: item,
+            },
+          })),
+        });
+      }
+    }
+
+    const totalCount = await prisma.component.count({
+      orderBy: [
+        {
+          createdAt: 'desc',
+        },
+      ],
+      where: {
+        approved: true,
+        rejected: false,
+        creator: {
+          username,
+        },
+        AND: [searchFilter, tiersFilter],
+      },
+    });
+
+    const result = await prisma.component.findMany({
+      skip: (currentPage - 1) * 10,
+      take: 10,
+      orderBy: [
+        {
+          createdAt: 'desc',
+        },
+      ],
+      where: {
+        approved: true,
+        rejected: false,
+        creator: {
+          username,
+        },
+        AND: [searchFilter, tiersFilter],
+      },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+    });
+
+    return {
+      result: result.map(({ _count, ...component }) => ({
+        ...component,
+        totalComments: _count.comments,
+      })),
+      currentPage,
+      totalCount,
+    };
+  }
+
   async getComponentById(componentId: string) {
     const result = await prisma.component.findUnique({
       where: {

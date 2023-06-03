@@ -7,47 +7,26 @@ import {
   Drawer,
   Flex,
   Grid,
-  Group,
   MediaQuery,
   Pagination,
   Paper,
   Stack,
   Text,
+  TextInput,
 } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
-import { useToggle, useWindowScroll } from '@mantine/hooks';
+import { useDebouncedValue, useToggle, useWindowScroll } from '@mantine/hooks';
+import { useRouter } from 'next/router';
 import { useTemplateData } from '../../../hooks/templates';
-import { useComponentsList } from '../../../hooks/components';
+import { useComponentsList, useUserComponentsList } from '../../../hooks/components';
 import { Filters } from '../../inputs/Filters/Filters';
 import { NextLink } from '../../general/NextLink/NextLink';
-import { ComponentRow } from '../../general/ComponentRow/ComponentRow';
+import { ComponentRow } from '../ComponentRow/ComponentRow';
 import { Block } from '../../general/Block/Block';
-import { useRouter } from 'next/router';
 
 const useStyles = createStyles((theme) => ({
   container: {
     padding: theme.spacing.sm,
-  },
-  box: {
-    position: 'relative',
-    width: '100%',
-    borderRadius: theme.radius.md,
-    '&:before': {
-      content: "''",
-      display: 'block',
-      paddingTop: '100%',
-    },
-  },
-  boxContent: {
-    position: 'absolute',
-    padding: theme.spacing.sm,
-    top: 0,
-    bottom: 0,
-    right: 0,
-    left: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
   },
   drawerButton: {
     width: '100%',
@@ -57,10 +36,12 @@ export const ComponentsList = ({
   categoryId,
   onChoose,
   viewport,
+  username,
 }: {
-  categoryId: string;
+  categoryId?: string;
   onChoose?: any;
   viewport?: any;
+  username?: string;
 }) => {
   const router = useRouter();
   const [activePage, setPage] = useState(1);
@@ -80,9 +61,23 @@ export const ComponentsList = ({
     data: componentsData,
     isSuccess: isComponentsSuccess,
     refetch,
-  } = useComponentsList(categoryId, filters);
+  } = !username
+    ? useComponentsList(categoryId as string, filters)
+    : useUserComponentsList(username, filters);
+
+  const [search, setSearch] = useState<string>('');
+  const [debouncedSearch] = useDebouncedValue(search, 300);
 
   const [scroll, scrollTo] = useWindowScroll();
+
+  useEffect(() => {
+    router.push({
+      query: {
+        ...router.query,
+        search: debouncedSearch,
+      },
+    });
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (viewport && viewport.current) {
@@ -109,7 +104,7 @@ export const ComponentsList = ({
     <Box sx={{ width: '100%' }} py="xs">
       <Container size="xl" px={!onChoose ? 0 : 'sm'} sx={{ width: '100%' }}>
         <Grid>
-          {!onChoose && (
+          {!onChoose && !username && (
             <Grid.Col lg={3.5}>
               <MediaQuery smallerThan="lg" styles={{ display: 'none' }}>
                 <Box>
@@ -126,15 +121,12 @@ export const ComponentsList = ({
             </Grid.Col>
           )}
           <Grid.Col lg="auto">
-            {onChoose && (
+            {(onChoose || username) && (
               <Block mb="md">
-                <Group position="apart">
-                  <Text>Фильтры</Text>
-                  <Group>
-                    <Button disabled>Сбросить</Button>
-                    <Button>Открыть меню</Button>
-                  </Group>
-                </Group>
+                <TextInput
+                  value={search}
+                  onChange={(event) => setSearch(event.currentTarget.value)}
+                />
               </Block>
             )}
             <Block mb="md" mt={onChoose ? 'md' : 0} shadow={0}>

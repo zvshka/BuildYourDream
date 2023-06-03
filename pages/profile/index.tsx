@@ -20,6 +20,8 @@ import { Block, PageHeader } from '../../components/Layout';
 import { uploadImageMutation } from '../../components/hooks/images';
 import { storage } from '../../lib/utils';
 import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfiigsList';
+import { ReportsList } from '../../components/Layout/specific/ReportsList/ReportsList';
+import { ComponentsList } from '../../components/Layout/specific/ComponentsList/ComponentsList';
 
 export default function ProfilePage() {
   const { user, refetch } = useAuth();
@@ -174,6 +176,12 @@ export default function ProfilePage() {
             </Tabs.Panel>
             <Tabs.Panel value="configs" mt="md">
               {user && <ConfigsList username={user.username} />}
+            </Tabs.Panel>
+            <Tabs.Panel value="reports" mt="md">
+              {user && <ReportsList username={user.username} />}
+            </Tabs.Panel>
+            <Tabs.Panel value="components">
+              {user && <ComponentsList username={user.username} />}
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>

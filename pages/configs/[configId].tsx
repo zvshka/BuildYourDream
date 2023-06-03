@@ -24,7 +24,7 @@ import { openConfirmModal, openModal } from '@mantine/modals';
 import { useForm } from '@mantine/form';
 import { Block, PageHeader } from '../../components/Layout';
 import { useConfigData } from '../../components/hooks/configs';
-import { ComponentRow } from '../../components/Layout/general/ComponentRow/ComponentRow';
+import { ComponentRow } from '../../components/Layout/specific/ComponentRow/ComponentRow';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { Comments } from '../../components/Layout/specific/Comments/Comments';
 import { storage } from '../../lib/utils';

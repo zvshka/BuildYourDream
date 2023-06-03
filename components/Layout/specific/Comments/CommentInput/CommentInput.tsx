@@ -72,6 +72,7 @@ export const CommentInput = ({
             autoFocus
             required
             maxLength={150}
+            pt={4}
           />
           <ActionIcon color="blue" variant="outline" size="lg" type="submit" disabled={!user}>
             <IconSend />

@@ -3,6 +3,7 @@ import { Center, Container, Grid, Image, Stack, Tabs, Text, Textarea, Title } fr
 import { useUserData } from '../../components/hooks/users';
 import { Block, PageHeader } from '../../components/Layout';
 import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfiigsList';
+import { ComponentsList } from '../../components/Layout/specific/ComponentsList/ComponentsList';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -42,7 +43,13 @@ export default function UserProfile() {
             </Block>
             <Block>
               <Center>
-                <Text>{isSuccess && userData.role}</Text>
+                <Text>
+                  {userData?.role === 'ADMIN'
+                    ? 'Администратор'
+                    : userData?.role === 'MODERATOR'
+                    ? 'Модератор'
+                    : 'Пользователь'}
+                </Text>
               </Center>
             </Block>
           </Stack>
@@ -75,6 +82,9 @@ export default function UserProfile() {
             </Tabs.Panel>
             <Tabs.Panel value="configs" mt="md">
               <ConfigsList username={router.query.username as string} />
+            </Tabs.Panel>
+            <Tabs.Panel value="components">
+              <ComponentsList username={router.query.username as string} />
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>

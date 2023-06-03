@@ -1,4 +1,5 @@
 import { isDate } from 'is-what';
+import dayjs from 'dayjs';
 import { User } from '../types/User';
 import { prisma } from '../lib/prisma';
 import { ApiError } from '../lib/ApiError';
@@ -44,6 +45,20 @@ class ReportService {
 
     if ([commentCandidate, configCandidate].filter((c) => !!c).length > 1) {
       throw ApiError.BadRequest('Так делать нельзя');
+    }
+
+    const lastAuthorReport = await prisma.report.findFirst({
+      where: {
+        authorId: author.id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (lastAuthorReport) {
+      const diff = dayjs().diff(lastAuthorReport.createdAt, 'minutes');
+      if (diff < 5) throw ApiError.BadRequest('Подожди 5 минут перед отправкой еще одной жалобы');
     }
 
     return prisma.report.create({
