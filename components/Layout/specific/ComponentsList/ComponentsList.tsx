@@ -71,7 +71,7 @@ export const ComponentsList = ({
   const [scroll, scrollTo] = useWindowScroll();
 
   useEffect(() => {
-    router.push({
+    router.replace({
       query: {
         ...router.query,
         search: debouncedSearch,
@@ -101,7 +101,7 @@ export const ComponentsList = ({
   }, [filters]);
 
   return (
-    <Box sx={{ width: '100%' }} py="xs">
+    <Box sx={{ width: '100%' }}>
       <Container size="xl" px={!onChoose ? 0 : 'sm'} sx={{ width: '100%' }}>
         <Grid>
           {!onChoose && !username && (
@@ -146,7 +146,7 @@ export const ComponentsList = ({
                 componentsData.result.map((component) =>
                   !onChoose ? (
                     <Box
-                      href={`/components/${categoryId}/${component.id}`}
+                      href={`/components/${component.templateId}/${component.id}`}
                       key={component.id}
                       component={NextLink}
                     >

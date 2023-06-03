@@ -26,6 +26,8 @@ import {
   IconPencil,
   IconPlus,
 } from '@tabler/icons-react';
+import { AxiosError } from 'axios';
+import { showNotification } from '@mantine/notifications';
 import { Block, PageHeader } from '../../../components/Layout';
 import { useComponentData } from '../../../components/hooks/components';
 import { useTemplateData } from '../../../components/hooks/templates';
@@ -97,11 +99,20 @@ export default function ComponentPage() {
     router.query.componentId as string
   );
 
-  if (isComponentDataFetched && !componentData) router.back();
+  if (isComponentDataFetched && (!componentData || componentData instanceof AxiosError)) {
+    showNotification({
+      title: 'Ошибка',
+      color: 'red',
+      message: componentData?.response?.data.message,
+    });
+    router.push('/components');
+  }
 
   const { data: templateData, isSuccess: isTemplateDataFetched } = useTemplateData(
     router.query.categoryId as string
   );
+
+  if (isComponentDataFetched && !templateData) router.push('/components');
 
   return (
     <Container size="xl" px={0}>
@@ -185,6 +196,7 @@ export default function ComponentPage() {
                   <Tabs.List>
                     <Tabs.Tab value="info">Информация</Tabs.Tab>
                     <Tabs.Tab value="comments">Комментарии</Tabs.Tab>
+                    <Tabs.Tab value="reviews">Отзывы</Tabs.Tab>
                   </Tabs.List>
                 </Block>
                 <Tabs.Panel value="info">
@@ -209,7 +221,9 @@ export default function ComponentPage() {
                       >
                         <Grid columns={6}>
                           {isTemplateDataFetched &&
+                            templateData &&
                             isComponentDataFetched &&
+                            componentData &&
                             templateData.fields
                               .filter(
                                 (field) =>

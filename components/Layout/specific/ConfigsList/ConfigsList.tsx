@@ -4,9 +4,9 @@ import { useWindowScroll } from '@mantine/hooks';
 import { Block } from '../../general/Block/Block';
 import { ConfigCard } from '../ConfigCard/ConfigCard';
 import { NextLink } from '../../general/NextLink/NextLink';
-import { useConfigsList, useUserConfigsList } from '../../../hooks/configs';
+import { useConfigsList, useLikedConfigsList, useUserConfigsList } from '../../../hooks/configs';
 
-export const ConfigsList = ({ username }: { username?: string }) => {
+export const ConfigsList = ({ username, liked }: { username?: string; liked?: boolean }) => {
   const [activePage, setPage] = useState(1);
   const [pos, scrollTo] = useWindowScroll();
 
@@ -21,7 +21,11 @@ export const ConfigsList = ({ username }: { username?: string }) => {
         },
         username
       )
-    : useConfigsList({
+    : !liked
+    ? useConfigsList({
+        page: activePage,
+      })
+    : useLikedConfigsList({
         page: activePage,
       });
 
@@ -51,7 +55,7 @@ export const ConfigsList = ({ username }: { username?: string }) => {
           cols={1}
           breakpoints={[
             { minWidth: 'xs', cols: 2 },
-            { minWidth: 'sm', cols: username ? 3 : 4 },
+            { minWidth: 'sm', cols: username || liked ? 3 : 4 },
           ]}
         >
           {configs.result.map((config) => (

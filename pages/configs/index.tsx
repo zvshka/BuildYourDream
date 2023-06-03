@@ -1,7 +1,7 @@
 import { Container, Stack } from '@mantine/core';
 import React from 'react';
 import { PageHeader } from '../../components/Layout';
-import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfiigsList';
+import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfigsList';
 
 export default function Configs() {
   return (

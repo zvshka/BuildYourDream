@@ -73,7 +73,7 @@ export function ConfigCard({ link, configData }) {
           message: 'Вы успешно удалили сборку',
           color: 'green',
         });
-        queryClient.invalidateQueries(['configs', 'lsit']);
+        queryClient.invalidateQueries(['configs', 'list']);
       },
       onError: (err: any) => {
         showNotification({
@@ -95,6 +95,7 @@ export function ConfigCard({ link, configData }) {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(['configs', 'list']);
+        queryClient.invalidateQueries(['configs', 'list', 'liked']);
       },
       onError: (err: any) => {
         showNotification({

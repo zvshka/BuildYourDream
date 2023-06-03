@@ -51,3 +51,18 @@ export function useUserConfigsList(
     enabled: !!username,
   });
 }
+
+export function useLikedConfigsList(filter: { page: number }) {
+  return useQuery({
+    queryFn: async () => {
+      const { data } = await axios.get('/api/auth/me/liked', {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+        params: filter,
+      });
+      return data;
+    },
+    queryKey: ['configs', 'list', 'liked'],
+  });
+}

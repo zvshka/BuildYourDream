@@ -19,7 +19,7 @@ import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
 import { Block, PageHeader } from '../../components/Layout';
 import { uploadImageMutation } from '../../components/hooks/images';
 import { storage } from '../../lib/utils';
-import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfiigsList';
+import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfigsList';
 import { ReportsList } from '../../components/Layout/specific/ReportsList/ReportsList';
 import { ComponentsList } from '../../components/Layout/specific/ComponentsList/ComponentsList';
 
@@ -160,7 +160,7 @@ export default function ProfilePage() {
                       label="Биография"
                       value={bio}
                       maxLength={1200}
-                      description={`${bio.length} / 1200`}
+                      description={`${bio?.length || 0} / 1200`}
                       onChange={(event) => setBio(event.currentTarget.value)}
                     />
                     <Button onClick={handleSaveBio}>Сохранить</Button>
@@ -182,8 +182,11 @@ export default function ProfilePage() {
             <Tabs.Panel value="reports" mt="md">
               {user && <ReportsList username={user.username} />}
             </Tabs.Panel>
-            <Tabs.Panel value="components">
+            <Tabs.Panel value="components" mt="md">
               {user && <ComponentsList username={user.username} />}
+            </Tabs.Panel>
+            <Tabs.Panel value="likedConfigs" mt="md">
+              {user && <ConfigsList liked />}
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>

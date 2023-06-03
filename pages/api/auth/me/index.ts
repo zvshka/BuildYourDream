@@ -1,6 +1,6 @@
-import { handler } from '../../../lib/handler';
-import AuthService from '../../../services/Auth.service';
-import { authGuard } from '../../../lib/guards';
+import { handler } from '../../../../lib/handler';
+import AuthService from '../../../../services/Auth.service';
+import { authGuard } from '../../../../lib/guards';
 
 const api = handler();
 

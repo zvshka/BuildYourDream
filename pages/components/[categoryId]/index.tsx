@@ -16,7 +16,7 @@ export default function CategoryPage() {
 
   return (
     <Container size="xl" px={0}>
-      <Stack spacing={0}>
+      <Stack>
         <PageHeader
           title={isSuccess ? templateData.name : ''}
           addBack

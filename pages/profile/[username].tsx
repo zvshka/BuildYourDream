@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { Center, Container, Grid, Image, Stack, Tabs, Text, Textarea, Title } from '@mantine/core';
 import { useUserData } from '../../components/hooks/users';
 import { Block, PageHeader } from '../../components/Layout';
-import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfiigsList';
+import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfigsList';
 import { ComponentsList } from '../../components/Layout/specific/ComponentsList/ComponentsList';
 
 export default function UserProfile() {

@@ -234,22 +234,21 @@ class ConfigService {
       where: {
         id: configId,
       },
+      include: {
+        likedUsers: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     if (!candidate || candidate.isDeleted) throw ApiError.BadRequest('Такой сборки не существует');
 
     if (candidate.authorId === user.id) throw ApiError.BadRequest('Самолайк - залог успеха');
 
-    const alreadyLiked = await prisma.config.findFirst({
-      where: {
-        id: configId,
-        likedUsers: {
-          some: {
-            id: user.id,
-          },
-        },
-      },
-    });
+    const alreadyLiked = candidate.likedUsers.some((u) => u.id === user.id);
+
     if (alreadyLiked) throw ApiError.BadRequest('Вы не можете раз сделать это еще раз');
 
     return prisma.config.update({
@@ -271,22 +270,20 @@ class ConfigService {
       where: {
         id: configId,
       },
+      include: {
+        likedUsers: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     if (!candidate || candidate.isDeleted) throw ApiError.BadRequest('Такой сборки не существует');
 
     if (candidate.authorId === user.id) throw ApiError.BadRequest('Самолайк - залог успеха');
 
-    const alreadyLiked = await prisma.config.findFirst({
-      where: {
-        id: configId,
-        likedUsers: {
-          some: {
-            id: user.id,
-          },
-        },
-      },
-    });
+    const alreadyLiked = candidate.likedUsers.some((u) => u.id === user.id);
 
     if (!alreadyLiked) throw ApiError.BadRequest('Вы не можете раз сделать это еще раз');
 
@@ -322,6 +319,74 @@ class ConfigService {
         isDeleted: true,
       },
     });
+  }
+
+  async getLikedList(user: User, filter: { [p: string]: string | string[] | undefined }) {
+    let currentPage = 1;
+    if (filter.page) {
+      if (!Number.isNaN(filter.page)) {
+        currentPage = parseInt(filter.page as string, 10);
+        if (currentPage <= 0) currentPage = 1;
+      }
+    }
+
+    const totalCount = await prisma.config.count({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        title: {
+          contains: (filter?.search as string) || '',
+          mode: 'insensitive',
+        },
+        isDeleted: false,
+        likedUsers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    const result = await prisma.config.findMany({
+      skip: (currentPage - 1) * 15,
+      take: 15,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        title: {
+          contains: (filter?.search as string) || '',
+          mode: 'insensitive',
+        },
+        isDeleted: false,
+        likedUsers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+      include: {
+        author: true,
+        _count: {
+          select: {
+            comments: true,
+            likedUsers: true,
+          },
+        },
+      },
+    });
+
+    return {
+      result: result.map(({ _count, ...config }) => ({
+        ...config,
+        totalComments: _count.comments,
+        totalLikes: _count.likedUsers,
+        liked: true,
+      })),
+      currentPage,
+      totalCount,
+    };
   }
 }
 
