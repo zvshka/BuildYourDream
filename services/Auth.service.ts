@@ -85,6 +85,10 @@ class AuthService {
   }
 
   async updateProfile(user: User, data: any) {
+    if (data.bio && data.bio.trim().length > 1200) {
+      throw ApiError.BadRequest('Слишком много символов (максимум 1200)');
+    }
+
     return prisma.user.update({
       where: {
         id: user.id,

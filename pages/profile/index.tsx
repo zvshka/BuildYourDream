@@ -159,6 +159,8 @@ export default function ProfilePage() {
                       maxRows={15}
                       label="Биография"
                       value={bio}
+                      maxLength={1200}
+                      description={`${bio.length} / 1200`}
                       onChange={(event) => setBio(event.currentTarget.value)}
                     />
                     <Button onClick={handleSaveBio}>Сохранить</Button>

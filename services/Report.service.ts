@@ -61,6 +61,10 @@ class ReportService {
       if (diff < 5) throw ApiError.BadRequest('Подожди 5 минут перед отправкой еще одной жалобы');
     }
 
+    if (reportBody.reason.trim().length < 10) {
+      throw ApiError.BadRequest('Опишите вашу жалобу (минимум 10 символов)');
+    }
+
     return prisma.report.create({
       data: {
         authorId: author.id,
