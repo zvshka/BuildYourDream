@@ -89,7 +89,7 @@ export default function ProfilePage() {
   return (
     <Container size="xl" px={0}>
       <PageHeader title="Ваш профиль" addBack />
-      <Grid mt="md">
+      <Grid mt="sm">
         <Grid.Col span="auto">
           <Stack>
             <Block>

@@ -12,7 +12,7 @@ export default function UserProfile() {
   return (
     <Container size="xl" px={0}>
       <PageHeader title="Профиль пользователя" addBack />
-      <Grid mt="md">
+      <Grid mt="sm">
         <Grid.Col span="auto">
           <Stack>
             <Block>
