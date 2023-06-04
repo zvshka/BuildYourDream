@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Anchor, Box, Flex, Pagination, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useWindowScroll } from '@mantine/hooks';
-import { Block } from '../../general/Block/Block';
+import { Block, NextLink } from '../../general';
 import { ConfigCard } from './ConfigCard/ConfigCard';
-import { NextLink } from '../../general/NextLink/NextLink';
 import { useConfigsList, useLikedConfigsList, useUserConfigsList } from '../../../hooks/configs';
 
 export const ConfigsList = ({ username, liked }: { username?: string; liked?: boolean }) => {

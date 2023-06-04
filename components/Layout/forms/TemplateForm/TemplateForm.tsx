@@ -18,7 +18,7 @@ import {
 import { IconApps, IconDeviceFloppy } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Block, PageHeader } from '../../index';
-import { SortableList } from '../../general/SortableList/SortableList';
+import { SortableList } from '../../general';
 import { CreateField, IField } from '../../../../types/Field';
 import { DragHandle } from '../../general/SortableList/SortableItem';
 import { TemplateField } from './TemplateField';

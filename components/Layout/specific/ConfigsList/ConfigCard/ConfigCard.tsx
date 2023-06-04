@@ -27,11 +27,11 @@ import { showNotification } from '@mantine/notifications';
 import { openConfirmModal, openModal } from '@mantine/modals';
 import { useContextMenu } from 'mantine-contextmenu';
 import { useEffect, useState } from 'react';
-import { NextLink } from '../../../general/NextLink/NextLink';
+import { NextLink } from '../../../general';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
-import { ReportForm } from '../../../forms/ReportForm/ReportForm';
+import { ReportForm } from '../../../forms';
 
 const useStyles = createStyles((theme) => ({
   card: {

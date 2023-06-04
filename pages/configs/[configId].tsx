@@ -22,14 +22,12 @@ import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { openConfirmModal, openModal } from '@mantine/modals';
 import { useForm } from '@mantine/form';
-import { Block, PageHeader } from '../../components/Layout';
+import { Block, Comments, ComponentRow, PageHeader } from '../../components/Layout';
 import { useConfigData } from '../../components/hooks/configs';
-import { ComponentRow } from '../../components/Layout/specific/ComponentsList/ComponentRow/ComponentRow';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
-import { Comments } from '../../components/Layout/specific/Comments/Comments';
 import { storage } from '../../lib/utils';
 import { queryClient } from '../../components/Providers/QueryProvider/QueryProvider';
-import { ReportForm } from '../../components/Layout/forms/ReportForm/ReportForm';
+import { ReportForm } from '../../components/Layout/forms';
 
 const UpdateConfigForm = ({ configData }: { configData: any }) => {
   const form = useForm({

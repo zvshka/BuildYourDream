@@ -19,10 +19,9 @@ import { useDebouncedValue, useToggle, useWindowScroll } from '@mantine/hooks';
 import { useRouter } from 'next/router';
 import { useTemplateData } from '../../../hooks/templates';
 import { useComponentsList, useUserComponentsList } from '../../../hooks/components';
-import { Filters } from '../../inputs/Filters/Filters';
-import { NextLink } from '../../general/NextLink/NextLink';
+import { Filters } from '../../inputs';
+import { Block, NextLink } from '../../general';
 import { ComponentRow } from './ComponentRow/ComponentRow';
-import { Block } from '../../general/Block/Block';
 
 const useStyles = createStyles((theme) => ({
   container: {

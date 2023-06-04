@@ -2,15 +2,15 @@ import { useRouter } from 'next/router';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect } from 'react';
 import { Box, Button, Modal, Stack, Text, Title } from '@mantine/core';
-import { Block } from '../../../general/Block/Block';
-import { ReportModal } from '../ReportModal/ReportModal';
-import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { storage } from '../../../../../lib/utils';
 import { showNotification } from '@mantine/notifications';
-import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 import { openConfirmModal } from '@mantine/modals';
+import { Block } from '../../../general';
+import { ReportModal } from '../ReportModal/ReportModal';
+import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
+import { storage } from '../../../../../lib/utils';
+import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 
 export const ReportCard = ({ reportData }) => {
   const router = useRouter();

@@ -1,10 +1,10 @@
 import { Center, Pagination, Select, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
-import { Block } from '../../general/Block/Block';
 import { DatePickerInput } from '@mantine/dates';
-import { ReportCard } from './ReportCard/ReportCard';
 import { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
 import { useDebouncedValue } from '@mantine/hooks';
+import { ReportCard } from './ReportCard/ReportCard';
+import { Block } from '../../general';
 import { useMyReportsList, useReportsList } from '../../../hooks/reports';
 
 export const ReportsList = ({ username }: { username?: string }) => {
