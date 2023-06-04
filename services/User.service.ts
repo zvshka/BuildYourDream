@@ -129,18 +129,24 @@ class UserService {
       },
       include: {
         _count: {
-          select: { configs: true, comments: true, myComponents: true, reports: true },
+          select: { configs: true, comments: true, myComponents: true, myReports: true },
+        },
+        reports: {
+          where: {
+            approved: true,
+          },
         },
       },
     });
 
     return {
-      result: result.map(({ _count, hashedPassword, ...user }) => ({
+      result: result.map(({ _count, reports, hashedPassword, ...user }) => ({
         ...user,
         totalConfigs: _count.configs,
         totalComments: _count.comments,
         totalComponents: _count.myComponents,
-        totalReports: _count.reports,
+        totalReports: _count.myReports,
+        totalWarns: reports.reduce((prev, next) => prev + (next.warns ? next.warns : 0), 0),
       })),
       totalCount,
       currentPage,

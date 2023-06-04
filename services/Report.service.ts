@@ -126,6 +126,7 @@ class ReportService {
           gt: 0,
           not: null,
         },
+        approved: true,
       },
       select: {
         warns: true,
@@ -323,6 +324,9 @@ class ReportService {
         ...reviewAtFilter,
         ...searchFilter,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: {
         author: true,
         user: true,
@@ -366,6 +370,9 @@ class ReportService {
       where: {
         authorId: user.id,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: {
         author: true,
         user: true,
@@ -375,6 +382,124 @@ class ReportService {
     });
 
     return { result, totalCount, currentPage };
+  }
+
+  async getUserViolations(username: string, filter: any) {
+    let currentPage = 1;
+    if (filter.page) {
+      if (!Number.isNaN(filter.page)) {
+        currentPage = parseInt(filter.page as string, 10);
+        if (currentPage <= 0) currentPage = 1;
+      }
+    }
+
+    let createdAtFilter = {};
+    if (filter.createdAt) {
+      const params = new URLSearchParams(filter.createdAt as string);
+      const gt = params.get('gt');
+      const lt = params.get('lt');
+      if (gt && lt && isDate(new Date(gt)) && isDate(new Date(lt))) {
+        createdAtFilter = Object.assign(createdAtFilter, {
+          createdAt: {
+            gte: gt,
+            lte: lt,
+          },
+        });
+      }
+    }
+
+    let reviewAtFilter = {};
+    if (filter.reviewAt) {
+      const params = new URLSearchParams(filter.reviewAt as string);
+      const gt = params.get('gt');
+      const lt = params.get('lt');
+      if (gt && lt && isDate(new Date(gt)) && isDate(new Date(lt))) {
+        reviewAtFilter = Object.assign(reviewAtFilter, {
+          OR: [
+            {
+              approvedAt: {
+                gte: gt,
+                lte: lt,
+              },
+            },
+            {
+              rejectedAt: {
+                gte: gt,
+                lte: lt,
+              },
+            },
+          ],
+        });
+      }
+    }
+
+    const candidate = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (!candidate) throw ApiError.BadRequest('Такого пользователя не существует');
+
+    const userWarns = await prisma.report.findMany({
+      where: {
+        userId: candidate.id,
+        expiredAt: {
+          gt: new Date(),
+        },
+        warns: {
+          gt: 0,
+          not: null,
+        },
+        approved: true,
+      },
+      select: {
+        warns: true,
+        expiredAt: true,
+      },
+    });
+
+    const totalWarns = userWarns.reduce((prev, next) => prev + next.warns!, 0);
+
+    const totalCount = await prisma.report.count({
+      where: {
+        ...createdAtFilter,
+        ...reviewAtFilter,
+        approved: true,
+      },
+      orderBy: {
+        approvedAt: 'desc',
+      },
+    });
+
+    const result = await prisma.report.findMany({
+      skip: (currentPage - 1) * 10,
+      take: 10,
+      where: {
+        ...createdAtFilter,
+        ...reviewAtFilter,
+        approved: true,
+      },
+      orderBy: {
+        approvedAt: 'desc',
+      },
+      include: {
+        author: true,
+        user: true,
+        config: {
+          include: {
+            author: true,
+          },
+        },
+        comment: {
+          include: {
+            author: true,
+          },
+        },
+      },
+    });
+
+    return { totalWarns, totalCount, result, currentPage };
   }
 }
 

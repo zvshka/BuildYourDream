@@ -113,6 +113,7 @@ export default function AdminUsers() {
               { accessor: 'totalConfigs', title: 'Сборок', sortable: true },
               { accessor: 'totalComments', title: 'Комментариев', sortable: true },
               { accessor: 'totalReports', title: 'Жалоб', sortable: true },
+              { accessor: 'totalWarns', title: 'Варнов', sortable: false },
               {
                 accessor: 'createdAt',
                 title: 'Создан',

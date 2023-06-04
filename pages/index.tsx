@@ -131,18 +131,12 @@ export default function HomePage() {
       [0, 0]
     );
     setTotalPrice(price);
+
     const componentsTierSummary =
-      components.reduce(
-        (prev, next) =>
-          // @ts-ignore
-          prev + next.data!.tier === 'low'
-            ? 1
-            : // @ts-ignore
-            next.data!.tier === 'medium'
-            ? 2
-            : 3,
-        0
-      ) / (components.length || 1);
+      components
+        .map((c) => c.data.tier)
+        .reduce((prev, next) => prev + (next === 'high' ? 3 : next === 'medium' ? 2 : 1), 0) /
+      (components.length || 1);
 
     const configTier =
       componentsTierSummary >= 0 && componentsTierSummary < 1.5

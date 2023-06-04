@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import { Center, Container, Grid, Image, Stack, Tabs, Text, Textarea, Title } from '@mantine/core';
 import { useUserData } from '../../components/hooks/users';
-import { Block, PageHeader } from '../../components/Layout';
-import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfigsList';
-import { ComponentsList } from '../../components/Layout/specific/ComponentsList/ComponentsList';
+import { Block, ComponentsList, PageHeader } from '../../components/Layout';
+import { ConfigsList } from '../../components/Layout/specific/ConfigsList';
+import { ViolationsList } from '../../components/Layout/specific/ViolationsList/ViolationsList';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -61,6 +61,7 @@ export default function UserProfile() {
                 <Tabs.Tab value="info">Информация о пользователе</Tabs.Tab>
                 <Tabs.Tab value="configs">Сборки пользователя</Tabs.Tab>
                 <Tabs.Tab value="components">Компоненты пользователя</Tabs.Tab>
+                <Tabs.Tab value="warns">История нарушений</Tabs.Tab>
               </Tabs.List>
             </Block>
             <Tabs.Panel value="info" mt="md">
@@ -83,8 +84,11 @@ export default function UserProfile() {
             <Tabs.Panel value="configs" mt="md">
               <ConfigsList username={router.query.username as string} />
             </Tabs.Panel>
-            <Tabs.Panel value="components">
+            <Tabs.Panel value="components" mt="md">
               <ComponentsList username={router.query.username as string} />
+            </Tabs.Panel>
+            <Tabs.Panel value="warns" mt="md">
+              <ViolationsList username={router.query.username as string} />
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>

@@ -96,7 +96,7 @@ export function useUserViolationsList(
 ) {
   return useQuery({
     queryFn: async () => {
-      const { data } = await axios.get(`/api/reports/violations/${username}`, {
+      const { data } = await axios.get(`/api/users/${username}/violations/`, {
         params: new URLSearchParams({
           page: filter.page.toString(),
           ...(filter.createdAt[0] && filter.createdAt[1]

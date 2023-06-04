@@ -16,12 +16,11 @@ import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
-import { Block, PageHeader } from '../../components/Layout';
+import { Block, ComponentsList, PageHeader, ReportsList } from '../../components/Layout';
 import { uploadImageMutation } from '../../components/hooks/images';
 import { storage } from '../../lib/utils';
-import { ConfigsList } from '../../components/Layout/specific/ConfigsList/ConfigsList';
-import { ReportsList } from '../../components/Layout/specific/ReportsList/ReportsList';
-import { ComponentsList } from '../../components/Layout/specific/ComponentsList/ComponentsList';
+import { ConfigsList } from '../../components/Layout/specific/ConfigsList';
+import { ViolationsList } from '../../components/Layout/specific/ViolationsList/ViolationsList';
 
 export default function ProfilePage() {
   const { user, refetch } = useAuth();
@@ -189,6 +188,9 @@ export default function ProfilePage() {
             </Tabs.Panel>
             <Tabs.Panel value="likedConfigs" mt="md">
               {user && <ConfigsList liked />}
+            </Tabs.Panel>
+            <Tabs.Panel value="warns" mt="md">
+              {user && <ViolationsList username={user.username} />}
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>
