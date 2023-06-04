@@ -85,3 +85,40 @@ export function useMyReportsList(filter: {
     queryKey: ['reports', 'list', 'my'],
   });
 }
+
+export function useUserViolationsList(
+  username: string,
+  filter: {
+    page: number;
+    createdAt: [Date | null, Date | null];
+    reviewAt: [Date | null, Date | null];
+  }
+) {
+  return useQuery({
+    queryFn: async () => {
+      const { data } = await axios.get(`/api/reports/violations/${username}`, {
+        params: new URLSearchParams({
+          page: filter.page.toString(),
+          ...(filter.createdAt[0] && filter.createdAt[1]
+            ? {
+                createdAt: new URLSearchParams({
+                  gt: filter.createdAt[0] ? filter.createdAt[0]?.toISOString() : '',
+                  lt: filter.createdAt[1] ? filter.createdAt[1]?.toISOString() : '',
+                }).toString(),
+              }
+            : {}),
+          ...(filter.reviewAt[0] && filter.reviewAt[1]
+            ? {
+                reviewAt: new URLSearchParams({
+                  gt: filter.reviewAt[0] ? filter.reviewAt[0]?.toISOString() : '',
+                  lt: filter.reviewAt[1] ? filter.reviewAt[1]?.toISOString() : '',
+                }).toString(),
+              }
+            : {}),
+        }),
+      });
+      return data;
+    },
+    queryKey: ['reports', 'list', 'violations'],
+  });
+}

@@ -21,7 +21,7 @@ import { useTemplateData } from '../../../hooks/templates';
 import { useComponentsList, useUserComponentsList } from '../../../hooks/components';
 import { Filters } from '../../inputs/Filters/Filters';
 import { NextLink } from '../../general/NextLink/NextLink';
-import { ComponentRow } from '../ComponentRow/ComponentRow';
+import { ComponentRow } from './ComponentRow/ComponentRow';
 import { Block } from '../../general/Block/Block';
 
 const useStyles = createStyles((theme) => ({
@@ -161,7 +161,7 @@ export const ComponentsList = ({
                   ) : (
                     <Box
                       key={component.id}
-                      onClick={() => onChoose(categoryId, component)}
+                      onClick={() => onChoose(component)}
                       sx={{ cursor: 'pointer' }}
                     >
                       <Block>

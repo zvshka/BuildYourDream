@@ -144,9 +144,11 @@ export default function ProfilePage() {
               <Tabs.List>
                 <Tabs.Tab value="info">Информация обо мне</Tabs.Tab>
                 <Tabs.Tab value="configs">Мои сборки</Tabs.Tab>
-                <Tabs.Tab value="reports">Мои жалобы</Tabs.Tab>
-                <Tabs.Tab value="components">Мои компоненты</Tabs.Tab>
                 <Tabs.Tab value="likedConfigs">Понравившиеся сборки</Tabs.Tab>
+                <Tabs.Tab value="components">Мои компоненты</Tabs.Tab>
+                <Tabs.Tab value="reviews">Мои отзывы</Tabs.Tab>
+                <Tabs.Tab value="reports">Мои жалобы</Tabs.Tab>
+                <Tabs.Tab value="warns">История нарушений</Tabs.Tab>
               </Tabs.List>
             </Block>
             <Tabs.Panel value="info" mt="md">
@@ -154,8 +156,8 @@ export default function ProfilePage() {
                 <Block>
                   <Stack>
                     <Textarea
-                      minRows={7}
                       autosize
+                      minRows={7}
                       maxRows={15}
                       label="Биография"
                       value={bio}

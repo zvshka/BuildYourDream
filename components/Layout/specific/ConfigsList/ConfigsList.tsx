@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Anchor, Box, Flex, Pagination, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useWindowScroll } from '@mantine/hooks';
 import { Block } from '../../general/Block/Block';
-import { ConfigCard } from '../ConfigCard/ConfigCard';
+import { ConfigCard } from './ConfigCard/ConfigCard';
 import { NextLink } from '../../general/NextLink/NextLink';
 import { useConfigsList, useLikedConfigsList, useUserConfigsList } from '../../../hooks/configs';
 

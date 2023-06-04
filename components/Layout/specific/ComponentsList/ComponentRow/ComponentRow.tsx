@@ -20,8 +20,8 @@ import {
   IconStarFilled,
   IconTrash,
 } from '@tabler/icons-react';
-import { IComponentBody } from '../../../../types/Template';
-import { useTemplateData } from '../../../hooks/templates';
+import { IComponentBody } from '../../../../../types/Template';
+import { useTemplateData } from '../../../../hooks/templates';
 
 export const ComponentRow = ({
   component,

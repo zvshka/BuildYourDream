@@ -19,12 +19,10 @@ import cuid from 'cuid';
 import { IconTrash } from '@tabler/icons-react';
 import { deepEqual, storage } from '../../../lib/utils';
 import { useTemplatesList } from '../../../components/hooks/templates';
-import { Block, PageHeader } from '../../../components/Layout';
-import { SortableList } from '../../../components/Layout/general/SortableList/SortableList';
+import { Block, ConstraintField, PageHeader, SortableList } from '../../../components/Layout';
 import { ITemplate } from '../../../types/Template';
 import { IConstraintFieldValue } from '../../../types/Constraints';
 import { useConstraintsList } from '../../../components/hooks/constraints';
-import { ConstraintField } from '../../../components/Layout/inputs/ConstraintField/ConstraintField';
 
 const ConfiguratorForm = () => {
   const { data: templates, isSuccess } = useTemplatesList();

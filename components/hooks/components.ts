@@ -64,7 +64,7 @@ export function useUnapprovedList(filter?: any) {
 }
 
 export function useComponentData(componentId?: string) {
-  return useQuery<{ id: string; templateId: string; data: IComponentBody }>({
+  return useQuery<{ id: string; templateId: string; data: IComponentBody; totalComments: number }>({
     queryKey: ['components', componentId],
     queryFn: async () => {
       const { data } = await axios.get(`/api/components/${componentId}`);

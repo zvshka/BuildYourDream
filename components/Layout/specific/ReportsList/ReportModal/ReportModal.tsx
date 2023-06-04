@@ -2,9 +2,9 @@ import { useForm } from '@mantine/form';
 import dayjs from 'dayjs';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { storage } from '../../../../lib/utils';
+import { storage } from '../../../../../lib/utils';
 import { showNotification } from '@mantine/notifications';
-import { queryClient } from '../../../Providers/QueryProvider/QueryProvider';
+import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 import {
   Anchor,
   Button,

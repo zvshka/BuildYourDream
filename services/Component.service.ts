@@ -312,11 +312,18 @@ class ComponentService {
       where: {
         id: componentId,
       },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
     });
 
     if (!result) throw ApiError.BadRequest(`Компонента с таким id (${componentId}) не существует`);
 
-    return result;
+    return { ...result, totalComments: result._count.comments };
   }
 
   async updateComponentById(

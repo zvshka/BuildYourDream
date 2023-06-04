@@ -41,7 +41,8 @@ import { IComponent, ITemplate } from '../types/Template';
 import { useConstraintsList } from '../components/hooks/constraints';
 import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
 import { configErrors, getCount, storage } from '../lib/utils';
-import { ComponentRow } from '../components/Layout/specific/ComponentRow/ComponentRow';
+import { ComponentRow } from '../components/Layout/specific/ComponentsList/ComponentRow/ComponentRow';
+import { useComponentData } from '../components/hooks/components';
 
 //TODO: Добавить помощник выбора в несколько шагов
 /**
@@ -50,6 +51,24 @@ import { ComponentRow } from '../components/Layout/specific/ComponentRow/Compone
  * Далее он заполняет форму в несколько этапов
  * После ему подбираются комплектующие по указанным критериям
  **/
+
+const ComponentRowWithReload = ({ component, onRemove, onLoad }) => {
+  const { data: componentData, isSuccess } = useComponentData(component.id);
+  useEffect(() => {
+    if (isSuccess && component.refetch) {
+      onLoad && onLoad(componentData);
+    }
+  }, [isSuccess]);
+
+  return (
+    <ComponentRow
+      component={isSuccess ? componentData.data : component.data}
+      templateId={component.templateId}
+      onRemove={onRemove}
+      totalComments={isSuccess ? componentData.totalComments : 0}
+    />
+  );
+};
 
 export default function HomePage() {
   const { data: templates, isSuccess, refetch } = useTemplatesList();
@@ -93,7 +112,10 @@ export default function HomePage() {
       const tObject = Object.fromEntries(mapped);
       setTemplatesObject(tObject);
 
-      const ids = templates.map((t) => [t.id, configData[t.id] || []]);
+      const ids = templates.map((t) => [
+        t.id,
+        configData[t.id] ? configData[t.id].map((item) => ({ ...item, refetch: true })) : [],
+      ]);
       const formData = Object.fromEntries(ids);
       form.setFieldValue('components', formData);
     }
@@ -158,21 +180,34 @@ export default function HomePage() {
     );
   };
 
-  const onChoose = (templateId: string, component: IComponent) => {
-    form.insertListItem(`components.${templateId}`, component);
+  const onChoose = (component: IComponent) => {
+    form.insertListItem(`components.${component.templateId}`, component);
     if (isSuccess) {
       const currentState = [...Object.values(form.values.components).flat(), component];
       const [currentCount, maxCount] = getCount(
         templatesObject,
-        templates.find((t) => t.id === templateId)!,
+        templates.find((t) => t.id === component.templateId)!,
         currentState
       );
       if (currentCount === maxCount) {
         handlers.close();
       }
       storage.updateConfig(
-        templateId,
-        currentState.filter((i) => i.templateId === templateId)
+        component.templateId,
+        currentState.filter((i) => i.templateId === component.templateId)
+      );
+    }
+  };
+
+  const onLoad = (component: IComponent, index) => {
+    if (isSuccess) {
+      const currentState = [...Object.values(form.values.components).flat()];
+
+      storage.updateConfig(
+        component.templateId,
+        currentState
+          .filter((i) => i.templateId === component.templateId)
+          .map((item, i) => (item.id === component.id && index === i ? component : item))
       );
     }
   };
@@ -365,10 +400,19 @@ export default function HomePage() {
                       {t.id in form.values.components &&
                         !!form.values.components[t.id] &&
                         form.values.components[t.id].map((component, index) => (
-                          <Stack pt={index === 0 ? 'md' : 0}>
-                            <ComponentRow
-                              component={component.data}
-                              templateId={component.templateId}
+                          <Stack pt={index === 0 ? 'md' : 0} key={`${component.id}_${index}`}>
+                            {/*<ComponentRow*/}
+                            {/*  component={component.data}*/}
+                            {/*  templateId={component.templateId}*/}
+                            {/*  onRemove={*/}
+                            {/*    form.values.components[t.id].length > 1*/}
+                            {/*      ? () => onRemove(t.id, index)*/}
+                            {/*      : undefined*/}
+                            {/*  }*/}
+                            {/*/>*/}
+                            <ComponentRowWithReload
+                              component={component}
+                              onLoad={(c) => onLoad(c, index)}
                               onRemove={
                                 form.values.components[t.id].length > 1
                                   ? () => onRemove(t.id, index)
@@ -382,10 +426,10 @@ export default function HomePage() {
                         ))}
                     </Card>
                     <Collapse in={categoryId === t.id && opened}>
-                      <Paper sx={{ backgroundColor: theme.colors.gray[4] }}>
+                      <Paper sx={{ backgroundColor: theme.colors.gray[4] }} pt="md">
                         <ScrollArea.Autosize sx={{ maxHeight: 700 }} viewportRef={viewport}>
                           <ComponentsList
-                            categoryId={categoryId as string}
+                            categoryId={categoryId && categoryId === t.id ? t.id : ''}
                             onChoose={onChoose}
                             viewport={viewport}
                           />

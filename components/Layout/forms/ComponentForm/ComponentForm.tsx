@@ -20,7 +20,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { useMutation } from '@tanstack/react-query';
 import { RangeInput } from '../../index';
-import { useComponentFormContext } from '../TemplateForm/TemplateContext';
+import { useComponentFormContext } from '../TemplateForm';
 import { IField } from '../../../../types/Field';
 import {
   BOOL,
