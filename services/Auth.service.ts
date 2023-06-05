@@ -125,15 +125,23 @@ class AuthService {
     if (process.env.NODE_ENV === 'development') {
       account = await nodemailer.createTestAccount();
     } else {
-      account = {};
+      account = {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      };
     }
 
     // create reusable transporter object using the default SMTP transport
     const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host:
+        process.env.NODE_ENV !== 'development' ? 'mail.buildyourdream.ru' : 'smtp.ethereal.email',
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: account,
+      tls: {
+        // do not fail on invalid certs
+        rejectUnauthorized: false,
+      },
     });
 
     const info = await transporter.sendMail({
@@ -176,13 +184,13 @@ ${process.env.BASE_URL}/auth/verify?code=${code.code}`, // plain text body
   async sendReset(toFind: string) {
     const candidate = await prisma.user.findFirst({
       where: {
-        email: toFind,
-        username: toFind,
+        OR: [{ email: toFind }, { username: toFind }],
       },
       include: {
         emailVerification: true,
       },
     });
+
     if (!candidate || (candidate.emailVerification && !candidate.emailVerification.doneAt)) {
       return false;
     }
@@ -207,15 +215,23 @@ ${process.env.BASE_URL}/auth/verify?code=${code.code}`, // plain text body
     if (process.env.NODE_ENV === 'development') {
       account = await nodemailer.createTestAccount();
     } else {
-      account = {};
+      account = {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      };
     }
 
     // create reusable transporter object using the default SMTP transport
     const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host:
+        process.env.NODE_ENV !== 'development' ? 'mail.buildyourdream.ru' : 'smtp.ethereal.email',
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: account,
+      tls: {
+        // do not fail on invalid certs
+        rejectUnauthorized: false,
+      },
     });
 
     const info = await transporter.sendMail({
@@ -226,11 +242,13 @@ ${process.env.BASE_URL}/auth/verify?code=${code.code}`, // plain text body
 ${process.env.BASE_URL}/auth/reset?code=${code.code}\nЕсли вы не запрашивали смену - проигнорируйте письмо`, // plain text body
     });
 
-    console.log('Message sent: %s', info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Message sent: %s', info.messageId);
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
-    // Preview only available when sending through an Ethereal account
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+      // Preview only available when sending through an Ethereal account
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
 
     return true;
   }

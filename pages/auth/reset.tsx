@@ -50,7 +50,7 @@ const ResetForm = ({ code }: { code: string }) => {
           password,
         },
         {
-          params: code,
+          params: { code },
         }
       ),
     {
