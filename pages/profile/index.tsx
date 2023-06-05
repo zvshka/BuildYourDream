@@ -3,6 +3,7 @@ import {
   Center,
   Container,
   Grid,
+  Group,
   Image,
   Stack,
   Tabs,
@@ -61,6 +62,54 @@ export default function ProfilePage() {
     }
   );
 
+  const verifyEmailMutation = useMutation(
+    () =>
+      axios.get('/api/auth/verify/send', {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Письмо с ссылкой успшешно отправлено на почту',
+          color: 'green',
+        });
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
+
+  const resetMutation = useMutation(
+    () =>
+      axios.post('/api/auth/reset/send', {
+        toFind: user?.username,
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'На почту была выслана ссылка',
+          color: 'green',
+        });
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
+
   const handleImageUpload = async (files: FileWithPath[]) => {
     const formData = new FormData();
     formData.append('upload', files[0]);
@@ -83,6 +132,13 @@ export default function ProfilePage() {
       avatarUrl: user?.avatarUrl,
       bio,
     });
+  };
+
+  const handleSendVerify = () => {
+    verifyEmailMutation.mutate();
+  };
+  const handleSendReset = () => {
+    resetMutation.mutate();
   };
 
   return (
@@ -152,6 +208,22 @@ export default function ProfilePage() {
             </Block>
             <Tabs.Panel value="info" mt="md">
               <Stack>
+                <Block>
+                  <Group>
+                    <Button
+                      onClick={handleSendVerify}
+                      disabled={!user || user.emailVerification?.doneAt}
+                    >
+                      Подтвердить Email
+                    </Button>
+                    <Button
+                      onClick={handleSendReset}
+                      disabled={!user || !user.emailVerification?.doneAt}
+                    >
+                      Поменять пароль
+                    </Button>
+                  </Group>
+                </Block>
                 <Block>
                   <Stack>
                     <Textarea

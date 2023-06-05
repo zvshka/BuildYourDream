@@ -2,7 +2,7 @@ export interface User {
   bio: string;
   id: string;
   email: string;
-  emailVerified?: any;
+  emailVerification?: any;
   avatarUrl?: string;
   username: string;
   role: string;

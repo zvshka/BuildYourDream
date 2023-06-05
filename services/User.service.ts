@@ -26,7 +26,7 @@ class UserService {
         username,
       },
       include: {
-        configs: true,
+        emailVerification: true,
       },
     });
 
@@ -47,6 +47,9 @@ class UserService {
     return prisma.user.findUnique({
       where: {
         id,
+      },
+      include: {
+        emailVerification: true,
       },
     });
   }

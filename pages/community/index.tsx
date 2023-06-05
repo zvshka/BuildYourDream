@@ -85,9 +85,8 @@ const ComponentsPanel = () => {
   const rejectComponent = useMutation(
     (data: any) =>
       axios.post(
-        '/api/components/reject',
+        `/api/components/${data.id}/reject`,
         {
-          componentId: data.id,
           reason: data.reason,
         },
         {
@@ -118,17 +117,11 @@ const ComponentsPanel = () => {
 
   const approveComponent = useMutation(
     (componentId: string) =>
-      axios.post(
-        '/api/components/approve',
-        {
-          componentId,
+      axios.get(`/api/components/${componentId}/approve`, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
         },
-        {
-          headers: {
-            authorization: `Bearer ${storage.getToken()}`,
-          },
-        }
-      ),
+      }),
     {
       onSuccess: () => {
         showNotification({

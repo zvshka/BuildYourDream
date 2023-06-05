@@ -1,5 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import cuid from 'cuid';
+import nodemailer from 'nodemailer';
+import dayjs from 'dayjs';
 import UserService from './User.service';
 import { ApiError } from '../lib/ApiError';
 import { tokenPayload } from '../types/tokenPayload';
@@ -98,6 +101,168 @@ class AuthService {
         bio: data.bio,
       },
     });
+  }
+
+  async sendVerify(user: User) {
+    if (user.emailVerification?.doneAt) throw ApiError.BadRequest('Вы не можете этого сделать');
+    const code = await prisma.emailVerification.upsert({
+      where: {
+        userId: user.id,
+      },
+      create: {
+        userId: user.id,
+        code: cuid(),
+        expiredAt: dayjs().add(2, 'h').toISOString(),
+      },
+      update: {
+        code: cuid(),
+        expiredAt: dayjs().add(2, 'h').toISOString(),
+      },
+    });
+
+    // Send mail
+    let account;
+    if (process.env.NODE_ENV === 'development') {
+      account = await nodemailer.createTestAccount();
+    } else {
+      account = {};
+    }
+
+    // create reusable transporter object using the default SMTP transport
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: account,
+    });
+
+    const info = await transporter.sendMail({
+      from: '"Build Your Dream" <admin@buildyourdream.ru>', // sender address
+      to: user.email, // list of receivers
+      subject: 'Подтверддение Email', // Subject line
+      text: `Перейдите по ссылке чтобы подтвердить Email
+${process.env.BASE_URL}/auth/verify?code=${code.code}`, // plain text body
+    });
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Message sent: %s', info.messageId);
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
+
+    return true;
+  }
+
+  async handleVerify(code: string) {
+    const candidate = await prisma.emailVerification.findUnique({
+      where: {
+        code,
+      },
+    });
+
+    if (!candidate || dayjs(candidate.expiredAt).diff() < 0) {
+      throw ApiError.BadRequest('Недействительный код');
+    }
+
+    return prisma.emailVerification.update({
+      where: {
+        code,
+      },
+      data: {
+        doneAt: dayjs().toISOString(),
+      },
+    });
+  }
+
+  async sendReset(toFind: string) {
+    const candidate = await prisma.user.findFirst({
+      where: {
+        email: toFind,
+        username: toFind,
+      },
+      include: {
+        emailVerification: true,
+      },
+    });
+    if (!candidate || (candidate.emailVerification && !candidate.emailVerification.doneAt)) {
+      return false;
+    }
+
+    const code = await prisma.passwordReset.upsert({
+      where: {
+        userId: candidate.id,
+      },
+      update: {
+        code: cuid(),
+        expiredAt: dayjs().add(2, 'h').toISOString(),
+      },
+      create: {
+        code: cuid(),
+        userId: candidate.id,
+        expiredAt: dayjs().add(2, 'h').toISOString(),
+      },
+    });
+
+    // Send mail
+    let account;
+    if (process.env.NODE_ENV === 'development') {
+      account = await nodemailer.createTestAccount();
+    } else {
+      account = {};
+    }
+
+    // create reusable transporter object using the default SMTP transport
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: account,
+    });
+
+    const info = await transporter.sendMail({
+      from: '"Build Your Dream" <noreply@buildyourdream.ru>', // sender address
+      to: candidate.email, // list of receivers
+      subject: 'Смена пароля', // Subject line
+      text: `Перейдите по ссылке чтобы сменить пароль
+${process.env.BASE_URL}/auth/reset?code=${code.code}\nЕсли вы не запрашивали смену - проигнорируйте письмо`, // plain text body
+    });
+
+    console.log('Message sent: %s', info.messageId);
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+    // Preview only available when sending through an Ethereal account
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+    return true;
+  }
+
+  async handleReset(code: string, data: any) {
+    const candidate = await prisma.passwordReset.findUnique({
+      where: {
+        code,
+      },
+    });
+
+    if (!candidate || dayjs(candidate.expiredAt).diff() < 0) {
+      throw ApiError.BadRequest('Недействительный код');
+    }
+
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    await prisma.user.update({
+      where: {
+        id: candidate.userId,
+      },
+      data: {
+        hashedPassword,
+      },
+    });
+
+    await prisma.passwordReset.delete({
+      where: {
+        code,
+      },
+    });
+
+    return true;
   }
 }
 

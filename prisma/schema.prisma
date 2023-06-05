@@ -16,11 +16,32 @@ enum Role {
   ADMIN
 }
 
+model EmailVerification {
+  code String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  expiredAt DateTime
+
+  doneAt DateTime?
+}
+
+model PasswordReset {
+  code String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  createdAt DateTime @default(now())
+  expiredAt DateTime
+}
+
 model User {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  emailVerified  DateTime?
-  username       String    @unique
+  id             String  @id @default(cuid())
+  email          String  @unique
+  username       String  @unique
   avatarUrl      String?
   bio            String?
   hashedPassword String
@@ -43,6 +64,10 @@ model User {
   proceedRequests   UpdateRequest[] @relation(name: "requestInspector")
   proceedComponents Component[]     @relation(name: "componentInspector")
   deletedComments   Comment[]       @relation(name: "deletedBy")
+  reviews           Review[]
+
+  emailVerification EmailVerification?
+  passwordReset     PasswordReset?
 }
 
 model Report {
@@ -139,6 +164,21 @@ model UpdateRequest {
   updatedAt DateTime @updatedAt
 }
 
+model Review {
+  id       String @id @default(cuid())
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  component   Component @relation(fields: [componentId], references: [id])
+  componentId String
+
+  rating Int
+  text   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Component {
   id   String @id @default(cuid())
   data Json
@@ -157,11 +197,14 @@ model Component {
 
   rejectReason String?
 
+  isDeleted Boolean @default(false)
+
   createdAt DateTime @default(now())
 
   configs        ComponentInConfig[]
   updateRequests UpdateRequest[]
   comments       Comment[]
+  reviews        Review[]
 }
 
 model ComponentInConfig {

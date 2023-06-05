@@ -168,6 +168,7 @@ class ComponentService {
       where: {
         approved: true,
         rejected: false,
+        isDeleted: false,
         templateId,
         AND: [searchFilter, tiersFilter],
       },
@@ -184,6 +185,7 @@ class ComponentService {
       where: {
         approved: true,
         rejected: false,
+        isDeleted: false,
         templateId,
         AND: [searchFilter, tiersFilter],
       },
@@ -265,6 +267,7 @@ class ComponentService {
       where: {
         approved: true,
         rejected: false,
+        isDeleted: false,
         creator: {
           username,
         },
@@ -283,6 +286,7 @@ class ComponentService {
       where: {
         approved: true,
         rejected: false,
+        isDeleted: false,
         creator: {
           username,
         },
@@ -321,7 +325,9 @@ class ComponentService {
       },
     });
 
-    if (!result) throw ApiError.BadRequest(`Компонента с таким id (${componentId}) не существует`);
+    if (!result || result.isDeleted) {
+      throw ApiError.BadRequest(`Компонента с таким id (${componentId}) не существует`);
+    }
 
     return { ...result, totalComments: result._count.comments };
   }
@@ -333,7 +339,7 @@ class ComponentService {
   ) {
     const candidate = await this.getComponentById(componentId);
 
-    if (!candidate) {
+    if (!candidate || candidate.isDeleted) {
       throw ApiError.BadRequest(`Компонента с таким id (${componentId}) не существует`);
     }
 
@@ -362,6 +368,27 @@ class ComponentService {
         componentId,
         data: componentData.data,
         userId: user.id,
+      },
+    });
+  }
+
+  async deleteById(componentId: string) {
+    const candidate = await prisma.component.findUnique({
+      where: {
+        id: componentId,
+      },
+    });
+
+    if (!candidate || candidate.isDeleted || !candidate.approved) {
+      throw ApiError.BadRequest('Такого компонента не существует');
+    }
+
+    return prisma.component.update({
+      where: {
+        id: componentId,
+      },
+      data: {
+        isDeleted: true,
       },
     });
   }

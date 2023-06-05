@@ -5,6 +5,7 @@ import {
   Center,
   Container,
   createStyles,
+  Group,
   LoadingOverlay,
   PasswordInput,
   Popover,
@@ -22,7 +23,7 @@ import { useRouter } from 'next/router';
 import { useToggle } from '@mantine/hooks';
 import { validateEmail } from '../../lib/validateEmail';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
-import { NextLink } from '../../components/Layout/general/NextLink/NextLink';
+import { NextLink } from '../../components/Layout';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -201,9 +202,14 @@ export default function SignUp() {
           <Button type="submit" className={classes.input}>
             Регистрация
           </Button>
-          <Anchor component={NextLink} href="/auth/signin">
-            Есть аккаунт?
-          </Anchor>
+          <Group>
+            <Anchor component={NextLink} href="/auth/reset">
+              Забыли пароль?
+            </Anchor>
+            <Anchor component={NextLink} href="/auth/signin">
+              Есть аккаунт?
+            </Anchor>
+          </Group>
           <Anchor component={NextLink} href="/">
             На главную
           </Anchor>
