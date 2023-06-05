@@ -12,7 +12,6 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { router } from 'next/client';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -27,6 +26,7 @@ const useStyles = createStyles(() => ({
 }));
 
 const ResetForm = ({ code }: { code: string }) => {
+  const router = useRouter();
   const { classes } = useStyles();
   const form = useForm({
     initialValues: {
