@@ -12,6 +12,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
+import { router } from 'next/client';
 
 const useStyles = createStyles(() => ({
   container: {
@@ -60,6 +61,7 @@ const ResetForm = ({ code }: { code: string }) => {
           message: 'Вы успешно изменили пароль, теперь вы можете войти с новым паролем',
           color: 'green',
         });
+        router.push('/auth/signin');
       },
       onError: (err: any) => {
         showNotification({
@@ -92,7 +94,9 @@ const ResetForm = ({ code }: { code: string }) => {
             required
             {...form.getInputProps('passwordConfirm')}
           />
-          <Button type="submit">Сохранить</Button>
+          <Button className={classes.input} type="submit">
+            Сохранить
+          </Button>
         </Stack>
       </Container>
     </form>

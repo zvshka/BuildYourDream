@@ -235,7 +235,7 @@ ${process.env.BASE_URL}/auth/verify?code=${code.code}`, // plain text body
     });
 
     const info = await transporter.sendMail({
-      from: '"Build Your Dream" <noreply@buildyourdream.ru>', // sender address
+      from: '"Build Your Dream" <admin@buildyourdream.ru>', // sender address
       to: candidate.email, // list of receivers
       subject: 'Смена пароля', // Subject line
       text: `Перейдите по ссылке чтобы сменить пароль
