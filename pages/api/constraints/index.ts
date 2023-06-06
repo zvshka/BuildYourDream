@@ -9,7 +9,7 @@ api.get(async (req, res) => {
   res.send(data);
 });
 
-api.post(authGuard, roleGuard('ADMIN'), async (req, res) => {
+api.post(authGuard(true), roleGuard('ADMIN'), async (req, res) => {
   const data = await ConstraintsService.create(req.body);
   res.send(data);
 });

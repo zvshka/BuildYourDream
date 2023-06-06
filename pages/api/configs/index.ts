@@ -9,7 +9,7 @@ api.get(authMiddleware, async (req, res) => {
   res.send(data);
 });
 
-api.post(authGuard, async (req, res) => {
+api.post(authGuard(true), async (req, res) => {
   const data = await ConfigService.create(req.user, req.body);
 
   res.send(data);

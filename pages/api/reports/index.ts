@@ -4,12 +4,12 @@ import ReportService from '../../../services/Report.service';
 
 const api = handler();
 
-api.post(authGuard, async (req, res) => {
+api.post(authGuard(true), async (req, res) => {
   const result = await ReportService.create(req.user, req.body);
   res.send(result);
 });
 
-api.get(authGuard, roleGuard(['ADMIN', 'MODERATOR']), async (req, res) => {
+api.get(authGuard(true), roleGuard(['ADMIN', 'MODERATOR']), async (req, res) => {
   const result = await ReportService.getList(req.query);
   res.send(result);
 });

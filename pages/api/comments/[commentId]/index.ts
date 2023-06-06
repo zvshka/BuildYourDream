@@ -4,7 +4,7 @@ import CommentService from '../../../../services/Comment.service';
 
 const api = handler();
 
-api.patch(authGuard, async (req, res) => {
+api.patch(authGuard(true), async (req, res) => {
   const result = await CommentService.update(
     req.user,
     req.query.commentId as string,
@@ -13,7 +13,7 @@ api.patch(authGuard, async (req, res) => {
   res.send(result);
 });
 
-api.delete(authGuard, async (req, res) => {
+api.delete(authGuard(true), async (req, res) => {
   const result = await CommentService.delete(req.user, req.query.commentId as string);
   res.send(result);
 });

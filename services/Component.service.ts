@@ -322,6 +322,7 @@ class ComponentService {
             comments: true,
           },
         },
+        reviews: true,
       },
     });
 

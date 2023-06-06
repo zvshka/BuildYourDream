@@ -9,7 +9,7 @@ api.get(async (req, res) => {
   res.send(template);
 });
 
-api.patch(authGuard, async (req, res) => {
+api.patch(authGuard(true), async (req, res) => {
   const template = await FormService.updateTemplateById(req.user, {
     id: req.query.templateId as string,
     data: req.body,

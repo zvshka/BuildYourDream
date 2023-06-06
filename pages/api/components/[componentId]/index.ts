@@ -9,7 +9,7 @@ api.get(async (req, res) => {
   res.send(part);
 });
 
-api.patch(authGuard, async (req, res) => {
+api.patch(authGuard(true), async (req, res) => {
   const part = await ComponentService.updateComponentById(
     req.user,
     req.query.componentId as string,
@@ -18,7 +18,7 @@ api.patch(authGuard, async (req, res) => {
   res.send(part);
 });
 
-api.delete(authGuard, roleGuard('ADMIN'), async (req, res) => {
+api.delete(authGuard(true), roleGuard('ADMIN'), async (req, res) => {
   const result = await ComponentService.deleteById(req.query.componentId as string);
   res.send(result);
 });

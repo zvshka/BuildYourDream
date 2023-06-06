@@ -1,9 +1,9 @@
 export interface User {
-  bio: string;
+  bio: string | null;
   id: string;
   email: string;
   emailVerification?: any;
-  avatarUrl?: string;
+  avatarUrl: string | null;
   username: string;
   role: string;
   isBanned: boolean;

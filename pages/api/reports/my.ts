@@ -4,7 +4,7 @@ import ReportService from '../../../services/Report.service';
 
 const api = handler();
 
-api.get(authGuard, async (req, res) => {
+api.get(authGuard(true), async (req, res) => {
   const result = await ReportService.getUserList(req.user, req.query);
 
   res.send(result);

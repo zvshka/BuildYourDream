@@ -4,7 +4,7 @@ import ComponentService from '../../../../services/Component.service';
 
 const api = handler();
 
-api.get(authGuard, roleGuard('ADMIN'), async (req, res) => {
+api.get(authGuard(true), roleGuard('ADMIN'), async (req, res) => {
   const result = await ComponentService.approveComponent(req.user, req.query.componentId as string);
   res.send(result);
 });

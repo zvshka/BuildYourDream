@@ -4,7 +4,7 @@ import ReportService from '../../../../services/Report.service';
 
 const api = handler();
 
-api.delete(authGuard, async (req, res) => {
+api.delete(authGuard(true), async (req, res) => {
   const result = await ReportService.delete(req.query.reportId as string, req.user);
   res.send(result);
 });

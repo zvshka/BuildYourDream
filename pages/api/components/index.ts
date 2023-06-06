@@ -4,7 +4,7 @@ import { authGuard } from '../../../lib/guards';
 
 const api = handler();
 
-api.post(authGuard, async (req, res) => {
+api.post(authGuard(true), async (req, res) => {
   const partData = await ComponentService.create(req.user, req.body);
   res.send(partData);
 });

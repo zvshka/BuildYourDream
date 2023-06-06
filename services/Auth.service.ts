@@ -30,19 +30,23 @@ class AuthService {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const { hashedPassword: _, ...user } = await UserService.create({
+    const userData = await UserService.create({
       username,
       email,
       hashedPassword,
     });
 
+    await this.sendVerify(userData);
+
     const accessToken = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: userData.id, role: userData.role },
       process.env.ACCESS_TOKEN_SECRET,
       {
         expiresIn: '1d',
       }
     );
+
+    const { hashedPassword: _, ...user } = userData;
 
     return {
       accessToken,
@@ -147,7 +151,7 @@ class AuthService {
     const info = await transporter.sendMail({
       from: '"Build Your Dream" <admin@buildyourdream.ru>', // sender address
       to: user.email, // list of receivers
-      subject: 'Подтверддение Email', // Subject line
+      subject: 'Подтверждение Email', // Subject line
       text: `Перейдите по ссылке чтобы подтвердить Email
 ${process.env.BASE_URL}/auth/verify?code=${code.code}`, // plain text body
     });
@@ -191,7 +195,11 @@ ${process.env.BASE_URL}/auth/verify?code=${code.code}`, // plain text body
       },
     });
 
-    if (!candidate || (candidate.emailVerification && !candidate.emailVerification.doneAt)) {
+    if (
+      !candidate ||
+      !candidate.emailVerification ||
+      (candidate.emailVerification && !candidate.emailVerification.doneAt)
+    ) {
       return false;
     }
 

@@ -6,30 +6,38 @@ import { tokenPayload } from '../types/tokenPayload';
 import { User } from '../types/User';
 import AuthService from '../services/Auth.service';
 
-export const authGuard = async (
-  req: NextApiRequest & { token: string; user: User },
-  res: NextApiResponse,
-  next: NextHandler
-) => {
-  const tokenHeader = req.headers.authorization;
-  if (!tokenHeader) throw ApiError.UnauthorizedError();
-  const [type, token] = tokenHeader.split(' ');
-  if (type.toLowerCase() !== 'bearer') throw ApiError.UnauthorizedError();
-  if (!token) throw ApiError.UnauthorizedError();
-  let tokenData;
-  try {
-    tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
-  } catch (e) {
-    throw ApiError.UnauthorizedError();
-  }
-  if (!tokenData.id) throw ApiError.UnauthorizedError();
-  req.token = token;
-  const data = await AuthService.exchange(token);
-  if (!(data instanceof ApiError)) {
-    req.user = <User>data.user;
-  }
-  await next();
-};
+export const authGuard =
+  (requiredVerified = true) =>
+  async (
+    req: NextApiRequest & { token: string; user: User },
+    res: NextApiResponse,
+    next: NextHandler
+  ) => {
+    const tokenHeader = req.headers.authorization;
+    if (!tokenHeader) throw ApiError.UnauthorizedError();
+    const [type, token] = tokenHeader.split(' ');
+    if (type.toLowerCase() !== 'bearer') throw ApiError.UnauthorizedError();
+    if (!token) throw ApiError.UnauthorizedError();
+    let tokenData;
+    try {
+      tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
+    } catch (e) {
+      throw ApiError.UnauthorizedError();
+    }
+    if (!tokenData.id) throw ApiError.UnauthorizedError();
+    req.token = token;
+    const data = await AuthService.exchange(token);
+    if (!(data instanceof ApiError)) {
+      if (
+        requiredVerified &&
+        (!data.user.emailVerification || !data.user.emailVerification.doneAt)
+      ) {
+        throw ApiError.Forbidden();
+      }
+      req.user = <User>data.user;
+    }
+    await next();
+  };
 
 export const authMiddleware = async (
   req: NextApiRequest & { token?: string; user?: User },

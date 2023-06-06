@@ -4,7 +4,7 @@ import ConfigService from '../../../../services/Config.service';
 
 const api = handler();
 
-api.get(authGuard, async (req, res) => {
+api.get(authGuard(true), async (req, res) => {
   const result = await ConfigService.unlike(req.user, req.query.id as string);
   res.send(result);
 });

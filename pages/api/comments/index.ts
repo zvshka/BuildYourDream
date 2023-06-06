@@ -4,7 +4,7 @@ import CommentService from '../../../services/Comment.service';
 
 const api = handler();
 
-api.post(authGuard, async (req, res) => {
+api.post(authGuard(true), async (req, res) => {
   const result = await CommentService.create(req.user, req.query, req.body);
   res.send(result);
 });

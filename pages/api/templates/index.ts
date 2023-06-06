@@ -9,12 +9,12 @@ api.get(async (req, res) => {
   res.send(forms);
 });
 
-api.post(authGuard, roleGuard('ADMIN'), async (req, res) => {
+api.post(authGuard(true), roleGuard('ADMIN'), async (req, res) => {
   const template = await TemplateService.create(req.body);
   res.send(template);
 });
 
-api.patch(authGuard, roleGuard('ADMIN'), async (req, res) => {
+api.patch(authGuard(true), roleGuard('ADMIN'), async (req, res) => {
   const result = await TemplateService.updateMany(req.body);
   res.send(result);
 });

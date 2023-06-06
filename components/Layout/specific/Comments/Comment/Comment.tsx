@@ -32,10 +32,10 @@ import { useContextMenu } from 'mantine-contextmenu';
 import Link from 'next/link';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
-import { Block } from '../../../general/Block/Block';
+import { Block } from '../../../general';
 import { User } from '../../../../../types/User';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
-import { ReportForm } from '../../../forms/ReportForm/ReportForm';
+import { ReportForm } from '../../../forms';
 import { useEffect, useState } from 'react';
 
 const useStyles = createStyles((theme) => ({

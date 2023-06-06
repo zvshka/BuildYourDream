@@ -4,7 +4,7 @@ import UserService from '../../../services/User.service';
 
 const api = handler();
 
-api.get(authGuard, roleGuard('ADMIN'), async (req, res) => {
+api.get(authGuard(true), roleGuard('ADMIN'), async (req, res) => {
   const result = await UserService.getList(req.query);
   res.send(result);
 });

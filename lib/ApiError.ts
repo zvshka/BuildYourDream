@@ -9,7 +9,7 @@ export class ApiError extends Error {
   }
 
   static Forbidden() {
-    return new ApiError(403, 'У вас нет доступа');
+    return new ApiError(403, 'У вас нет доступа.');
   }
 
   static UnauthorizedError() {

@@ -4,7 +4,7 @@ import UserService from '../../../../services/User.service';
 
 const api = handler();
 
-api.get(authGuard, roleGuard(['ADMIN', 'MODERATOR']), async (req, res) => {
+api.get(authGuard(true), roleGuard(['ADMIN', 'MODERATOR']), async (req, res) => {
   const result = await UserService.unban(req.query.username as string);
   res.send(result);
 });

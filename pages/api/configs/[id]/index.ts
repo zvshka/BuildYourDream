@@ -9,12 +9,12 @@ api.get(async (req, res) => {
   res.send(data);
 });
 
-api.delete(authGuard, async (req, res) => {
+api.delete(authGuard(true), async (req, res) => {
   const result = await ConfigService.deleteById(req.user, req.query.id as string);
   res.send(result);
 });
 
-api.patch(authGuard, async (req, res) => {
+api.patch(authGuard(true), async (req, res) => {
   const result = await ConfigService.updateConfigById(req.user, req.query.id as string, req.body);
   res.send(result);
 });
