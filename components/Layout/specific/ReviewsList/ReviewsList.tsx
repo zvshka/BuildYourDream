@@ -6,6 +6,7 @@ import { Block } from '../../general';
 import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
 import { ReviewModal } from './ReviewModal/ReviewModal';
 import { useComponentReviews, useUserReviews } from '../../../hooks/reviews';
+import { ReviewCard } from './ReviewCard/ReviewCard';
 
 export const ReviewsList = ({
   componentId,
@@ -83,17 +84,35 @@ export const ReviewsList = ({
         </Grid>
       </Block>
       <Block>
-        <Pagination total={10} />
+        <Pagination
+          total={isSuccess && reviews.totalCount > 0 ? Math.ceil(reviews.totalCount / 10) : 1}
+          value={activePage}
+          onChange={setPage}
+        />
       </Block>
 
-      <Block>
-        <Center h={200}>
-          <Text>Еще нет отзывов</Text>
-        </Center>
-      </Block>
+      {isSuccess && reviews.totalCount === 0 && (
+        <Block>
+          <Center h={200}>
+            <Text>Еще нет отзывов</Text>
+          </Center>
+        </Block>
+      )}
+
+      {isSuccess && reviews.totalCount > 0 && (
+        <Stack>
+          {reviews.result.map((review) => (
+            <ReviewCard key={review.id} {...review} />
+          ))}
+        </Stack>
+      )}
 
       <Block>
-        <Pagination total={10} />
+        <Pagination
+          total={isSuccess && reviews.totalCount > 0 ? Math.ceil(reviews.totalCount / 10) : 1}
+          value={activePage}
+          onChange={setPage}
+        />
       </Block>
     </Stack>
   );

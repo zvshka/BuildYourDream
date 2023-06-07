@@ -116,7 +116,16 @@ class ReviewService {
       });
     }
 
+    const totalCount = await prisma.review.count({
+      where: {
+        componentId,
+      },
+      orderBy,
+    });
+
     const result = await prisma.review.findMany({
+      skip: (currentPage - 1) * 10,
+      take: 10,
       where: {
         componentId,
       },
@@ -126,10 +135,14 @@ class ReviewService {
       orderBy,
     });
 
-    return result.map(({ author: { hashedPassword, ...userData }, ...data }) => ({
-      ...data,
-      author: userData,
-    }));
+    return {
+      totalCount,
+      result: result.map(({ author: { hashedPassword, ...userData }, ...data }) => ({
+        ...data,
+        author: userData,
+      })),
+      currentPage,
+    };
   }
 
   async getReviewsByUsername(username: string, filter: any) {
@@ -156,7 +169,18 @@ class ReviewService {
       });
     }
 
-    return prisma.review.findMany({
+    const totalCount = await prisma.review.count({
+      where: {
+        author: {
+          username,
+        },
+      },
+      orderBy,
+    });
+
+    const result = await prisma.review.findMany({
+      skip: (currentPage - 1) * 10,
+      take: 10,
       where: {
         author: {
           username,
@@ -167,6 +191,8 @@ class ReviewService {
       },
       orderBy,
     });
+
+    return { totalCount, result, currentPage };
   }
 }
 

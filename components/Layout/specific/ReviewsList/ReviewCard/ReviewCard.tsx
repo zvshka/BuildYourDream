@@ -14,8 +14,16 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useContextMenu } from 'mantine-contextmenu';
 import { useEffect, useState } from 'react';
+import { openConfirmModal, openModal } from '@mantine/modals';
+import axios from 'axios';
+import { showNotification } from '@mantine/notifications';
+import { useMutation } from '@tanstack/react-query';
 import { Block } from '../../../general';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
+import { ReviewModal } from '../ReviewModal/ReviewModal';
+import { storage } from '../../../../../lib/utils';
+import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
+import { ReportForm } from '../../../forms';
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -37,19 +45,67 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export const ReviewCard = ({ author, createdAt, updatedAt, text, rating }) => {
+export const ReviewCard = ({ author, createdAt, updatedAt, text, rating, id }) => {
   const { classes } = useStyles();
   const [contextMenu, setContextMenu] = useState<any[]>([]);
   const showContextMenu = useContextMenu();
   const { user } = useAuth();
 
-  const handleEdit = () => {};
+  const deleteReviewMutation = useMutation(
+    () =>
+      axios.delete(`/api/reviews/${id}`, {
+        headers: {
+          authorization: `Bearer ${storage.getToken()}`,
+        },
+      }),
+    {
+      onSuccess: () => {
+        showNotification({
+          title: 'Успех',
+          message: 'Вы успешно удалили отзыв',
+          color: 'green',
+        });
+        queryClient.invalidateQueries(['reviews']);
+      },
+      onError: (err: any) => {
+        showNotification({
+          title: 'Ошибка',
+          message: err.response.data.message || 'Что-то пошло не так',
+          color: 'red',
+        });
+      },
+    }
+  );
 
-  const handleDelete = () => {};
+  const handleEdit = () => {
+    openModal({
+      title: 'Изменение отзыва',
+      children: <ReviewModal reviewData={{ author, id, rating, text }} />,
+    });
+  };
+
+  const handleDelete = () => {
+    openConfirmModal({
+      title: 'Удаление отзыва',
+      children: <Text>Вы собираетесь удалить отзыв, продолжить?</Text>,
+      labels: {
+        confirm: 'Да',
+        cancel: 'Нет',
+      },
+      onConfirm() {
+        deleteReviewMutation.mutate();
+      },
+    });
+  };
 
   const handleReport = () => {};
 
-  const handleReportUser = () => {};
+  const handleReportUser = () => {
+    openModal({
+      title: 'Жалоба на пользователя',
+      children: <ReportForm userId={author.id} />,
+    });
+  };
 
   useEffect(() => {
     if (user) {
@@ -136,7 +192,7 @@ export const ReviewCard = ({ author, createdAt, updatedAt, text, rating }) => {
       <Text className={classes.body} size="sm">
         {text}
       </Text>
-      <Rating readOnly size="lg" value={rating} />
+      <Rating readOnly size="md" value={rating} ml={rem(54)} mt="md" />
       {user && user.id !== author.id && (
         <UnstyledButton className={classes.button} onClick={handleReport}>
           <Text h={30} size="sm">
