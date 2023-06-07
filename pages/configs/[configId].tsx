@@ -279,6 +279,7 @@ export default function ConfigPage() {
                             <ComponentRow
                               component={c.component.data}
                               templateId={c.component.templateId}
+                              avgRating={c.component.avgRating || 0}
                             />
                           </Block>
                         ))}

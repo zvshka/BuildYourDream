@@ -154,6 +154,7 @@ export const ComponentsList = ({
                           component={component.data}
                           templateId={component.templateId}
                           totalComments={component.totalComments}
+                          avgRating={component.avgRating}
                         />
                       </Block>
                     </Box>
@@ -167,6 +168,8 @@ export const ComponentsList = ({
                         <ComponentRow
                           component={component.data}
                           templateId={component.templateId}
+                          totalComments={component.totalComments}
+                          avgRating={component.avgRating}
                         />
                       </Block>
                     </Box>

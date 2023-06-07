@@ -187,6 +187,7 @@ const ComponentsPanel = () => {
                           <ComponentRow
                             component={component.data}
                             templateId={component.templateId}
+                            avgRating={0}
                           />
                         </Block>
                       </Box>
@@ -215,6 +216,7 @@ const ComponentsPanel = () => {
                           component={component.data}
                           templateId={component.templateId}
                           totalComments={component.totalComments}
+                          avgRating={0}
                         />
                       </Block>
                     </Box>

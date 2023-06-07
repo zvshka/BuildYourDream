@@ -70,7 +70,11 @@ class ConfigService {
         author: true,
         components: {
           include: {
-            component: true,
+            component: {
+              include: {
+                reviews: true,
+              },
+            },
           },
         },
       },
@@ -104,7 +108,18 @@ class ConfigService {
           : componentsTierSummary >= 1.5 && componentsTierSummary < 2.2
           ? 'Medium tier'
           : 'High tier';
-      return { ...candidate, price, configTier };
+
+      const components = candidate.components.map(
+        ({ component: { reviews, ...componentData }, ...data }) => ({
+          ...data,
+          component: {
+            ...componentData,
+            avgRating:
+              reviews.reduce((prev, next) => prev + next.rating, 0) / (reviews.length || 1),
+          },
+        })
+      );
+      return { ...candidate, price, configTier, components };
     }
 
     throw ApiError.BadRequest('Такой сборки не существует');

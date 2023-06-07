@@ -13,7 +13,7 @@ export interface IConfig {
     id: string;
     templateId: string;
     componentId: string;
-    component: IComponent;
+    component: IComponent & { avgRating: number };
   }[];
 }
 

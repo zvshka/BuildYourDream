@@ -66,6 +66,7 @@ const ComponentRowWithReload = ({ component, onRemove, onLoad }) => {
       templateId={component.templateId}
       onRemove={onRemove}
       totalComments={isSuccess ? componentData.totalComments : 0}
+      avgRating={isSuccess ? componentData.avgRating : 0}
     />
   );
 };

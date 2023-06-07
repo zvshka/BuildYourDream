@@ -342,7 +342,10 @@ class ComponentService {
       throw ApiError.BadRequest(`Компонента с таким id (${componentId}) не существует`);
     }
 
-    return { ...result, totalComments: result._count.comments };
+    const { _count, reviews, ...data } = result;
+    const avgRating = reviews.reduce((prev, next) => prev + next.rating, 0) / (reviews.length || 1);
+
+    return { ...data, totalComments: _count.comments, avgRating, reviews };
   }
 
   async updateComponentById(

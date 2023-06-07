@@ -28,14 +28,18 @@ export const ComponentRow = ({
   templateId,
   totalComments,
   onRemove,
+  avgRating,
 }: {
   component: IComponentBody;
   templateId: string;
   totalComments?: number;
+  avgRating: number;
   onRemove?: any;
 }) => {
   const { data: templateData, isSuccess } = useTemplateData(templateId);
   const theme = useMantineTheme();
+
+  console.log(avgRating);
 
   return (
     <Box w="100%" sx={{ position: 'relative' }}>
@@ -133,7 +137,7 @@ export const ComponentRow = ({
                     }}
                     px="xs"
                     py={4}
-                    value={component.avgRating}
+                    value={avgRating}
                   />
                   <Group
                     spacing="xs"
