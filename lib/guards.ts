@@ -18,7 +18,7 @@ export const authGuard =
     const [type, token] = tokenHeader.split(' ');
     if (type.toLowerCase() !== 'bearer') throw ApiError.UnauthorizedError();
     if (!token) throw ApiError.UnauthorizedError();
-    let tokenData;
+    let tokenData: tokenPayload;
     try {
       tokenData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as tokenPayload;
     } catch (e) {
@@ -30,11 +30,14 @@ export const authGuard =
     if (!(data instanceof ApiError)) {
       if (
         requiredVerified &&
+        tokenData.role !== 'ADMIN' &&
         (!data.user.emailVerification || !data.user.emailVerification.doneAt)
       ) {
         throw ApiError.Forbidden();
       }
       req.user = <User>data.user;
+    } else {
+      throw ApiError.Forbidden();
     }
     await next();
   };

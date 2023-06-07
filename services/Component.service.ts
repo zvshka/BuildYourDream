@@ -190,6 +190,11 @@ class ComponentService {
         AND: [searchFilter, tiersFilter],
       },
       include: {
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
         _count: {
           select: {
             comments: true,
@@ -199,9 +204,10 @@ class ComponentService {
     });
 
     return {
-      result: result.map(({ _count, ...component }) => ({
+      result: result.map(({ _count, reviews, ...component }) => ({
         ...component,
         totalComments: _count.comments,
+        avgRating: reviews.reduce((prev, next) => prev + next.rating, 0) / (reviews.length || 1),
       })),
       currentPage,
       totalCount,
@@ -293,6 +299,11 @@ class ComponentService {
         AND: [searchFilter, tiersFilter],
       },
       include: {
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
         _count: {
           select: {
             comments: true,
@@ -302,9 +313,10 @@ class ComponentService {
     });
 
     return {
-      result: result.map(({ _count, ...component }) => ({
+      result: result.map(({ _count, reviews, ...component }) => ({
         ...component,
         totalComments: _count.comments,
+        avgRating: reviews.reduce((prev, next) => prev + next.rating, 0) / (reviews.length || 1),
       })),
       currentPage,
       totalCount,

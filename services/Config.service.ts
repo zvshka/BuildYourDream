@@ -165,15 +165,50 @@ class ConfigService {
       }
     }
 
+    const orderDir =
+      filter.orderDir === 'desc' ? 'desc' : filter.orderDir === 'asc' ? 'asc' : 'desc';
+
+    const orderBy:
+      | { createdAt: 'desc' | 'asc' }
+      | { likedUsers: { _count: 'desc' | 'asc' } }
+      | { comments: { _count: 'desc' | 'asc' } } =
+      filter.orderBy === 'createdAt'
+        ? {
+            createdAt: orderDir,
+          }
+        : filter.orderBy === 'liked'
+        ? {
+            likedUsers: {
+              _count: orderDir,
+            },
+          }
+        : filter.orderBy === 'comments'
+        ? {
+            comments: {
+              _count: orderDir,
+            },
+          }
+        : {
+            createdAt: orderDir,
+          };
+
     const totalCount = await prisma.config.count({
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy,
       where: {
-        title: {
-          contains: (filter?.search as string) || '',
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            title: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+        ],
         isDeleted: false,
         ...userFilter,
       },
@@ -182,14 +217,22 @@ class ConfigService {
     const result = await prisma.config.findMany({
       skip: (currentPage - 1) * 15,
       take: 15,
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy,
       where: {
-        title: {
-          contains: (filter?.search as string) || '',
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            title: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+        ],
         isDeleted: false,
         ...userFilter,
       },
@@ -330,15 +373,50 @@ class ConfigService {
       }
     }
 
+    const orderDir =
+      filter.orderDir === 'desc' ? 'desc' : filter.orderDir === 'asc' ? 'asc' : 'desc';
+
+    const orderBy:
+      | { createdAt: 'desc' | 'asc' }
+      | { likedUsers: { _count: 'desc' | 'asc' } }
+      | { comments: { _count: 'desc' | 'asc' } } =
+      filter.orderBy === 'createdAt'
+        ? {
+            createdAt: orderDir,
+          }
+        : filter.orderBy === 'liked'
+        ? {
+            likedUsers: {
+              _count: orderDir,
+            },
+          }
+        : filter.orderBy === 'comments'
+        ? {
+            comments: {
+              _count: orderDir,
+            },
+          }
+        : {
+            createdAt: orderDir,
+          };
+
     const totalCount = await prisma.config.count({
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy,
       where: {
-        title: {
-          contains: (filter?.search as string) || '',
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            title: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+        ],
         isDeleted: false,
         likedUsers: {
           some: {
@@ -351,14 +429,22 @@ class ConfigService {
     const result = await prisma.config.findMany({
       skip: (currentPage - 1) * 15,
       take: 15,
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy,
       where: {
-        title: {
-          contains: (filter?.search as string) || '',
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            title: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: (filter?.search as string) || '',
+              mode: 'insensitive',
+            },
+          },
+        ],
         isDeleted: false,
         likedUsers: {
           some: {

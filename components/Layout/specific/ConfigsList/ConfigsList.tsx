@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Anchor, Box, Flex, Pagination, SimpleGrid, Stack, Text } from '@mantine/core';
-import { useWindowScroll } from '@mantine/hooks';
+import {
+  Anchor,
+  Box,
+  Flex,
+  Pagination,
+  Select,
+  SimpleGrid,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core';
+import { useDebouncedValue, useWindowScroll } from '@mantine/hooks';
 import { Block, NextLink } from '../../general';
 import { ConfigCard } from './ConfigCard/ConfigCard';
 import { useConfigsList, useLikedConfigsList, useUserConfigsList } from '../../../hooks/configs';
@@ -8,6 +18,11 @@ import { useConfigsList, useLikedConfigsList, useUserConfigsList } from '../../.
 export const ConfigsList = ({ username, liked }: { username?: string; liked?: boolean }) => {
   const [activePage, setPage] = useState(1);
   const [pos, scrollTo] = useWindowScroll();
+  const [sortField, setSortField] = useState<'createdAt' | 'liked' | 'comments'>('createdAt');
+  const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc');
+  const [search, setSearch] = useState('');
+
+  const [debouncedSearch] = useDebouncedValue(search, 200);
 
   const {
     data: configs,
@@ -17,15 +32,24 @@ export const ConfigsList = ({ username, liked }: { username?: string; liked?: bo
     ? useUserConfigsList(
         {
           page: activePage,
+          orderBy: sortField,
+          orderDir: sortDirection,
+          search: debouncedSearch,
         },
         username
       )
     : !liked
     ? useConfigsList({
         page: activePage,
+        orderBy: sortField,
+        orderDir: sortDirection,
+        search: debouncedSearch,
       })
     : useLikedConfigsList({
         page: activePage,
+        orderBy: sortField,
+        orderDir: sortDirection,
+        search: debouncedSearch,
       });
 
   useEffect(() => {
@@ -36,10 +60,44 @@ export const ConfigsList = ({ username, liked }: { username?: string; liked?: bo
 
   useEffect(() => {
     refetch();
-  }, [activePage]);
+  }, [activePage, sortDirection, sortField, debouncedSearch]);
 
   return (
     <Stack>
+      <Block>
+        <SimpleGrid
+          cols={1}
+          breakpoints={[
+            { minWidth: 'sm', cols: 2 },
+            { minWidth: 'md', cols: 3 },
+          ]}
+        >
+          <TextInput
+            label="Поиск"
+            value={search}
+            onChange={(event) => setSearch(event.currentTarget.value)}
+          />
+          <Select
+            label="Поле сортировки"
+            data={[
+              { value: 'createdAt', label: 'По дате создания' },
+              { value: 'liked', label: 'По лайка' },
+              { value: 'comments', label: 'По активности' },
+            ]}
+            value={sortField}
+            onChange={(value) => setSortField(value as 'createdAt' | 'liked' | 'comments')}
+          />
+          <Select
+            label="Направление сортировки"
+            data={[
+              { value: 'desc', label: 'По убыванию' },
+              { value: 'asc', label: 'По возрастанию' },
+            ]}
+            value={sortDirection}
+            onChange={(value) => setSortDirection(value as 'desc' | 'asc')}
+          />
+        </SimpleGrid>
+      </Block>
       <Block shadow={0}>
         <Pagination
           value={activePage}

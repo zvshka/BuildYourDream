@@ -1,6 +1,6 @@
 import { Container, Stack } from '@mantine/core';
 import { PageHeader } from '../../../components/Layout';
-import { ReportsList } from '../../../components/Layout/specific/ReportsList/ReportsList';
+import { ReportsList } from '../../../components/Layout';
 
 export default function ReportsPage() {
   return (

@@ -31,6 +31,9 @@ export function useConfigData(configId: string) {
 export function useUserConfigsList(
   filter: {
     page: number;
+    orderBy: 'createdAt' | 'liked' | 'comments';
+    orderDir: 'desc' | 'asc';
+    search: string;
   },
   username: string
 ) {
@@ -52,7 +55,12 @@ export function useUserConfigsList(
   });
 }
 
-export function useLikedConfigsList(filter: { page: number }) {
+export function useLikedConfigsList(filter: {
+  page: number;
+  orderBy: 'createdAt' | 'liked' | 'comments';
+  orderDir: 'desc' | 'asc';
+  search: string;
+}) {
   return useQuery({
     queryFn: async () => {
       const { data } = await axios.get('/api/auth/me/liked', {

@@ -4,6 +4,7 @@ import { useUserData } from '../../components/hooks/users';
 import { Block, ComponentsList, PageHeader } from '../../components/Layout';
 import { ConfigsList } from '../../components/Layout/specific/ConfigsList';
 import { ViolationsList } from '../../components/Layout/specific/ViolationsList/ViolationsList';
+import { ReviewsList } from '../../components/Layout/specific/ReviewsList/ReviewsList';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -89,6 +90,9 @@ export default function UserProfile() {
             </Tabs.Panel>
             <Tabs.Panel value="warns" mt="md">
               <ViolationsList username={router.query.username as string} />
+            </Tabs.Panel>
+            <Tabs.Panel value="reviews" mt="md">
+              <ReviewsList username={router.query.username as string} />
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>
