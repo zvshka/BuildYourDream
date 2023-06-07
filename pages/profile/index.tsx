@@ -30,7 +30,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) {
-      setBio(user.bio);
+      setBio(user.bio as string);
     }
   }, [user]);
 
@@ -231,7 +231,7 @@ export default function ProfilePage() {
                       minRows={7}
                       maxRows={15}
                       label="Биография"
-                      value={bio}
+                      value={bio || undefined}
                       maxLength={1200}
                       description={`${bio?.length || 0} / 1200`}
                       onChange={(event) => setBio(event.currentTarget.value)}
