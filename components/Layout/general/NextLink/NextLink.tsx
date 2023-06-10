@@ -29,7 +29,8 @@ export const NextLink = forwardRef<HTMLAnchorElement, NextLinkProps>((props, ref
       passHref={passHref}
       prefetch={prefetch}
       locale={locale}
-      legacyBehavior={legacyBehavior}
+      legacyBehavior
+      style={{ ...otherProps.style, textDecoration: 'none' }}
     >
       <a {...otherProps} ref={ref} style={{ ...otherProps.style, textDecoration: 'none' }}>
         {props.children}

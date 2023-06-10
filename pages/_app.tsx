@@ -12,24 +12,20 @@ import calendar from 'dayjs/plugin/calendar';
 import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
 import { useRouter } from 'next/router';
-import { RouterTransition } from '../components/Layout/general/RouterTransition/RouterTransition';
+import { ContextMenuProvider } from 'mantine-contextmenu';
+import { RouterTransition } from '../components/Layout';
 import { ColorProvider } from '../components/Layout/general/ColorControl/ColorContext';
 import 'dayjs/locale/ru';
 import { ReactQueryProvider } from '../components/Providers/QueryProvider/QueryProvider';
 import { AuthProvider } from '../components/Providers/AuthContext/AuthWrapper';
 
-// import 'react-querybuilder/dist/query-builder.css';
 import { NavigationProvider } from '../components/Providers/NavigationContext/NavigationContext';
-// eslint-disable-next-line import/order
-import { ContextMenuProvider } from 'mantine-contextmenu';
 import Layout from '../components/Layout/Layout';
 
 dayjs.extend(relativeTime);
 dayjs.extend(isToday);
 dayjs.extend(duration);
 dayjs.extend(calendar);
-
-// dayjs.locale('ru');
 
 export default function App(props: AppProps & { colorScheme: ColorScheme; primaryColor: string }) {
   const { Component, pageProps } = props;
@@ -104,7 +100,6 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
             <ContextMenuProvider>
               <ReactQueryProvider>
                 <AuthProvider>
-                  {/*<DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>*/}
                   <NavigationProvider>
                     <ModalsProvider>
                       <Notifications />
@@ -119,7 +114,6 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
                       )}
                     </ModalsProvider>
                   </NavigationProvider>
-                  {/*</DevSupport>*/}
                 </AuthProvider>
               </ReactQueryProvider>
             </ContextMenuProvider>

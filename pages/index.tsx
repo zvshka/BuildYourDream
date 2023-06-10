@@ -259,17 +259,20 @@ export default function HomePage() {
         message: 'Вы не авторизованы',
       });
     }
-    const components = Object.values(values.components)
-      .map((arr) =>
-        arr.map((c) => ({
-          componentId: c.id,
-          count: arr.length,
-        }))
-      )
+
+    const allComponents = Object.values(values.components);
+    const mappedComponents = allComponents
+      .map((arr) => {
+        const counted: Record<string, number> = {};
+        for (let i = 0; i < arr.length; i += 1) {
+          counted[arr[i].id] ? (counted[arr[i].id] += 1) : (counted[arr[i].id] = 1);
+        }
+        return Object.entries(counted).map(([id, count]) => ({ componentId: id, count }));
+      })
       .flat();
 
     return createConfigMutation.mutate({
-      components,
+      components: mappedComponents,
       title: values.title,
       description: values.description,
     });

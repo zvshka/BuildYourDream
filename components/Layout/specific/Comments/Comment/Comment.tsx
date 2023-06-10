@@ -30,13 +30,13 @@ import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { useContextMenu } from 'mantine-contextmenu';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 import { Block } from '../../../general';
 import { User } from '../../../../../types/User';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
-import { ReportForm } from '../../../forms';
-import { useEffect, useState } from 'react';
+import { ReportForm } from '../../../forms/ReportForm/ReportForm';
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -288,7 +288,13 @@ export function Comment({
       onContextMenu={showContextMenu(contextMenu)}
     >
       <Group position="apart">
-        <Link href={`/profile/${commentData.author.username}`}>
+        <Link
+          href={`/profile/${commentData.author.username}`}
+          style={{
+            textDecoration: 'none',
+            color: 'black',
+          }}
+        >
           <Group
             sx={{ cursor: 'pointer' }}
             onContextMenu={showContextMenu([

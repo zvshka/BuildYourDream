@@ -39,8 +39,6 @@ export const ComponentRow = ({
   const { data: templateData, isSuccess } = useTemplateData(templateId);
   const theme = useMantineTheme();
 
-  console.log(avgRating);
-
   return (
     <Box w="100%" sx={{ position: 'relative' }}>
       <MediaQuery styles={{ display: 'none' }} largerThan="sm">

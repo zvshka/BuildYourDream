@@ -16,4 +16,7 @@ module.exports = withPWA({
   eslint: {
     ignoreDuringBuilds: true,
   },
+  compiler: {
+    emotion: true,
+  },
 });

@@ -121,7 +121,13 @@ export const ReportModal = ({ reportData }) => {
             <Text>{reportData.configTitle}</Text>
             <Text weight={600}>Описание сборки:</Text>
             <Text>{reportData.configDescription}</Text>
-            <Link href={`/configs/${reportData.config.id}`}>
+            <Link
+              href={`/configs/${reportData.config.id}`}
+              style={{
+                textDecoration: 'none',
+                color: 'black',
+              }}
+            >
               <Anchor>Ссылка на сборку</Anchor>
             </Link>
           </Stack>
@@ -132,13 +138,25 @@ export const ReportModal = ({ reportData }) => {
             <Text>{reportData.userBio || 'Нет биографии'}</Text>
             <Text weight={600}>Ссылка на аватар пользователя:</Text>
             {reportData.userAvatarUrl ? (
-              <Link href={reportData.userAvatarUrl || ''}>
+              <Link
+                href={reportData.userAvatarUrl || ''}
+                style={{
+                  textDecoration: 'none',
+                  color: 'black',
+                }}
+              >
                 <Anchor>Ссылка на аватар</Anchor>
               </Link>
             ) : (
               <Text>Нет аватара</Text>
             )}
-            <Link href={`/profile/${reportData.user.username}`}>
+            <Link
+              href={`/profile/${reportData.user.username}`}
+              style={{
+                textDecoration: 'none',
+                color: 'black',
+              }}
+            >
               <Anchor>Ссылка на пользователя</Anchor>
             </Link>
           </Stack>

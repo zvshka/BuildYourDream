@@ -195,12 +195,7 @@ export function ConfigCard({ link, configData }) {
       <Stack h="100%" spacing={0} justify="space-around">
         <Grid>
           <Grid.Col span="auto">
-            <Title
-              order={4}
-              className={classes.title}
-              fw={500}
-              // sx={{ maxWidth: 250, wordWrap: 'break-word' }}
-            >
+            <Title order={4} className={classes.title} fw={500}>
               {configData.title}
             </Title>
           </Grid.Col>
@@ -254,7 +249,10 @@ export function ConfigCard({ link, configData }) {
         </Text>
 
         <Group position="apart" className={classes.footer} align="end">
-          <Link href={`/profile/${configData.author.username}`}>
+          <Link
+            href={`/profile/${configData.author.username}`}
+            style={{ textDecoration: 'none', color: 'black' }}
+          >
             <Center
               onContextMenu={showContextMenu(
                 user && user.id !== configData.authorId

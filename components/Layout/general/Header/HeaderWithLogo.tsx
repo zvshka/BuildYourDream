@@ -20,10 +20,10 @@ import {
 import { IconLogout, IconUser } from '@tabler/icons-react';
 import { showNotification } from '@mantine/notifications';
 import { useModals } from '@mantine/modals';
+import Link from 'next/link';
 import { useAuth } from '../../../Providers/AuthContext/AuthWrapper';
 import { useNavigationContext } from '../../../Providers/NavigationContext/NavigationContext';
 import { NextLink } from '../NextLink/NextLink';
-import Link from 'next/link';
 
 const useStyles = createStyles((theme) => ({
   version: {
@@ -97,7 +97,7 @@ export function HeaderWithLogo() {
           </Grid.Col>
           <Grid.Col span="content">
             <Flex justify="center" sx={{ height: '100%' }} align="center">
-              <Link href="/">
+              <Link href="/" style={{ textDecoration: 'none' }}>
                 <Title order={1} className={classes.logo}>
                   <Text
                     color={
