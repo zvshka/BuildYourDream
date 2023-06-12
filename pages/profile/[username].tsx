@@ -63,6 +63,7 @@ export default function UserProfile() {
                 <Tabs.Tab value="configs">Сборки пользователя</Tabs.Tab>
                 <Tabs.Tab value="components">Компоненты пользователя</Tabs.Tab>
                 <Tabs.Tab value="warns">История нарушений</Tabs.Tab>
+                <Tabs.Tab value="reviews">Отзывы пользователя</Tabs.Tab>
               </Tabs.List>
             </Block>
             <Tabs.Panel value="info" mt="md">

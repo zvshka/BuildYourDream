@@ -9,7 +9,7 @@ import {
   Text,
   UnstyledButton,
 } from '@mantine/core';
-import { IconFlag, IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconFlag, IconMinusVertical, IconPencil, IconTrash } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useContextMenu } from 'mantine-contextmenu';
@@ -45,7 +45,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export const ReviewCard = ({ author, createdAt, updatedAt, text, rating, id }) => {
+export const ReviewCard = ({ author, createdAt, updatedAt, text, rating, id, component }) => {
   const { classes } = useStyles();
   const [contextMenu, setContextMenu] = useState<any[]>([]);
   const showContextMenu = useContextMenu();
@@ -151,31 +151,44 @@ export const ReviewCard = ({ author, createdAt, updatedAt, text, rating, id }) =
   return (
     <Block onContextMenu={showContextMenu(contextMenu)}>
       <Group position="apart">
-        <Link href={`/profile/${author.username}`}>
-          <Group
-            sx={{ cursor: 'pointer' }}
-            onContextMenu={showContextMenu([
-              {
-                key: 'report',
-                icon: <IconFlag size="1rem" />,
-                onClick: handleReportUser,
-                title: 'Пожаловаться',
-                color: 'red',
-              },
-            ])}
+        <Group align="normal">
+          <Link
+            href={`/profile/${author.username}`}
+            style={{ textDecoration: 'none', color: 'black' }}
           >
-            <Avatar src={author.avatarUrl} alt={author.username} radius="xl" />
-            <Box>
-              <Text size="md">{author.username}</Text>
-              <Text size="xs" color="dimmed">
-                {dayjs(createdAt).toDate().toLocaleDateString()}{' '}
-                {createdAt !== updatedAt
-                  ? `(Изменено ${dayjs(updatedAt).toDate().toLocaleDateString()})`
-                  : ''}
-              </Text>
-            </Box>
-          </Group>
-        </Link>
+            <Group
+              sx={{ cursor: 'pointer' }}
+              onContextMenu={showContextMenu(
+                user && user.id !== author.id
+                  ? [
+                      {
+                        key: 'report',
+                        icon: <IconFlag size="1rem" />,
+                        onClick: handleReportUser,
+                        title: 'Пожаловаться',
+                        color: 'red',
+                      },
+                    ]
+                  : []
+              )}
+            >
+              <Avatar src={author.avatarUrl} alt={author.username} radius="xl" />
+              <Box>
+                <Text size="md">{author.username}</Text>
+                <Text size="xs" color="dimmed">
+                  {dayjs(createdAt).toDate().toLocaleDateString()}{' '}
+                  {createdAt !== updatedAt
+                    ? `(Изменено ${dayjs(updatedAt).toDate().toLocaleDateString()})`
+                    : ''}
+                </Text>
+              </Box>
+            </Group>
+          </Link>
+          <IconMinusVertical color="lightgrey" />
+          <Text size="sm">
+            {component.template.name} {component.data['Название']}
+          </Text>
+        </Group>
         <Group spacing="xs">
           {user && author.id === user.id && (
             <ActionIcon color="blue" size="lg" onClick={handleEdit}>

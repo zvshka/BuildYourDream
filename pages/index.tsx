@@ -169,9 +169,11 @@ export default function HomePage() {
     }
     storage.updateConfig(
       templateId,
-      form.values.components[templateId].filter(
-        (item, i) => i !== index && item.templateId === templateId
-      )
+      index === undefined
+        ? []
+        : form.values.components[templateId].filter(
+            (item, i) => i !== index && item.templateId === templateId
+          )
     );
   };
 
@@ -399,15 +401,6 @@ export default function HomePage() {
                         !!form.values.components[t.id] &&
                         form.values.components[t.id].map((component, index) => (
                           <Stack pt={index === 0 ? 'md' : 0} key={`${component.id}_${index}`}>
-                            {/*<ComponentRow*/}
-                            {/*  component={component.data}*/}
-                            {/*  templateId={component.templateId}*/}
-                            {/*  onRemove={*/}
-                            {/*    form.values.components[t.id].length > 1*/}
-                            {/*      ? () => onRemove(t.id, index)*/}
-                            {/*      : undefined*/}
-                            {/*  }*/}
-                            {/*/>*/}
                             <ComponentRowWithReload
                               component={component}
                               onLoad={(c) => onLoad(c, index)}

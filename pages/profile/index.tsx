@@ -22,6 +22,7 @@ import { uploadImageMutation } from '../../components/hooks/images';
 import { storage } from '../../lib/utils';
 import { ConfigsList } from '../../components/Layout/specific/ConfigsList';
 import { ViolationsList } from '../../components/Layout/specific/ViolationsList/ViolationsList';
+import { ReviewsList } from '../../components/Layout/specific/ReviewsList/ReviewsList';
 
 export default function ProfilePage() {
   const { user, refetch } = useAuth();
@@ -263,6 +264,9 @@ export default function ProfilePage() {
             </Tabs.Panel>
             <Tabs.Panel value="warns" mt="md">
               {user && <ViolationsList username={user.username} />}
+            </Tabs.Panel>
+            <Tabs.Panel value="reviews" mt="md">
+              {user && <ReviewsList username={user.username} />}
             </Tabs.Panel>
           </Tabs>
         </Grid.Col>

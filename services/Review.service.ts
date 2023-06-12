@@ -130,6 +130,15 @@ class ReviewService {
         componentId,
       },
       include: {
+        component: {
+          include: {
+            template: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
         author: true,
       },
       orderBy,
@@ -187,7 +196,22 @@ class ReviewService {
         },
       },
       include: {
-        component: true,
+        component: {
+          include: {
+            template: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        author: {
+          select: {
+            username: true,
+            id: true,
+            avatarUrl: true,
+          },
+        },
       },
       orderBy,
     });
