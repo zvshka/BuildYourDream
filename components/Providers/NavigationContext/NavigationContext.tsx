@@ -1,31 +1,47 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 
 const NavigationContext = createContext<{
-  opened: boolean;
-  setOpened: () => void;
-  setClosed: () => void;
+  handleOpen: () => void;
+  handleClose: () => void;
+  setHandler: (handler: any) => void;
+  setCloseAll: (handler: any) => void;
+  isOpened: boolean;
 }>({
-  opened: false,
-  setClosed(): void {},
-  setOpened(): void {},
+  handleOpen(): void {},
+  handleClose(): void {},
+  setHandler(): void {},
+  setCloseAll(): void {},
+  isOpened: false,
 });
 
 export const useNavigationContext = () => useContext(NavigationContext);
 
 export const NavigationProvider = ({ children }) => {
+  const [openHandler, setHandler] = useState(() => () => {});
+  const [closeAll, setCloseAll] = useState(() => () => {});
   const [opened, { open, close }] = useDisclosure(false);
 
-  const setOpened = () => {
-    if (!opened) open();
+  const handleOpen = () => {
+    openHandler && openHandler();
+    open();
   };
 
-  const setClosed = () => {
-    if (opened) close();
+  const handleClose = () => {
+    closeAll && closeAll();
+    close();
   };
 
   return (
-    <NavigationContext.Provider value={{ opened, setOpened, setClosed }}>
+    <NavigationContext.Provider
+      value={{
+        handleOpen,
+        handleClose,
+        setHandler,
+        setCloseAll,
+        isOpened: opened,
+      }}
+    >
       {children}
     </NavigationContext.Provider>
   );

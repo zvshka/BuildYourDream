@@ -328,11 +328,13 @@ export default function HomePage() {
                         {...form.getInputProps('title')}
                         required
                         maxLength={50}
+                        description={`${form.values.title.length} / 50`}
                       />
                       <Textarea
                         label="Описание сборки"
                         {...form.getInputProps('description')}
                         required
+                        description={`${form.values.description.length} / 500`}
                         maxLength={500}
                       />
                       <Button disabled={!user} type="submit">

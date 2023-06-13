@@ -1,5 +1,5 @@
 import { Button, Center, Grid, Pagination, Select, Stack, Text } from '@mantine/core';
-import { openModal } from '@mantine/modals';
+import { useModals } from '@mantine/modals';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { Block } from '../../general';
@@ -17,6 +17,7 @@ export const ReviewsList = ({
 }) => {
   const { user } = useAuth();
   const [activePage, setPage] = useState(1);
+  const { openModal } = useModals();
 
   const handleReview = () => {
     openModal({

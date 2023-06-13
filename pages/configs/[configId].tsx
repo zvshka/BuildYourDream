@@ -20,7 +20,7 @@ import { IconCurrencyRubel, IconFlag, IconPencil, IconTrash } from '@tabler/icon
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { openConfirmModal, openModal } from '@mantine/modals';
+import { useModals } from '@mantine/modals';
 import { useForm } from '@mantine/form';
 import { Block, Comments, ComponentRow, PageHeader } from '../../components/Layout';
 import { useConfigData } from '../../components/hooks/configs';
@@ -93,6 +93,7 @@ const UpdateConfigForm = ({ configData }: { configData: any }) => {
 
 export default function ConfigPage() {
   const router = useRouter();
+  const { openModal, openConfirmModal } = useModals();
   const { data: configData, isSuccess } = useConfigData(router.query.configId as string);
 
   const { user } = useAuth();

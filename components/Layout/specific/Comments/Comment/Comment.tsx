@@ -25,7 +25,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { openConfirmModal, openModal } from '@mantine/modals';
+import { useModals } from '@mantine/modals';
 import { useToggle } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { useContextMenu } from 'mantine-contextmenu';
@@ -84,6 +84,7 @@ export function Comment({
   const [isEditing, toggleEditing] = useToggle([false, true]);
   const showContextMenu = useContextMenu();
   const [contextMenu, setContextMenu] = useState<any[]>([]);
+  const { openModal, openConfirmModal } = useModals();
 
   const form = useForm({
     initialValues: {

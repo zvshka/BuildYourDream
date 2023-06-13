@@ -10,7 +10,10 @@ const withPWA = require('next-pwa')({
   publicExcludes: ['!uploads/*.*'],
 });
 
-module.exports = withPWA({
+/**
+ * @type {import('next').NextConfig}
+ **/
+const nextConfig = {
   swcMinify: true,
   reactStrictMode: process.env.NODE_ENV === 'development',
   eslint: {
@@ -19,4 +22,9 @@ module.exports = withPWA({
   compiler: {
     emotion: true,
   },
-});
+  compress: true,
+};
+
+const config = withPWA(nextConfig);
+
+module.exports = config;

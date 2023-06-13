@@ -24,6 +24,7 @@ import { showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
 import { useMediaQuery, useToggle } from '@mantine/hooks';
 import dynamic from 'next/dynamic';
+import { useModals } from '@mantine/modals';
 import { useUnapprovedList } from '../../components/hooks/components';
 import { Block, ComponentRow, NextLink } from '../../components/Layout';
 import { useAuth } from '../../components/Providers/AuthContext/AuthWrapper';
@@ -263,6 +264,7 @@ const UpdateRow = ({ updateData }: { updateData: any }) => {
   const [newDataText, setNewDataText] = useState('');
   const theme = useMantineTheme();
   const { user } = useAuth();
+  const { openModal } = useModals();
 
   useEffect(() => {
     if (updateData.templateToUpdate) {
@@ -352,7 +354,6 @@ const UpdateRow = ({ updateData }: { updateData: any }) => {
 
   const isSmall = useMediaQuery(theme.fn.smallerThan('sm').replace('@media', ''));
 
-  const [diffOpened, toggleDiff] = useToggle();
   const [rejectOpened, toggleReject] = useToggle();
 
   const rejectUpdateMutation = useMutation(
@@ -424,9 +425,12 @@ const UpdateRow = ({ updateData }: { updateData: any }) => {
     approveUpdateMutation.mutate(updateData.id);
   };
 
-  return (
-    <Box>
-      <Modal opened={diffOpened} onClose={toggleDiff} size={1200} centered title="Изменения">
+  const handleDiffModal = () => {
+    openModal({
+      size: 1200,
+      centered: true,
+      title: 'Изменения',
+      children: (
         <Box sx={{ height: '100%', width: '100%', overflowX: 'auto', display: 'flex' }}>
           <Box sx={{ flex: '1 0 auto', maxWidth: 1800 }}>
             <ReactDiffViewer
@@ -437,11 +441,28 @@ const UpdateRow = ({ updateData }: { updateData: any }) => {
             />
           </Box>
         </Box>
-      </Modal>
+      ),
+    });
+  };
+
+  return (
+    <Box>
+      {/*<Modal opened={diffOpened} onClose={toggleDiff} size={1200} centered title="Изменения">*/}
+      {/*  <Box sx={{ height: '100%', width: '100%', overflowX: 'auto', display: 'flex' }}>*/}
+      {/*    <Box sx={{ flex: '1 0 auto', maxWidth: 1800 }}>*/}
+      {/*      <ReactDiffViewer*/}
+      {/*        oldValue={oldDataText}*/}
+      {/*        newValue={newDataText}*/}
+      {/*        showDiffOnly*/}
+      {/*        splitView={!isSmall}*/}
+      {/*      />*/}
+      {/*    </Box>*/}
+      {/*  </Box>*/}
+      {/*</Modal>*/}
       <Modal opened={rejectOpened} onClose={toggleReject} title="Форма отказа изменений">
         <RejectForm id={updateData.id} onSubmit={rejectUpdateMutation.mutate} />
       </Modal>
-      <Block onClick={() => toggleDiff()} sx={{ cursor: 'pointer' }}>
+      <Block onClick={handleDiffModal} sx={{ cursor: 'pointer' }}>
         <Stack spacing={4}>
           <Title order={3}>
             Изменения {updateData.templateToUpdate ? 'категории' : 'компонента'}

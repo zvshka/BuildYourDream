@@ -24,10 +24,10 @@ import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { openConfirmModal, openModal } from '@mantine/modals';
+import { useModals } from '@mantine/modals';
 import { useContextMenu } from 'mantine-contextmenu';
 import { useEffect, useState } from 'react';
-import { NextLink } from '../../../general';
+import { useRouter } from 'next/router';
 import { useAuth } from '../../../../Providers/AuthContext/AuthWrapper';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
@@ -58,6 +58,8 @@ export function ConfigCard({ link, configData }) {
   const { user } = useAuth();
   const showContextMenu = useContextMenu();
   const [contextMenu, setContextMenu] = useState<any[]>([]);
+  const router = useRouter();
+  const { openConfirmModal, openModal } = useModals();
 
   const deleteConfigMutation = useMutation(
     () =>
@@ -188,8 +190,9 @@ export function ConfigCard({ link, configData }) {
       withBorder
       radius="md"
       className={classes.card}
-      component={NextLink}
-      {...linkProps}
+      onClick={() => {
+        router.push(linkProps.href);
+      }}
       onContextMenu={showContextMenu(contextMenu)}
     >
       <Stack h="100%" spacing={0} justify="space-around">

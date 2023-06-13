@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useContextMenu } from 'mantine-contextmenu';
 import { useEffect, useState } from 'react';
-import { openConfirmModal, openModal } from '@mantine/modals';
+import { useModals } from '@mantine/modals';
 import axios from 'axios';
 import { showNotification } from '@mantine/notifications';
 import { useMutation } from '@tanstack/react-query';
@@ -50,6 +50,7 @@ export const ReviewCard = ({ author, createdAt, updatedAt, text, rating, id, com
   const [contextMenu, setContextMenu] = useState<any[]>([]);
   const showContextMenu = useContextMenu();
   const { user } = useAuth();
+  const { openModal, openConfirmModal } = useModals();
 
   const deleteReviewMutation = useMutation(
     () =>

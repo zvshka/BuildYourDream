@@ -29,7 +29,7 @@ import {
 } from '@tabler/icons-react';
 import axios, { AxiosError } from 'axios';
 import { showNotification } from '@mantine/notifications';
-import { openConfirmModal } from '@mantine/modals';
+import { useModals } from '@mantine/modals';
 import { useMutation } from '@tanstack/react-query';
 import { Block, Comments, NextLink, PageHeader } from '../../../components/Layout';
 import { useComponentData } from '../../../components/hooks/components';
@@ -98,6 +98,7 @@ const Field = ({ data }) => (
 export default function ComponentPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { openConfirmModal } = useModals();
 
   const { data: componentData, isSuccess: isComponentDataFetched } = useComponentData(
     router.query.componentId as string

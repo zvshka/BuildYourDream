@@ -36,7 +36,7 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
     setColorScheme(nextColorScheme);
     setCookie('mantine-color-scheme', nextColorScheme, { maxAge: 60 * 60 * 24 * 30 });
   };
-  //
+
   const changePrimaryColor = useCallback(
     (value: string) => {
       setPrimaryColor(value);
@@ -101,7 +101,11 @@ export default function App(props: AppProps & { colorScheme: ColorScheme; primar
               <ReactQueryProvider>
                 <AuthProvider>
                   <NavigationProvider>
-                    <ModalsProvider>
+                    <ModalsProvider
+                      modalProps={{
+                        closeOnEscape: false,
+                      }}
+                    >
                       <Notifications />
                       <RouterTransition />
                       {/*@ts-ignore*/}

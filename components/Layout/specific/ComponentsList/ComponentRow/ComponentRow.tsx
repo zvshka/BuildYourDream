@@ -50,7 +50,7 @@ export const ComponentRow = ({
             width={280}
             height={280}
             {...(component.imageUrl && component.imageUrl.length > 0
-              ? { src: `${component.imageUrl}?quality=60` }
+              ? { src: `${component.imageUrl}?quality=60&width=320` }
               : {})}
           />
           <Overlay color="rgb(255, 255, 255)" opacity={0.9} zIndex={1} />
@@ -64,7 +64,7 @@ export const ComponentRow = ({
             width={280}
             height={280}
             {...(component.imageUrl && component.imageUrl.length > 0
-              ? { src: `${component.imageUrl}?quality=60` }
+              ? { src: `${component.imageUrl}?quality=60&width=320` }
               : {})}
           />
         </MediaQuery>

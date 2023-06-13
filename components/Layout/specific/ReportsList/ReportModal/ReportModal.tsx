@@ -13,12 +13,13 @@ import {
   Switch,
   Text,
 } from '@mantine/core';
-import Link from 'next/link';
 import { DatesProvider, DateTimePicker } from '@mantine/dates';
+import { useRouter } from 'next/router';
 import { storage } from '../../../../../lib/utils';
 import { queryClient } from '../../../../Providers/QueryProvider/QueryProvider';
 
 export const ReportModal = ({ reportData }) => {
+  const router = useRouter();
   const approveForm = useForm({
     initialValues: {
       warns: reportData.warns || 0,
@@ -121,15 +122,13 @@ export const ReportModal = ({ reportData }) => {
             <Text>{reportData.configTitle}</Text>
             <Text weight={600}>Описание сборки:</Text>
             <Text>{reportData.configDescription}</Text>
-            <Link
-              href={`/configs/${reportData.config.id}`}
-              style={{
-                textDecoration: 'none',
-                color: 'black',
+            <Anchor
+              onClick={() => {
+                router.push(`/configs/${reportData.config.id}`);
               }}
             >
-              <Anchor>Ссылка на сборку</Anchor>
-            </Link>
+              Ссылка на сборку
+            </Anchor>
           </Stack>
         )}
         {reportData.user && !reportData.config && !reportData.comment && (
@@ -138,27 +137,23 @@ export const ReportModal = ({ reportData }) => {
             <Text>{reportData.userBio || 'Нет биографии'}</Text>
             <Text weight={600}>Ссылка на аватар пользователя:</Text>
             {reportData.userAvatarUrl ? (
-              <Link
-                href={reportData.userAvatarUrl || ''}
-                style={{
-                  textDecoration: 'none',
-                  color: 'black',
+              <Anchor
+                onClick={() => {
+                  router.push(reportData.userAvatarUrl);
                 }}
               >
-                <Anchor>Ссылка на аватар</Anchor>
-              </Link>
+                Ссылка на аватар
+              </Anchor>
             ) : (
               <Text>Нет аватара</Text>
             )}
-            <Link
-              href={`/profile/${reportData.user.username}`}
-              style={{
-                textDecoration: 'none',
-                color: 'black',
+            <Anchor
+              onClick={() => {
+                router.push(`/profile/${reportData.user.username}`);
               }}
             >
-              <Anchor>Ссылка на пользователя</Anchor>
-            </Link>
+              Ссылка на пользователя
+            </Anchor>
           </Stack>
         )}
         <Divider />

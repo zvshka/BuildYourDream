@@ -56,10 +56,10 @@ export function HeaderWithLogo() {
   const theme = useMantineTheme();
   const { classes } = useStyles();
   const { user, logout } = useAuth();
-  const modals = useModals();
+  const { modals, openConfirmModal } = useModals();
 
   const handleLogout = () => {
-    modals.openConfirmModal({
+    openConfirmModal({
       title: 'Вы уверены?',
       children: <Text size="sm">После подтверждения вам придётся войти в аккаунт снова</Text>,
       labels: { confirm: 'Конечно', cancel: 'Нет' },
@@ -84,11 +84,11 @@ export function HeaderWithLogo() {
           <Grid.Col span="auto" pl={0}>
             <Flex sx={{ height: '100%' }} align="center">
               <Burger
-                opened={navigationContext.opened}
+                opened={navigationContext.isOpened}
                 onClick={() =>
-                  navigationContext.opened
-                    ? navigationContext.setClosed()
-                    : navigationContext.setOpened()
+                  navigationContext.isOpened
+                    ? navigationContext.handleClose()
+                    : navigationContext.handleOpen()
                 }
                 size="md"
                 color={theme.colors.gray[6]}
