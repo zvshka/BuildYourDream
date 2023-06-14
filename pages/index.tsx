@@ -291,10 +291,10 @@ export default function HomePage() {
         )}
         <Grid columns={48}>
           <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-            <Grid.Col>
-              <Block>
-                <Tabs defaultValue="info" allowTabDeactivation>
-                  <Tabs.List>
+            <Grid.Col sx={{ position: 'sticky', top: '6rem', zIndex: 3 }}>
+              <Block sx={{ border: '1px solid lightgrey' }}>
+                <Tabs allowTabDeactivation>
+                  <Tabs.List grow>
                     <Tabs.Tab value="info" icon={<IconListCheck size="1.2rem" />}>
                       Информация
                     </Tabs.Tab>

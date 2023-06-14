@@ -156,8 +156,6 @@ export default function ConfigPage() {
     });
   };
 
-  console.log(configData);
-
   return (
     isSuccess &&
     !!configData && (
