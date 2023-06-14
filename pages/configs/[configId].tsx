@@ -292,6 +292,7 @@ export default function ConfigPage() {
                               {new Array(c.count).fill(0).map((number, index) => (
                                 <Block key={`${c.id}_${index}`}>
                                   <ComponentRow
+                                    componentId={c.component.id}
                                     component={c.component.data}
                                     templateId={c.component.templateId}
                                     avgRating={c.component.avgRating || 0}
@@ -302,6 +303,7 @@ export default function ConfigPage() {
                           ) : (
                             <Block key={c.id}>
                               <ComponentRow
+                                componentId={c.component.id}
                                 component={c.component.data}
                                 templateId={c.component.templateId}
                                 avgRating={c.component.avgRating || 0}

@@ -20,6 +20,7 @@ import {
   IconStarFilled,
   IconTrash,
 } from '@tabler/icons-react';
+import { useRouter } from 'next/router';
 import { IComponentBody } from '../../../../../types/Template';
 import { useTemplateData } from '../../../../hooks/templates';
 
@@ -30,12 +31,14 @@ const myToFixed = (n, digits) => {
 
 export const ComponentRow = ({
   component,
+  componentId,
   templateId,
   totalComments,
   onRemove,
   avgRating,
 }: {
   component: IComponentBody;
+  componentId: string;
   templateId: string;
   totalComments?: number;
   avgRating: number;
@@ -43,6 +46,7 @@ export const ComponentRow = ({
 }) => {
   const { data: templateData, isSuccess } = useTemplateData(templateId);
   const theme = useMantineTheme();
+  const router = useRouter();
 
   return (
     <Box w="100%" sx={{ position: 'relative' }}>
@@ -141,6 +145,11 @@ export const ComponentRow = ({
                     px="xs"
                     py={4}
                     value={avgRating}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      router.push(`/components/${templateId}/${componentId}?activeTab=reviews`);
+                    }}
                   />
                   <Group
                     spacing="xs"
@@ -150,6 +159,11 @@ export const ComponentRow = ({
                     }}
                     px="xs"
                     py={1}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      router.push(`/components/${templateId}/${componentId}?activeTab=comments`);
+                    }}
                   >
                     <IconMessage size={20} />
                     <Text fz={18}>
@@ -165,13 +179,27 @@ export const ComponentRow = ({
                     },
                   }}
                 >
-                  <Group spacing="xs">
+                  <Group
+                    spacing="xs"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      router.push(`/components/${templateId}/${componentId}?activeTab=comments`);
+                    }}
+                  >
                     <IconMessage />
                     <Text fz={18}>
                       {totalComments && totalComments > 999 ? '999+' : totalComments || 0}
                     </Text>
                   </Group>
-                  <Group spacing="xs">
+                  <Group
+                    spacing="xs"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      router.push(`/components/${templateId}/${componentId}?activeTab=reviews`);
+                    }}
+                  >
                     <IconStarFilled style={{ color: 'orange' }} />
                     <Text fz={18}>{avgRating ? myToFixed(avgRating, 1) : '0.0'}</Text>
                   </Group>

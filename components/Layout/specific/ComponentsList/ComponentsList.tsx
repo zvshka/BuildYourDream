@@ -151,6 +151,7 @@ export const ComponentsList = ({
                     >
                       <Block>
                         <ComponentRow
+                          componentId={component.id}
                           component={component.data}
                           templateId={component.templateId}
                           totalComments={component.totalComments}
@@ -166,6 +167,7 @@ export const ComponentsList = ({
                     >
                       <Block>
                         <ComponentRow
+                          componentId={component.id}
                           component={component.data}
                           templateId={component.templateId}
                           totalComments={component.totalComments}

@@ -59,6 +59,7 @@ const ComponentRowWithReload = ({ component, onRemove, onLoad }) => {
 
   return (
     <ComponentRow
+      componentId={component.id}
       component={isSuccess ? componentData.data : component.data}
       templateId={component.templateId}
       onRemove={onRemove}
