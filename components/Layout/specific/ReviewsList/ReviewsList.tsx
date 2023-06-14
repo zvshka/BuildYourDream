@@ -55,7 +55,7 @@ export const ReviewsList = ({
     <Stack>
       <Block>
         <Grid>
-          <Grid.Col span="auto">
+          <Grid.Col xs={12} sm="auto">
             <Select
               data={[
                 { label: 'Дата создания', value: 'createdAt' },
@@ -64,7 +64,7 @@ export const ReviewsList = ({
               {...sortForm.getInputProps('orderBy')}
             />
           </Grid.Col>
-          <Grid.Col span="auto">
+          <Grid.Col xs={12} sm="auto">
             <Select
               data={[
                 { label: 'По убыванию', value: 'desc' },
@@ -74,7 +74,7 @@ export const ReviewsList = ({
             />
           </Grid.Col>
           {user && componentId && (
-            <Grid.Col span="auto">
+            <Grid.Col xs={12} sm="auto">
               <Center>
                 <Button fullWidth onClick={handleReview}>
                   Оставить отзыв

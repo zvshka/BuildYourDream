@@ -3,13 +3,16 @@ import {
   Avatar,
   Box,
   createStyles,
+  Divider,
   Group,
+  MediaQuery,
+  Menu,
   Rating,
   rem,
   Text,
   UnstyledButton,
 } from '@mantine/core';
-import { IconFlag, IconMinusVertical, IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconDotsVertical, IconFlag, IconPencil, IconTrash } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import { useContextMenu } from 'mantine-contextmenu';
@@ -151,14 +154,15 @@ export const ReviewCard = ({ author, createdAt, updatedAt, text, rating, id, com
 
   return (
     <Block onContextMenu={showContextMenu(contextMenu)}>
-      <Group position="apart">
-        <Group align="normal">
+      <Group position="apart" noWrap align="normal">
+        <Group align="normal" noWrap>
           <Link
             href={`/profile/${author.username}`}
             style={{ textDecoration: 'none', color: 'black' }}
           >
             <Group
               sx={{ cursor: 'pointer' }}
+              noWrap
               onContextMenu={showContextMenu(
                 user && user.id !== author.id
                   ? [
@@ -185,23 +189,42 @@ export const ReviewCard = ({ author, createdAt, updatedAt, text, rating, id, com
               </Box>
             </Group>
           </Link>
-          <IconMinusVertical color="lightgrey" />
+          <Divider orientation="vertical" />
           <Text size="sm">
             {component.template.name} {component.data['Название']}
           </Text>
         </Group>
-        <Group spacing="xs">
-          {user && author.id === user.id && (
-            <ActionIcon color="blue" size="lg" onClick={handleEdit}>
-              <IconPencil />
-            </ActionIcon>
-          )}
-          {user && (author.id === user.id || user.role !== 'USER') && (
-            <ActionIcon color="red" size="lg" onClick={handleDelete}>
-              <IconTrash />
-            </ActionIcon>
-          )}
-        </Group>
+        <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+          <Group spacing="xs">
+            {user && author.id === user.id && (
+              <ActionIcon color="blue" size="lg" onClick={handleEdit}>
+                <IconPencil />
+              </ActionIcon>
+            )}
+            {user && (author.id === user.id || user.role !== 'USER') && (
+              <ActionIcon color="red" size="lg" onClick={handleDelete}>
+                <IconTrash />
+              </ActionIcon>
+            )}
+          </Group>
+        </MediaQuery>
+        <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+          <Menu>
+            <Menu.Target>
+              <ActionIcon>
+                <IconDotsVertical />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item onClick={handleEdit} icon={<IconPencil size="1rem" />}>
+                Изменить
+              </Menu.Item>
+              <Menu.Item onClick={handleDelete} icon={<IconTrash color="red" size="1rem" />}>
+                Удалить
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </MediaQuery>
       </Group>
       <Text className={classes.body} size="sm">
         {text}

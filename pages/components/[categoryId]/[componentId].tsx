@@ -178,7 +178,7 @@ export default function ComponentPage() {
           addBack
           rightSection={
             user && (
-              <Box sx={{ height: '100%' }}>
+              <Group sx={{ height: '100%' }}>
                 <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
                   <Group>
                     <Button
@@ -196,7 +196,7 @@ export default function ComponentPage() {
                   </Group>
                 </MediaQuery>
                 <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-                  <Group>
+                  <Stack>
                     <ActionIcon
                       color="blue"
                       variant="filled"
@@ -210,9 +210,9 @@ export default function ComponentPage() {
                         <IconTrash />
                       </ActionIcon>
                     )}
-                  </Group>
+                  </Stack>
                 </MediaQuery>
-              </Box>
+              </Group>
             )
           }
         />
