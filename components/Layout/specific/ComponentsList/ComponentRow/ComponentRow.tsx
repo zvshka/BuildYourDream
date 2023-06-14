@@ -23,6 +23,11 @@ import {
 import { IComponentBody } from '../../../../../types/Template';
 import { useTemplateData } from '../../../../hooks/templates';
 
+const myToFixed = (n, digits) => {
+  const currentDigits = digits || 0;
+  return n.toFixed(digits).replace(new RegExp(`\\.0{${currentDigits}}`), '');
+};
+
 export const ComponentRow = ({
   component,
   templateId,
@@ -168,7 +173,7 @@ export const ComponentRow = ({
                   </Group>
                   <Group spacing="xs">
                     <IconStarFilled style={{ color: 'orange' }} />
-                    <Text fz={18}>0.0</Text>
+                    <Text fz={18}>{avgRating ? myToFixed(avgRating, 1) : '0.0'}</Text>
                   </Group>
                 </Stack>
                 <Group spacing={4} sx={{ verticalAlign: 'bottom' }}>
