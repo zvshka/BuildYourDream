@@ -23,6 +23,7 @@ import { Block, ConstraintField, PageHeader, SortableList } from '../../../compo
 import { ITemplate } from '../../../types/Template';
 import { IConstraintFieldValue } from '../../../types/Constraints';
 import { useConstraintsList } from '../../../components/hooks/constraints';
+import { queryClient } from '../../../components/Providers/QueryProvider/QueryProvider';
 
 const ConfiguratorForm = () => {
   const { data: templates, isSuccess } = useTemplatesList();
@@ -193,6 +194,7 @@ const ConstraintsForm = () => {
           color: 'green',
           message: 'Ограничение успешно создано',
         });
+        queryClient.invalidateQueries(['constraints', 'list']);
       },
       onError: () => {
         showNotification({
@@ -218,6 +220,7 @@ const ConstraintsForm = () => {
           color: 'green',
           message: 'Ограничение успешно обновлено',
         });
+        queryClient.invalidateQueries(['constraints', 'list']);
       },
       onError: () => {
         showNotification({
@@ -243,6 +246,7 @@ const ConstraintsForm = () => {
           color: 'green',
           message: 'Ограничение успешно удалено',
         });
+        queryClient.invalidateQueries(['constraints', 'list']);
       },
       onError: () => {
         showNotification({
@@ -251,7 +255,6 @@ const ConstraintsForm = () => {
           message: 'При удалении ограничения что-то пошло не так',
         });
       },
-      mutationKey: ['constraints', 'list'],
     }
   );
 
