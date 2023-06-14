@@ -108,7 +108,7 @@ export default function ComponentPage() {
     showNotification({
       title: 'Ошибка',
       color: 'red',
-      message: componentData?.response?.data.message,
+      message: componentData?.response?.data.message || 'Что-то пошло не так',
     });
     router.push('/components');
   }
@@ -261,7 +261,18 @@ export default function ComponentPage() {
             </Stack>
           </Grid.Col>
           <Grid.Col xs={3} sm={2}>
-            <Tabs defaultValue="info">
+            <Tabs
+              defaultValue="info"
+              onTabChange={(value) => {
+                router.replace({
+                  query: {
+                    ...router.query,
+                    activeTab: value,
+                  },
+                });
+              }}
+              value={router.query.activeTab as string}
+            >
               <Block>
                 <Tabs.List>
                   <Tabs.Tab value="info">Информация</Tabs.Tab>

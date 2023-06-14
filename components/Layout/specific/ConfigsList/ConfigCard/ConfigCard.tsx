@@ -39,6 +39,7 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
     minHeight: '12rem',
     height: '100%',
+    cursor: 'pointer',
   },
 
   title: {
@@ -309,6 +310,7 @@ export function ConfigCard({ link, configData }) {
                 onClick={(event) => {
                   event.stopPropagation();
                   event.preventDefault();
+                  router.push(`/configs/${configData.id}?activeTab=comments`);
                 }}
               >
                 <IconMessage size="1rem" />

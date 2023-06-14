@@ -73,7 +73,7 @@ export const ComponentsList = ({
     router.replace({
       query: {
         ...router.query,
-        search: debouncedSearch,
+        search: debouncedSearch || '',
       },
     });
   }, [debouncedSearch]);

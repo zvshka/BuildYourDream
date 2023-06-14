@@ -35,13 +35,10 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useTemplatesList } from '../components/hooks/templates';
 import { useAuth } from '../components/Providers/AuthContext/AuthWrapper';
-import { Block } from '../components/Layout';
-import { ComponentsList } from '../components/Layout/specific/ComponentsList/ComponentsList';
+import { Block, ComponentRow, ComponentsList, ErrorMessage } from '../components/Layout';
 import { IComponent, ITemplate } from '../types/Template';
 import { useConstraintsList } from '../components/hooks/constraints';
-import { ErrorMessage } from '../components/Layout/specific/ConfiguratorMessage/ConfiguratorMessage';
 import { configErrors, getCount, storage } from '../lib/utils';
-import { ComponentRow } from '../components/Layout/specific/ComponentsList/ComponentRow/ComponentRow';
 import { useComponentData } from '../components/hooks/components';
 
 //TODO: Добавить помощник выбора в несколько шагов
@@ -186,7 +183,7 @@ export default function HomePage() {
         templates.find((t) => t.id === component.templateId)!,
         currentState
       );
-      if (currentCount === maxCount) {
+      if (currentCount >= maxCount) {
         handlers.close();
       }
       storage.updateConfig(
@@ -435,7 +432,7 @@ export default function HomePage() {
           </Grid.Col>
           <MediaQuery styles={{ display: 'none' }} smallerThan="md">
             <Grid.Col md={14}>
-              <Stack>
+              <Stack sx={{ position: 'sticky', top: '6rem' }}>
                 <Block>
                   <Stack spacing="xs">
                     <Title order={3}>Информация</Title>

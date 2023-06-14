@@ -156,6 +156,8 @@ export default function ConfigPage() {
     });
   };
 
+  console.log(configData);
+
   return (
     isSuccess &&
     !!configData && (
@@ -261,7 +263,18 @@ export default function ConfigPage() {
               </Stack>
             </Grid.Col>
             <Grid.Col xs={3} sm={2}>
-              <Tabs defaultValue="info">
+              <Tabs
+                defaultValue="info"
+                onTabChange={(value) => {
+                  router.replace({
+                    query: {
+                      ...router.query,
+                      activeTab: value,
+                    },
+                  });
+                }}
+                value={router.query.activeTab as string}
+              >
                 <Block>
                   <Tabs.List>
                     <Tabs.Tab value="info">Информация</Tabs.Tab>
@@ -275,15 +288,29 @@ export default function ConfigPage() {
                     </Block>
                     <Stack>
                       {isSuccess &&
-                        configData.components.map((c) => (
-                          <Block key={c.id}>
-                            <ComponentRow
-                              component={c.component.data}
-                              templateId={c.component.templateId}
-                              avgRating={c.component.avgRating || 0}
-                            />
-                          </Block>
-                        ))}
+                        configData.components.map((c) =>
+                          c.count > 0 ? (
+                            <Stack key={c.id}>
+                              {new Array(c.count).fill(0).map((number, index) => (
+                                <Block key={`${c.id}_${index}`}>
+                                  <ComponentRow
+                                    component={c.component.data}
+                                    templateId={c.component.templateId}
+                                    avgRating={c.component.avgRating || 0}
+                                  />
+                                </Block>
+                              ))}
+                            </Stack>
+                          ) : (
+                            <Block key={c.id}>
+                              <ComponentRow
+                                component={c.component.data}
+                                templateId={c.component.templateId}
+                                avgRating={c.component.avgRating || 0}
+                              />
+                            </Block>
+                          )
+                        )}
                     </Stack>
                   </Stack>
                 </Tabs.Panel>
