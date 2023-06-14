@@ -294,12 +294,12 @@ const ConstraintsForm = () => {
           createConstraint.mutate(item);
         }
 
-        for (let i = 0; i < toCreate.length; i += 1) {
+        for (let i = 0; i < toEdit.length; i += 1) {
           const item = toEdit[i];
           updateConstraint.mutate(item);
         }
 
-        for (let i = 0; i < toCreate.length; i += 1) {
+        for (let i = 0; i < toDelete.length; i += 1) {
           const item = toDelete[i];
           if (item) {
             deleteConstraint.mutate(item.id);
@@ -312,18 +312,20 @@ const ConstraintsForm = () => {
   return (
     <Box>
       <PageHeader title="Настройка ограничений" />
-
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack mt="md">
-          <Group>
-            <Button onClick={() => form.insertListItem('constraints', { id: cuid(), data: {} })}>
-              Добавить
-            </Button>
-            <Button type="submit">Сохранить</Button>
-          </Group>
+          <Block>
+            <Group>
+              <Button onClick={() => form.insertListItem('constraints', { id: cuid(), data: {} })}>
+                Добавить
+              </Button>
+              <Button type="submit">Сохранить</Button>
+            </Group>
+          </Block>
           <Stack>
             {form.values.constraints.map((c, index) => (
               <Block
+                key={c.id}
                 sx={{
                   outline: duplicates.some((cc) => c.id === cc.id)
                     ? '1px solid red'
