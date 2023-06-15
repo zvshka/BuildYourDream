@@ -1,14 +1,4 @@
-import {
-  Accordion,
-  Checkbox,
-  createStyles,
-  Group,
-  NumberInput,
-  Paper,
-  Select,
-  Stack,
-  TextInput,
-} from '@mantine/core';
+import { Accordion, Checkbox, createStyles, Paper, Select, Stack, TextInput } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/router';
@@ -23,6 +13,7 @@ import {
   SELECT,
   TEXT,
 } from '../../../../types/FieldTypes';
+import { RangeInput } from '../RangeInput/RangeInput';
 
 const boolValues = [
   { value: 'all', label: 'Все' },
@@ -80,7 +71,6 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
 
   useEffect(() => {
     router.replace({
-      // query: { ...router.query, search: debouncedSearch, tiers },
       query: new URLSearchParams({
         ...router.query,
         search: debouncedSearch,
@@ -88,6 +78,25 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
       }).toString(),
     });
   }, [debouncedSearch, tiers]);
+
+  const handleAddFilter = (value: any, field: IField) => {
+    router.replace({
+      query: new URLSearchParams({
+        ...router.query,
+        [field.name]: value,
+      }).toString(),
+    });
+  };
+
+  const handleAddFilterRange = (value: any, field: IField) => {
+    router.replace({
+      query: new URLSearchParams({
+        ...router.query,
+        [`${field.name}_start`]: value[0],
+        [`${field.name}_end`]: value[1],
+      }).toString(),
+    });
+  };
 
   return (
     <Stack sx={{ width: '100%' }}>
@@ -116,7 +125,10 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
                   <Accordion.Control>{field.name}</Accordion.Control>
                   <Accordion.Panel>
                     {field.type === SELECT && (
-                      <Checkbox.Group>
+                      <Checkbox.Group
+                        value={(router.query[field.name] as string).split(',')}
+                        onChange={(value) => handleAddFilter(value, field)}
+                      >
                         <Stack spacing="xs">
                           {field.options.map((option: string, key: number) => (
                             <Checkbox
@@ -129,14 +141,14 @@ export const Filters = ({ fields }: { fields: IField[] }) => {
                       </Checkbox.Group>
                     )}
                     {(field.type === RANGE || field.type === NUMBER) && (
-                      <Group grow>
-                        <NumberInput placeholder="От" />
-                        <NumberInput placeholder="До" />
-                      </Group>
+                      <RangeInput onChange={(value) => handleAddFilterRange(value, field)} />
                     )}
                     {field.type === BOOL && <Select data={boolValues} defaultValue="all" />}
                     {field.type === DEPENDS_ON && (
-                      <Checkbox.Group>
+                      <Checkbox.Group
+                        value={(router.query[field.name] as string).split(',')}
+                        onChange={(value) => handleAddFilter(value, field)}
+                      >
                         <Stack spacing="xs">
                           {getValues(field).map((option: string, key: number) => (
                             <Checkbox

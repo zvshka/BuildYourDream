@@ -1,7 +1,17 @@
 import { Group, Input, NumberInput } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
-export const RangeInput = ({ label, required, value = [0, 0], onChange }: any) => {
+export const RangeInput = ({
+  label,
+  required,
+  value = [0, 0],
+  onChange,
+}: {
+  label?: string;
+  required?: boolean;
+  value?: [number, number];
+  onChange?: (value: [number, number]) => void;
+}) => {
   const [currentFrom, setFrom] = useState(value[0]);
   const [currentTo, setTo] = useState(value[1]);
 

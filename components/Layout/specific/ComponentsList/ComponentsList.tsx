@@ -90,6 +90,7 @@ export const ComponentsList = ({
   useEffect(() => {
     setFilters((currentFilter) => ({
       ...currentFilter,
+      ...router.query,
       search: (router.query.search as string) || '',
       tiers: (router.query.tiers as string[]) || [],
     }));

@@ -1,8 +1,77 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { IComponent } from '../types/Template';
 import { ApiError } from '../lib/ApiError';
 import TemplateService from './Template.service';
 import { User } from '../types/User';
+import { IField } from '../types/Field';
+import { BOOL, DEPENDS_ON, NUMBER, RANGE, SELECT } from '../types/FieldTypes';
+
+const parseField = (field: IField) => {
+  let result = `"data" ->> '${field.name}' as "${field.name}"`;
+  switch (field.type) {
+    case NUMBER:
+      result = `("data" ->> '${field.name}')::int as "${field.name}"`;
+      break;
+    case RANGE:
+      result = `
+        ("data" -> '${field.name}' ->> 0)::int as "${field.name}_start",\n
+        ("data" -> '${field.name}' ->> 1)::int as "${field.name}_end"
+      `;
+      break;
+    case BOOL:
+      result = `("data" ->> '${field.name}')::boolean as "${field.name}"`;
+      break;
+    default:
+      break;
+  }
+  return result;
+};
+
+const parseFilterField = (field: IField, search: any) => {
+  let result = `"${field.name}" = '${search}'`;
+  switch (field.type) {
+    case DEPENDS_ON:
+    case SELECT:
+      result = `"${field.name}" IN (${search
+        .split(',')
+        .map((v) => `'${v}'`)
+        .join(', ')})`;
+      break;
+    case NUMBER:
+      break;
+    case RANGE:
+      break;
+    default:
+      break;
+  }
+
+  return result;
+};
+
+const generateFilter = (filter: any, templateFields: IField[]) => {
+  let result = '';
+  const fieldsNames = templateFields.map((f) => f.name);
+  const filterKeys = Object.keys(filter);
+  const presentInFilter = filterKeys
+    .filter((key) => fieldsNames.includes(key))
+    .map((key) => templateFields.find((f) => f.name === key))
+    .filter((v) => v !== undefined);
+
+  if (presentInFilter.length > 0) {
+    for (let i = 0; i < presentInFilter.length; i += 1) {
+      const search = filter[presentInFilter[i]?.name!];
+      if (search.length > 0) {
+        result += `AND ${parseFilterField(
+          presentInFilter[i] as IField,
+          filter[presentInFilter[i]?.name!]
+        )}`;
+      }
+    }
+  }
+
+  return result;
+};
 
 class ComponentService {
   async approveComponent(user: User, componentId: string) {
@@ -119,8 +188,6 @@ class ComponentService {
       },
     });
 
-    if (!candidate) throw ApiError.BadRequest('Такой категории не существует');
-
     let currentPage = 1;
     if (filter.page) {
       if (!Number.isNaN(filter.page)) {
@@ -173,6 +240,30 @@ class ComponentService {
         AND: [searchFilter, tiersFilter],
       },
     });
+
+    if (!candidate) throw ApiError.BadRequest('Такой категории не существует');
+
+    console.log(filter);
+    const filters = generateFilter(filter, candidate.fields! as unknown as IField[]);
+    console.log(filters);
+
+    try {
+      const test_result = await prisma.$queryRaw`
+          SELECT *
+          FROM (SELECT *,
+                       ${Prisma.raw(
+                         (candidate.fields! as unknown as IField[])
+                           .map((f) => parseField(f))
+                           .join(', ')
+                       )}
+                FROM "Component") as subquery
+          WHERE "templateId" = ${templateId} ${
+        filters && filters.length > 0 ? Prisma.raw(filters) : Prisma.raw('')
+      };
+      `;
+
+      console.log(test_result);
+    } catch (e) {}
 
     const result = await prisma.component.findMany({
       skip: (currentPage - 1) * 10,

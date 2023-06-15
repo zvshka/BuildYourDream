@@ -1,11 +1,9 @@
 import { ActionIcon, Box, Button, Container, Group, MediaQuery, Menu, Stack } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { IconArrowLeft, IconCirclePlus, IconDotsVertical, IconPencil } from '@tabler/icons-react';
+import { IconCirclePlus, IconDotsVertical, IconPencil } from '@tabler/icons-react';
 import { useAuth } from '../../../components/Providers/AuthContext/AuthWrapper';
-import { PageHeader } from '../../../components/Layout';
+import { ComponentsList, NextLink, PageHeader } from '../../../components/Layout';
 import { useTemplateData } from '../../../components/hooks/templates';
-import { NextLink } from '../../../components/Layout/general/NextLink/NextLink';
-import { ComponentsList } from '../../../components/Layout/specific/ComponentsList/ComponentsList';
 
 export default function CategoryPage() {
   const router = useRouter();
