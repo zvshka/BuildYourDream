@@ -81,7 +81,7 @@ export const ConfigsList = ({ username, liked }: { username?: string; liked?: bo
             label="Поле сортировки"
             data={[
               { value: 'createdAt', label: 'По дате создания' },
-              { value: 'liked', label: 'По лайка' },
+              { value: 'liked', label: 'По лайкам' },
               { value: 'comments', label: 'По активности' },
             ]}
             value={sortField}
